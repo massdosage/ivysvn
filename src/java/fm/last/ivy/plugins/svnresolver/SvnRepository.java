@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.plugins.repository.AbstractRepository;
 import org.apache.ivy.plugins.repository.Resource;
 import org.apache.ivy.plugins.repository.TransferEvent;
@@ -167,15 +168,24 @@ public class SvnRepository extends AbstractRepository {
     return repository;
   }
 
+  String revision = null;
+  
   /**
    * Starts a publish transaction.
    * 
-   * @param commitMessage The SVN commit message to use for this publish transaction.
+   * @param mrid The SVN commit message to use for this publish transaction.
    */
-  public void beginPublishTransaction(String commitMessage) {
+  public void beginPublishTransaction(ModuleRevisionId mrid) {
+    this.revision = mrid.getRevision();
     // TODO: review all messages and their levels
-    Message.info("Starting transaction " + commitMessage + "...");
-    publishTransaction = new SvnPublishTransaction(commitMessage, binaryDiff, binaryDiffLocation);
+    StringBuilder comment = new StringBuilder();
+    comment.append("Ivy publishing ").append(mrid.getOrganisation()).append("/");
+    comment.append(mrid.getName()).append(" [");
+    comment.append(mrid.getRevision()).append("]");
+    
+    Message.info("Starting transaction " + mrid + "...");
+    
+    publishTransaction = new SvnPublishTransaction(comment.toString(), binaryDiff, binaryDiffLocation);
   }
 
   /**
@@ -200,6 +210,10 @@ public class SvnRepository extends AbstractRepository {
    */
   public void abortPublishTransaction() throws IOException {
     ensurePublishTransaction();
+    if (!publishTransaction.isCommitInProgress()) {
+      Message.info("Commit transaction not started, nothing to abort");
+      return;
+    }
     Message.info("Aborting transaction");
     try {
       publishTransaction.abort();
@@ -233,6 +247,11 @@ public class SvnRepository extends AbstractRepository {
         publishTransaction.setCommitRepository(commitRepository);
       }
       // add all info needed to put the file to the transaction
+      // TODO: decide whether this logic should go here or in PutOperation...
+      PutOperation operation = new PutOperation(source, destination, overwrite, this.repositoryPath);
+      if (binaryDiff && operation.getFolderPath().endsWith(revision)) {
+        throw new IllegalStateException("Ivy pattern does not use revision as directory");
+      }
       publishTransaction.addPutOperation(source, destination, overwrite, this.repositoryPath); 
     } catch (SVNException e) {
       throw new IOException("Error putting " + destination, e);

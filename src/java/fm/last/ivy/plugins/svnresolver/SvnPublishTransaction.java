@@ -73,8 +73,10 @@ public class SvnPublishTransaction {
    * Editor that to use for performing various operations within a commit transaction.
    */
   private ISVNEditor commitEditor;
+  
+  private boolean commitInProgress = false;
 
-  private boolean binaryDiff;
+  private boolean binaryDiff = false;
 
   private String binaryDiffLocation;
 
@@ -132,6 +134,10 @@ public class SvnPublishTransaction {
     // NOTE: file contents are stored in memory...
     this.entries.add(new PutOperation(source, destinationPath, overwrite, repositoryPath));
   }
+  
+  public void addPutOperation(PutOperation operation) {
+    this.entries.add(operation);
+  }
 
   /**
    * Commits all files scheduled to be put.
@@ -143,6 +149,7 @@ public class SvnPublishTransaction {
     SVNURL root = commitRepository.getRepositoryRoot(true);
     commitRepository.setLocation(root, false);
     commitEditor = commitRepository.getCommitEditor(commitMessage, null);
+    commitInProgress = true;
     commitEditor.openRoot(-1);
     int committedEntryCount = performPutOperations();
     commitEditor.closeDir();
@@ -297,4 +304,11 @@ public class SvnPublishTransaction {
     return ancillaryRepository;
   }
 
+  /**
+   * @return the commitInProgress
+   */
+  public boolean isCommitInProgress() {
+    return commitInProgress;
+  }
+  
 }
