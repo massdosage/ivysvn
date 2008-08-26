@@ -1,0 +1,10 @@
+#summary Overview of third party libraries used by Ivysvn.
+
+= Third Party Libraries =
+
+The Ivy Subversion resolver uses the following third-party libraries, the version numbers indicate the versions that the Ivy Subversion resolver was built and tested against, your mileage with other versions may vary.
+
+  * [http://ant.apache.org Apache Ant] 1.7.0
+  * [http://ant.apache.org/ivy/ Ivy] 2.0 beta 2
+  * [http://www.trilead.com/Products/Trilead-SSH-2-Java/ Trilead SSH for Java] build 211
+  * [http://svnkit.com/ SVNKit] 1.1.6
