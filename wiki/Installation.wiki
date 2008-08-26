@@ -1,4 +1,4 @@
-#How to install Ivysvn from a binary release.
+# How to install Ivysvn from a binary release.
 = Installing Ivysvn =
 
 The following steps describe how to install Ivysvn after you have downloaded and unpacked the latest binary release.
