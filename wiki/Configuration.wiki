@@ -1,0 +1,45 @@
+#summary Configuring Ivysvn.
+
+Configuring Ivysvn is explained below
+
+= Configuration =
+
+1. Create an ivysettings.xml file as described below, removing attributes and/or replacing words which are all uppercase with values that suit your setup.
+ 
+{{{
+<ivysettings>
+
+  <typedef name="svn" classname="fm.last.ivy.plugins.svnresolver.SvnResolver"/>
+
+  <resolvers>
+    <svn name="ivysvn" username="${svn.user.name}" userpassword="${svn.user.password}" keyfile="${ssh.keyfile}" port="${ssh.port}" passphrase="${ssh.keyfile.passphrase}" 
+        certfile="${ssl.certfile}" repositoryURL="PROTOCOL://HOSTNAME/PATH_TO_YOUR_SVN_ROOT">
+      <ivy pattern="PROTOCOL://HOSTNAME/PATH_TO_YOUR_IVY_REPOSITORY/[organisation]/[module]/[revision]/ivy.xml"/>
+      <artifact pattern="PROTOCOL://HOSTNAME/PATH_TO_YOUR_IVY_REPOSITORY/[organisation]/[module]/[revision]/[artifact].[ext]"/>
+    </svn>
+  </resolvers>
+
+  <settings defaultResolver="ivysvn" />
+    <modules>
+      <module organisation="YOUR_ORGANISATION" name="ivysvnresolver" resolver="ivysvn"/>
+    </modules>
+</ivysettings>
+}}}
+
+For more information on the values in ivysettings.xml refer to the [http://ant.apache.org/ivy/history/trunk/configuration.html Ivy documentation]. Make sure that this file is included in your Ant build file before you call any Ivy ant targets like ivy:retrieve, ivy:publish etc. You include it with a line like so:
+{{{
+<ivy:settings file="ivysettings.xml" />
+}}}
+
+2. Remove, add and set attributes of the "svn" element to suit your environment as per the table below (we recommend setting them via properties in your ant build file) and the above examples are coded accordingly.
+
+
+|| *Attribute* || *Description* || *Required* ||
+|| name        || Name of the resolver || Always ||
+|| username || Subversion user name || Always ||
+|| userpassword || Subversion password || For svn+ssh:// and http(s):// connections that require username and password authentication ||
+|| keyfile || Path to SSH key file || For svn+ssh:// connections that require username and keyfile authentication ||
+|| passphrase || The SSH key file passphrase (if any) || For svn+ssh:// connections that require username and keyfile authentication with a keyfile requiring a passphrase ||
+|| port || The SSH port || For svn+ssh:// connections where the SSH server is listening on a port other than 22 ||
+|| certfile || Path to client side certificate file || For https:// connections that require client side certificates for authentication ||
+|| repositoryURL || A base repository URL (containing protocol, host and path to the root of the repository) || If the root of the Subversion repository is located more than one directory level deep and you are using http(s):// ||
