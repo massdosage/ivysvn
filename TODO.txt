@@ -1,0 +1,4 @@
+-Could make "ivy publishing file" message configurable or contain file name by default.
+
+-Test and bundle with Ivy 2.0 jar when released. Rename ivy jar to ivy.jar so future updates don't 
+require you to manually remove old ivy as part of "install"
