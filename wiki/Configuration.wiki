@@ -33,7 +33,6 @@ For more information on the values in ivysettings.xml refer to the [http://ant.a
 
 2. Remove, add and set attributes of the "svn" element to suit your environment as per the table below (we recommend setting them via properties in your ant build file) and the above examples are coded accordingly.
 
-
 || *Attribute* || *Description* || *Required* ||
 || name        || Name of the resolver || Always ||
 || username || Subversion user name || Always ||
@@ -43,3 +42,23 @@ For more information on the values in ivysettings.xml refer to the [http://ant.a
 || port || The SSH port || For svn+ssh:// connections where the SSH server is listening on a port other than 22 ||
 || certfile || Path to client side certificate file || For https:// connections that require client side certificates for authentication ||
 || repositoryURL || A base repository URL (containing protocol, host and path to the root of the repository) || If the root of the Subversion repository is located more than one directory level deep and you are using http(s):// ||
+
+So an example ivysettings.xml for a Subversion repository accessed over SSH on the default SSH port using SSH username and password authentication would be:
+{{{
+<ivysettings>
+
+  <typedef name="svn" classname="fm.last.ivy.plugins.svnresolver.SvnResolver"/>
+
+  <resolvers>
+    <svn name="ivysvn" username="${svn.user.name}" userpassword="${svn.user.password}>
+      <ivy pattern="svn+ssh://example.com/svn/someproject/[organisation]/[module]/[revision]/ivy.xml"/>
+      <artifact pattern="svn+ssh://example.com/svn/someproject/[organisation]/[module]/[revision]/[artifact].[ext]"/>
+    </svn>
+  </resolvers>
+
+  <settings defaultResolver="ivysvn" />
+    <modules>
+      <module organisation="some_organisation" name="ivysvnresolver" resolver="ivysvn"/>
+    </modules>
+</ivysettings>  
+}}}
