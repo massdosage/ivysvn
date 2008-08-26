@@ -102,6 +102,12 @@ public class SvnRepository extends AbstractRepository {
    */
   private SvnPublishTransaction publishTransaction;
 
+  private boolean binaryDiff = false;
+  
+  private static final String DEFAULT_BINARY_DIFF_LOCATION = "LATEST";
+  
+  private String binaryDiffLocation = DEFAULT_BINARY_DIFF_LOCATION;
+
   /**
    * Initialises repository to accept requests for svn protocol.
    */
@@ -144,13 +150,20 @@ public class SvnRepository extends AbstractRepository {
    * object.
    * 
    * @param url Subversion repository URL.
+   * @param cache Whether to cache repository reference.
    * @return An initialised repository object.
    * @throws SVNException If the URL or authentication credentials are invalid.
    */
-  private SVNRepository createRepository(SVNURL url) throws SVNException {
-    SVNRepository repository = SvnUtils.createRepository(url, userName, userPassword, keyFile, passPhrase, portNumber,
+  private SVNRepository getRepository(SVNURL url, boolean cache) throws SVNException {
+    SVNRepository repository = null;
+    if (cache) {
+      repository = SVNRepositoryCache.getInstance().getRepository(url, userName, userPassword, keyFile, passPhrase,
+          portNumber, certFile, storageAllowed);
+    } else {
+      repository = SvnUtils.createRepository(url, userName, userPassword, keyFile, passPhrase, portNumber,
         certFile, storageAllowed);
-    repository.setLocation(url, true);
+    }
+    repository.setLocation(url, false);
     return repository;
   }
 
@@ -162,7 +175,7 @@ public class SvnRepository extends AbstractRepository {
   public void beginPublishTransaction(String commitMessage) {
     // TODO: review all messages and their levels
     Message.info("Starting transaction " + commitMessage + "...");
-    publishTransaction = new SvnPublishTransaction(commitMessage);
+    publishTransaction = new SvnPublishTransaction(commitMessage, binaryDiff, binaryDiffLocation);
   }
 
   /**
@@ -212,16 +225,15 @@ public class SvnRepository extends AbstractRepository {
       SVNURL destinationURL = SVNURL.parseURIEncoded(destination);
       if (publishTransaction.getAncillaryRepository() == null) { // haven't initialised transaction on a previous put
         // first create a repository which transaction can use for various file checks
-        SVNRepository rootRepository = createRepository(destinationURL);
+        SVNRepository rootRepository = getRepository(destinationURL, false);
         publishTransaction.setAncillaryRepository(rootRepository);
 
         // now create another repository which transaction will use to do actual commits
-        SVNRepository commitRepository = createRepository(destinationURL);
+        SVNRepository commitRepository = getRepository(destinationURL, false);
         publishTransaction.setCommitRepository(commitRepository);
       }
-      publishTransaction.addPutOperation(source, destination, overwrite, this.repositoryPath); // add the file to put to
-                                                                                               // the
-      // transaction
+      // add all info needed to put the file to the transaction
+      publishTransaction.addPutOperation(source, destination, overwrite, this.repositoryPath); 
     } catch (SVNException e) {
       throw new IOException("Error putting " + destination, e);
     }
@@ -252,7 +264,7 @@ public class SvnRepository extends AbstractRepository {
     BufferedOutputStream output = null;
     try {
       SVNURL url = SVNURL.parseURIEncoded(source);
-      SVNRepository repository = createRepository(url);
+      SVNRepository repository = getRepository(url, true);
       repository.setLocation(url, false);
 
       Resource resource = getResource(source);
@@ -312,7 +324,7 @@ public class SvnRepository extends AbstractRepository {
     SvnResource result = null;
     try {
       SVNURL url = SVNURL.parseURIEncoded(source);
-      SVNRepository repository = createRepository(url);
+      SVNRepository repository = getRepository(url, true);
       SVNNodeKind nodeKind = repository.checkPath("", -1);
       if (nodeKind == SVNNodeKind.NONE) {
         Message.info("No resource found at " + source + ", returning default resource");
@@ -342,7 +354,7 @@ public class SvnRepository extends AbstractRepository {
     List<String> resources = new ArrayList<String>();
     try {
       SVNURL url = SVNURL.parseURIEncoded(source);
-      SVNRepository repository = createRepository(url);
+      SVNRepository repository = getRepository(url, true);
       SVNNodeKind nodeKind = repository.checkPath("", -1);
       SVNErrorMessage error = SvnUtils.checkNodeIsFolder(nodeKind, url);
       if (error != null) {
@@ -435,6 +447,10 @@ public class SvnRepository extends AbstractRepository {
     if (!repositoryPath.endsWith("/")) {
       repositoryPath += "/";
     }
+  }
+
+  public void setBinaryDiff(String binaryDiff) {
+    this.binaryDiff = Boolean.valueOf(binaryDiff);
   }
 
 }

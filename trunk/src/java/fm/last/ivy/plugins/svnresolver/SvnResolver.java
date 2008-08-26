@@ -190,5 +190,17 @@ public class SvnResolver extends RepositoryResolver {
       ((SvnRepository) repository).setUserPassword(userPassword.trim());
     }
   }
+  
+  /**
+   * Set whether to use binary diff or not (defaults to false).
+   * 
+   * @param binaryDiff Whether to use binary diff or not.
+   */
+  public void setBinaryDiff(String binaryDiff) {
+    Repository repository = getRepository();
+    if (repository != null && validParameter(binaryDiff) && repository instanceof SvnRepository) {
+      ((SvnRepository) repository).setBinaryDiff(binaryDiff.trim());
+    }
+  }
 
 }
