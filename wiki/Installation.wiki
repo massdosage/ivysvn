@@ -1,3 +1,4 @@
+#summary One-sentence summary of this page.
 = Installing Ivysvn =
 
 The following steps describe how to install Ivysvn after you have downloaded and unpacked the latest binary release.
