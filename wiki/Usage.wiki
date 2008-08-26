@@ -1,0 +1,5 @@
+#summary How to use Ivysvn.
+
+= Usage =
+
+Provided you have followed the [Installation] and [Configuration] steps above you should be able to publish and retrieve files to and from your Ivy Subversion repository using the standard Ivy Ant tasks. For retrieving you will obviously need to set up your own repository in Subversion and add files and folders containing whatever your projects depend on. For publishing you will need write access to the repository
