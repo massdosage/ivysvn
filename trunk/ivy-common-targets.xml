@@ -61,7 +61,8 @@
 			artifactspattern="${ivy.distrib.dir}/[artifact].[ext]"
 			resolver="ivysvn" pubrevision="${publish.revision}"
 			pubdate="${publish.date}" status="${publish.status}"
-			publishivy="${publish.publishivy}" overwrite="${publish.overwrite}"/>
+			publishivy="${publish.publishivy}" overwrite="${publish.overwrite}"
+      forcedeliver="true"/>
 		<echo
 			message="project ${ant.project.name} released with version ${publish.revision}" />
 	</target>
