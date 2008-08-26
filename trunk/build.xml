@@ -43,9 +43,9 @@ limitations under the License.
 		<copy todir="${ant.home}/lib" overwrite="true" verbose="true">
 			<fileset refid="dependencies" />
 		</copy>
-		<!-- copy XML files to ANT_HOME/lib to match debian version -->
+		<!-- copy XML files to ANT_HOME/lib -->
     <copy todir="${ant.home}/lib" overwrite="true" verbose="true">
-      <fileset dir="${basedir}">
+      <fileset dir="${ivysettings.dir}">
         <include name="ivysettings.xml" />
       	<include name="ivy-common-targets.xml" />
       </fileset>
