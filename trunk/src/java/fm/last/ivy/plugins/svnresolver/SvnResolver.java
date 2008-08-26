@@ -46,12 +46,8 @@ public class SvnResolver extends RepositoryResolver {
   }
 
   @Override
-  public void beginPublishTransaction(ModuleRevisionId mrid, boolean b) throws IOException {
-    StringBuilder comment = new StringBuilder();
-    comment.append("Ivy publishing ").append(mrid.getOrganisation()).append("/");
-    comment.append(mrid.getName()).append(" [");
-    comment.append(mrid.getRevision()).append("]");
-    getSvnRepository().beginPublishTransaction(comment.toString());
+  public void beginPublishTransaction(ModuleRevisionId mrid, boolean flag) throws IOException {
+    getSvnRepository().beginPublishTransaction(mrid);
   }
 
   @Override
@@ -63,7 +59,7 @@ public class SvnResolver extends RepositoryResolver {
   public void commitPublishTransaction() throws IOException {
     getSvnRepository().commitPublishTransaction();
   }
-
+  
   /**
    * Determines whether a parameter is valid or not, parameters that are determined to be "unset" property placeholders
    * will be silently ignored.

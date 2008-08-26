@@ -3,7 +3,7 @@ Ivy Subversion Resolver
 
 For more information please visit:
 
-  http://audioscrobbler.net/development/ivysvn/
+  http://code.google.com/p/ivysvn/
   
 Binary Version
 ~~~~~~~~~~~~~~

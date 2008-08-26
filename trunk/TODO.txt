@@ -1,4 +1,14 @@
--Could make "ivy publishing file" message configurable or contain file name by default.
+2.0
+~~~
+- proper credit for Apache people who have provided code for transaction and binary diffs
+
+-Binary diffs.
 
 -Test and bundle with Ivy 2.0 jar when released. Rename ivy jar to ivy.jar so future updates don't 
 require you to manually remove old ivy as part of "install"
+
+TBD
+~~~
+
+-Make commit message configurable (maybe via a file template?)
+
