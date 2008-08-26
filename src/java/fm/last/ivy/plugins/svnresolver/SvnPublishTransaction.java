@@ -74,13 +74,21 @@ public class SvnPublishTransaction {
    */
   private ISVNEditor commitEditor;
 
+  private boolean binaryDiff;
+
+  private String binaryDiffLocation;
+
   /**
    * Constructs a new instance of this class, which will use the passed message when a commit is performed.
    * 
    * @param commitMessage Commit message.
+   * @param binaryDiffLocation
+   * @param binaryDiff
    */
-  public SvnPublishTransaction(String commitMessage) {
+  public SvnPublishTransaction(String commitMessage, boolean binaryDiff, String binaryDiffLocation) {
     this.commitMessage = commitMessage;
+    this.binaryDiff = binaryDiff;
+    this.binaryDiffLocation = binaryDiffLocation;
   }
 
   /**
