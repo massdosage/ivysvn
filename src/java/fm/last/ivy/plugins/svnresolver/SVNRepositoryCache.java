@@ -36,10 +36,15 @@ public class SVNRepositoryCache {
    */
   private static SVNRepositoryCache instance = new SVNRepositoryCache();
 
+  /**
+   * Cache of SVNRepository instances where the key is protocol:host.
+   */
   private Map<String, SVNRepository> repositoryCache = new HashMap<String, SVNRepository>();
 
+  /**
+   * Private constructor to enfore singleton pattern.
+   */
   private SVNRepositoryCache() {
-
   }
 
   /**
@@ -53,20 +58,20 @@ public class SVNRepositoryCache {
 
   /**
    * Gets a repository instance for the passed URL. The same instance will be returned for the same protocol + host
-   * combination. The location on the returned repository should be set after this method is called. If the repository
-   * cannot be found in the cache a new one will be created, the passed parameters determine the authentication
-   * mechanism which will be used for this.
+   * combination. If the repository cannot be found in the cache a new one will be created, the passed parameters
+   * determine the authentication mechanism which will be used for this. The returned repository will have its location
+   * set to the passed url.
    * 
    * @param url A SVNURL object with at the very least the protocol and host set.
-   * @param userName
-   * @param userPassword
-   * @param keyFile
-   * @param passPhrase
-   * @param portNumber
-   * @param certFile
-   * @param storageAllowed
-   * @return
-   * @throws SVNException
+   * @param userName Subversion user name.
+   * @param userPassword Subversion password.
+   * @param keyFile SSH Key file.
+   * @param passPhrase SSH key file passphrase.
+   * @param portNumber SSH port number.
+   * @param certFile SSL certificate file.
+   * @param storageAllowed Whether to allow credential storage or not.
+   * @return A repository for the passed url.
+   * @throws SVNException If an error occurs creating the repository.
    */
   public synchronized SVNRepository getRepository(SVNURL url, String userName, String userPassword, File keyFile,
       String passPhrase, int portNumber, File certFile, boolean storageAllowed) throws SVNException {
@@ -77,6 +82,7 @@ public class SVNRepositoryCache {
           storageAllowed);
       repositoryCache.put(key, repository);
     }
+    repository.setLocation(url, false);
     return repository;
   }
 
