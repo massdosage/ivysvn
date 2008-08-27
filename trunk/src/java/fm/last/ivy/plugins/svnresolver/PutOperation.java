@@ -35,11 +35,6 @@ public class PutOperation {
   private File file;
   
   /**
-   * The full path to the file destination location in svn.
-   */
-  private String fullDestinationPath;
-  
-  /**
    * Whether any existing file data in svn should be overwritten or not.
    */
   private boolean overwrite;
@@ -53,6 +48,11 @@ public class PutOperation {
    * The folder path of the file.
    */
   private String folderPath;
+
+  /*
+   * The full path to the file destination location in svn.
+   */
+  private String fullDestinationPath;
   
   /**
    * The name of the file (without any folder path).
@@ -74,7 +74,8 @@ public class PutOperation {
    *          the first "/" in any svn paths (often the case).
    * @throws IOException If the file data cannot be read from disk or the file paths cannot be determined.
    */
-  public PutOperation(File file, String destination, boolean overwrite, String baseRepositoryPath) throws IOException {
+  public PutOperation(File file, String destination, boolean overwrite, String baseRepositoryPath)
+      throws IOException {
     this.file = file;
     this.fullDestinationPath = destination;
     this.overwrite = overwrite;
@@ -86,7 +87,7 @@ public class PutOperation {
     }
     
     // When Ivy does a put it copies the files to a temp location and calls put from there, unfortunately it
-    // deletes some files (e.g. hashes) inbwetween calls so in order for us to send them as a transaction
+    // deletes some files (e.g. hashes) inbetween calls so in order for us to send them as a transaction
     // we store entire file contents in memory.
     if (file != null && file.isFile()) {
       data = new byte[(int) file.length()];
@@ -140,35 +141,10 @@ public class PutOperation {
   }
 
   /**
-   * @return the file
-   */
-  public File getFile() {
-    return file;
-  }
-
-  /**
-   * @param file the file to set
-   */
-  public void setFile(File file) {
-    this.file = file;
-  }
-
-  public String getFullPath() {
-    return this.folderPath + "/" + this.fileName;
-  }
-
-  /**
    * @return the folderPath
    */
   public String getFolderPath() {
     return folderPath;
-  }
-
-  /**
-   * @param folderPath the folderPath to set
-   */
-  public void setFolderPath(String folderPath) {
-    this.folderPath = folderPath;
   }
 
   /**
@@ -179,24 +155,10 @@ public class PutOperation {
   }
 
   /**
-   * @param fileName the fileName to set
-   */
-  public void setFileName(String fileName) {
-    this.fileName = fileName;
-  }
-
-  /**
    * @return the overwrite
    */
   public boolean isOverwrite() {
     return overwrite;
-  }
-
-  /**
-   * @param overwrite the overwrite to set
-   */
-  public void setOverwrite(boolean overwrite) {
-    this.overwrite = overwrite;
   }
 
   /**
@@ -206,39 +168,4 @@ public class PutOperation {
     return data;
   }
 
-  /**
-   * @param data the data to set
-   */
-  public void setData(byte[] data) {
-    this.data = data;
-  }
-
-  /**
-   * @return the baseRepositoryPath
-   */
-  public String getBaseRepositoryPath() {
-    return baseRepositoryPath;
-  }
-
-  /**
-   * @param baseRepositoryPath the baseRepositoryPath to set
-   */
-  public void setBaseRepositoryPath(String baseRepositoryPath) {
-    this.baseRepositoryPath = baseRepositoryPath;
-  }
-
-  /**
-   * @return the fullDestinationPath
-   */
-  public String getFullDestinationPath() {
-    return fullDestinationPath;
-  }
-
-  /**
-   * @param fullDestinationPath the fullDestinationPath to set
-   */
-  public void setFullDestinationPath(String fullDestinationPath) {
-    this.fullDestinationPath = fullDestinationPath;
-  }
- 
 }

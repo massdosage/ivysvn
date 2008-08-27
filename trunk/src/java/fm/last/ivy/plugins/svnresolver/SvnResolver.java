@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.ivy.core.module.id.ModuleRevisionId;
-import org.apache.ivy.plugins.repository.Repository;
 import org.apache.ivy.plugins.resolver.RepositoryResolver;
 import org.tmatesoft.svn.core.SVNException;
 
@@ -59,7 +58,7 @@ public class SvnResolver extends RepositoryResolver {
   public void commitPublishTransaction() throws IOException {
     getSvnRepository().commitPublishTransaction();
   }
-  
+
   /**
    * Determines whether a parameter is valid or not, parameters that are determined to be "unset" property placeholders
    * will be silently ignored.
@@ -82,11 +81,10 @@ public class SvnResolver extends RepositoryResolver {
    * @param keyFile Key file.
    */
   public void setKeyfile(String keyFilePath) {
-    Repository repository = getRepository();
-    if (repository != null && validParameter(keyFilePath) && repository instanceof SvnRepository) {
+    if (validParameter(keyFilePath)) {
       File keyFile = new File(keyFilePath.trim());
       if (keyFile.exists()) {
-        ((SvnRepository) repository).setKeyFile(keyFile);
+        getSvnRepository().setKeyFile(keyFile);
       } else {
         System.err.println("No key file found at '" + keyFilePath + "'");
       }
@@ -99,9 +97,8 @@ public class SvnResolver extends RepositoryResolver {
    * @param passPhrase
    */
   public void setPassphrase(String passPhrase) {
-    Repository repository = getRepository();
-    if (repository != null && validParameter(passPhrase) && repository instanceof SvnRepository) {
-      ((SvnRepository) repository).setPassPhrase(passPhrase.trim());
+    if (validParameter(passPhrase)) {
+      getSvnRepository().setPassPhrase(passPhrase.trim());
     }
   }
 
@@ -111,10 +108,9 @@ public class SvnResolver extends RepositoryResolver {
    * @param portNumber
    */
   public void setPort(String port) {
-    Repository repository = getRepository();
-    if (repository != null && validParameter(port) && repository instanceof SvnRepository) {
+    if (validParameter(port)) {
       int portNumber = Integer.parseInt(port.trim());
-      ((SvnRepository) repository).setPortNumber(portNumber);
+      getSvnRepository().setPortNumber(portNumber);
     }
   }
 
@@ -124,11 +120,10 @@ public class SvnResolver extends RepositoryResolver {
    * @param certFile SSL Certificate file.
    */
   public void setCertfile(String certFilePath) {
-    Repository repository = getRepository();
-    if (repository != null && validParameter(certFilePath) && repository instanceof SvnRepository) {
+    if (validParameter(certFilePath)) {
       File certFile = new File(certFilePath.trim());
       if (certFile.exists()) {
-        ((SvnRepository) repository).setCertFile(certFile);
+        getSvnRepository().setCertFile(certFile);
       } else {
         System.err.println("No cert file found at '" + certFilePath + "'");
       }
@@ -141,10 +136,9 @@ public class SvnResolver extends RepositoryResolver {
    * @param storageAllowed Whether to store authentication credentials or not.
    */
   public void setStorageallowed(String storageAllowedString) {
-    Repository repository = getRepository();
-    if (repository != null && validParameter(storageAllowedString) && repository instanceof SvnRepository) {
+    if (validParameter(storageAllowedString)) {
       boolean storageAllowed = Boolean.parseBoolean(storageAllowedString.trim());
-      ((SvnRepository) repository).setStorageAllowed(storageAllowed);
+      getSvnRepository().setStorageAllowed(storageAllowed);
     }
   }
 
@@ -157,9 +151,8 @@ public class SvnResolver extends RepositoryResolver {
    * @throws SVNException If an error occurs parsing the passed repositoryURL as a SVNURL.
    */
   public void setRepositoryURL(String repositoryURL) throws SVNException {
-    Repository repository = getRepository();
-    if (repository != null && validParameter(repositoryURL) && repository instanceof SvnRepository) {
-      ((SvnRepository) repository).setSvnRepositoryURL(repositoryURL.trim());
+    if (validParameter(repositoryURL)) {
+      getSvnRepository().setSvnRepositoryURL(repositoryURL.trim());
     }
   }
 
@@ -169,9 +162,8 @@ public class SvnResolver extends RepositoryResolver {
    * @param userName The svn username.
    */
   public void setUsername(String userName) {
-    Repository repository = getRepository();
-    if (repository != null && validParameter(userName) && repository instanceof SvnRepository) {
-      ((SvnRepository) repository).setUserName(userName.trim());
+    if (validParameter(userName)) {
+      getSvnRepository().setUserName(userName.trim());
     }
   }
 
@@ -181,22 +173,31 @@ public class SvnResolver extends RepositoryResolver {
    * @param userPassword The svn password.
    */
   public void setUserpassword(String userPassword) {
-    Repository repository = getRepository();
-    if (repository != null && validParameter(userPassword) && repository instanceof SvnRepository) {
-      ((SvnRepository) repository).setUserPassword(userPassword.trim());
+    if (validParameter(userPassword)) {
+      getSvnRepository().setUserPassword(userPassword.trim());
     }
   }
-  
+
   /**
    * Set whether to use binary diff or not (defaults to false).
    * 
    * @param binaryDiff Whether to use binary diff or not.
    */
-  public void setBinaryDiff(String binaryDiff) {
-    Repository repository = getRepository();
-    if (repository != null && validParameter(binaryDiff) && repository instanceof SvnRepository) {
-      ((SvnRepository) repository).setBinaryDiff(binaryDiff.trim());
+  public void setBinaryDiff(String binaryDiffString) {
+    if (validParameter(binaryDiffString)) {
+      boolean binaryDiff = Boolean.parseBoolean(binaryDiffString.trim());
+      getSvnRepository().setBinaryDiff(binaryDiff);
     }
   }
 
+  /**
+   * Set the name of the folder to use for binary diffs.
+   * 
+   * @param folderName The binary diff folder name.
+   */
+  public void setBinaryDiffFolderName(String folderName) {
+    if (validParameter(folderName)) {
+      getSvnRepository().setBinaryDiffFolderName(folderName.trim());
+    }
+  }
 }

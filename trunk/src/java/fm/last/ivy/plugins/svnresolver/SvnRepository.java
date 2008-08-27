@@ -43,11 +43,8 @@ import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl;
 import org.tmatesoft.svn.core.io.SVNRepository;
 
-
 /**
  * Ivy repository that uses Subversion for artifact storage.
- * 
- * @author adrian
  */
 public class SvnRepository extends AbstractRepository {
 
@@ -103,11 +100,25 @@ public class SvnRepository extends AbstractRepository {
    */
   private SvnPublishTransaction publishTransaction;
 
+  /**
+   * Whether to perform binary diffs or not.
+   */
   private boolean binaryDiff = false;
-  
-  private static final String DEFAULT_BINARY_DIFF_LOCATION = "LATEST";
-  
-  private String binaryDiffLocation = DEFAULT_BINARY_DIFF_LOCATION;
+
+  /**
+   * The default folder name for binary diffs.
+   */
+  private static final String DEFAULT_BINARY_DIFF_FOLDER_NAME = "LATEST";
+
+  /**
+   * The folder name for binary diffs.
+   */
+  private String binaryDiffFolderName = DEFAULT_BINARY_DIFF_FOLDER_NAME;
+
+  /**
+   * The revision id of the module being published.
+   */
+  private ModuleRevisionId moduleRevisionId;
 
   /**
    * Initialises repository to accept requests for svn protocol.
@@ -161,31 +172,22 @@ public class SvnRepository extends AbstractRepository {
       repository = SVNRepositoryCache.getInstance().getRepository(url, userName, userPassword, keyFile, passPhrase,
           portNumber, certFile, storageAllowed);
     } else {
-      repository = SvnUtils.createRepository(url, userName, userPassword, keyFile, passPhrase, portNumber,
-        certFile, storageAllowed);
+      repository = SvnUtils.createRepository(url, userName, userPassword, keyFile, passPhrase, portNumber, certFile,
+          storageAllowed);
+      repository.setLocation(url, false);
     }
-    repository.setLocation(url, false);
     return repository;
   }
 
-  String revision = null;
-  
   /**
    * Starts a publish transaction.
    * 
    * @param mrid The SVN commit message to use for this publish transaction.
    */
   public void beginPublishTransaction(ModuleRevisionId mrid) {
-    this.revision = mrid.getRevision();
     // TODO: review all messages and their levels
-    StringBuilder comment = new StringBuilder();
-    comment.append("Ivy publishing ").append(mrid.getOrganisation()).append("/");
-    comment.append(mrid.getName()).append(" [");
-    comment.append(mrid.getRevision()).append("]");
-    
     Message.info("Starting transaction " + mrid + "...");
-    
-    publishTransaction = new SvnPublishTransaction(comment.toString(), binaryDiff, binaryDiffLocation);
+    this.moduleRevisionId = mrid;
   }
 
   /**
@@ -209,8 +211,11 @@ public class SvnRepository extends AbstractRepository {
    * @throws IOException If an error occurs aborting the publish transaction.
    */
   public void abortPublishTransaction() throws IOException {
-    ensurePublishTransaction();
-    if (!publishTransaction.isCommitInProgress()) {
+    if (publishTransaction == null) {
+      Message.info("Transaction not created, nothing to abort");
+      return;
+    }
+    if (!publishTransaction.commitStarted()) {
       Message.info("Commit transaction not started, nothing to abort");
       return;
     }
@@ -231,28 +236,31 @@ public class SvnRepository extends AbstractRepository {
    * @throws IOException If an error occurs putting a file (invalid path, invalid login credentials etc.)
    */
   public void put(File source, String destination, boolean overwrite) throws IOException {
-    ensurePublishTransaction();
+    if (binaryDiff && !overwrite) {
+      String errorMessage = "Binary diff cannot be performed if overwrite is set to false";
+      Message.error(errorMessage);
+      throw new IOException(errorMessage);
+    }
+
     fireTransferInitiated(getResource(destination), TransferEvent.REQUEST_PUT);
-    Message.info("Publishing from " + source.getAbsolutePath() + " to " + destination);
+    Message.info("Scheduling publish from " + source.getAbsolutePath() + " to " + destination);
 
     try {
       SVNURL destinationURL = SVNURL.parseURIEncoded(destination);
-      if (publishTransaction.getAncillaryRepository() == null) { // haven't initialised transaction on a previous put
+      if (publishTransaction == null) { // haven't initialised transaction on a previous put
         // first create a repository which transaction can use for various file checks
-        SVNRepository rootRepository = getRepository(destinationURL, false);
-        publishTransaction.setAncillaryRepository(rootRepository);
+        SVNRepository ancillaryRepository = getRepository(destinationURL, false);
+        SVNURL root = ancillaryRepository.getRepositoryRoot(false);
+        ancillaryRepository.setLocation(root, false);
+        SvnDao svnDAO = new SvnDao(ancillaryRepository);
 
+        publishTransaction = new SvnPublishTransaction(svnDAO, moduleRevisionId, binaryDiff);
         // now create another repository which transaction will use to do actual commits
         SVNRepository commitRepository = getRepository(destinationURL, false);
         publishTransaction.setCommitRepository(commitRepository);
       }
       // add all info needed to put the file to the transaction
-      // TODO: decide whether this logic should go here or in PutOperation...
-      PutOperation operation = new PutOperation(source, destination, overwrite, this.repositoryPath);
-      if (binaryDiff && operation.getFolderPath().endsWith(revision)) {
-        throw new IllegalStateException("Ivy pattern does not use revision as directory");
-      }
-      publishTransaction.addPutOperation(source, destination, overwrite, this.repositoryPath); 
+      publishTransaction.addPutOperation(source, destination, overwrite, repositoryPath, binaryDiffFolderName);
     } catch (SVNException e) {
       throw new IOException("Error putting " + destination, e);
     }
@@ -468,8 +476,22 @@ public class SvnRepository extends AbstractRepository {
     }
   }
 
-  public void setBinaryDiff(String binaryDiff) {
-    this.binaryDiff = Boolean.valueOf(binaryDiff);
+  /**
+   * Set whether to perform a binary diff or not.
+   * 
+   * @param binaryDiff
+   */
+  public void setBinaryDiff(boolean binaryDiff) {
+    this.binaryDiff = binaryDiff;
+  }
+
+  /**
+   * Sets the folder name to use for binary diffs, if not set will default to DEFAULT_BINARY_DIFF_LOCATION
+   * 
+   * @param binaryDiffFolderName The folder name to use for binary diffs.
+   */
+  public void setBinaryDiffFolderName(String binaryDiffFolderName) {
+    this.binaryDiffFolderName = binaryDiffFolderName;
   }
 
 }

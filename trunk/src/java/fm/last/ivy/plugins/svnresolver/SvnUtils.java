@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Last.fm
+ * Copyright 2008 Last.fm
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,13 +16,11 @@
  */
 package fm.last.ivy.plugins.svnresolver;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.ivy.util.Message;
-import org.tmatesoft.svn.core.SVNCommitInfo;
 import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNErrorMessage;
 import org.tmatesoft.svn.core.SVNException;
@@ -35,20 +33,14 @@ import org.tmatesoft.svn.core.auth.SVNPasswordAuthentication;
 import org.tmatesoft.svn.core.auth.SVNSSHAuthentication;
 import org.tmatesoft.svn.core.auth.SVNSSLAuthentication;
 import org.tmatesoft.svn.core.auth.SVNUserNameAuthentication;
-import org.tmatesoft.svn.core.io.ISVNEditor;
 import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
-import org.tmatesoft.svn.core.io.diff.SVNDeltaGenerator;
 
 /**
  * Utility class for performing common operations in subversion.
- * 
- * @author adrian
  */
 public class SvnUtils {
   
-  // TODO: possibly ditch this class, or just remove methods we no longer use
-
   /**
    * Check that the passed node exists and represents a folder.
    * 
@@ -83,78 +75,6 @@ public class SvnUtils {
           "Entry at URL ''{0}'' is not valid (expected file but was something else)", url);
     }
     return errorMessage;
-  }
-
-  /**
-   * Adds a directory to subversion.
-   * 
-   * @param repository The SVNRepository object to add directories to.
-   * @param newDirPath The part of the directory path that needs to be added.
-   * @throws SVNException If an error occurs adding the directory.
-   */
-  public static void addDirectory(SVNRepository repository, String newDirPath) throws SVNException {
-    String[] newDirs = newDirPath.split("/");
-    // we have to create new folders one at a time, relative to existing path
-    for (String newPath : newDirs) {
-      ISVNEditor editor = repository.getCommitEditor("Ivy publishing folder", null);
-      // open root dir, all modifications will be relative to this
-      editor.openRoot(-1);
-      editor.addDir(newPath, null, -1);
-      editor.closeDir();
-      SVNCommitInfo commitInfo = editor.closeEdit();
-      Message.info("Added folder: " + commitInfo);
-      appendToRepositoryLocation(repository, newPath);
-    }
-
-  }
-
-  /**
-   * Change the location in a SVN repository that a SVNRepository uses as root.
-   * 
-   * @param repository The SVNRepository object who's location is to be appended to.
-   * @param pathSegment The path segment to append.
-   * @throws SVNException If an error occurs appending to the repository's location.
-   */
-  public static void appendToRepositoryLocation(SVNRepository repository, String pathSegment) throws SVNException {
-    SVNURL currentUrl = repository.getLocation();
-    SVNURL newUrl = currentUrl.appendPath(pathSegment, true);
-    repository.setLocation(newUrl, true);
-  }
-
-  /**
-   * Adds a file to subversion.
-   * 
-   * @param repository The repository to add the file to.
-   * @param filePath The path of the file to add.
-   * @param data The file data.
-   * @param overwrite Whether to overwrite a file if it already exists.
-   * @return An object representing the status of the commit, or null if nothing was committed.
-   * @throws SVNException If an error occurs adding the file.
-   */
-  public static SVNCommitInfo addFile(SVNRepository repository, String filePath, byte[] data, boolean overwrite)
-      throws SVNException {
-    SVNNodeKind nodeKind = repository.checkPath(filePath, -1);
-    if (nodeKind == SVNNodeKind.DIR || nodeKind == SVNNodeKind.UNKNOWN) {
-      throw new SVNException(SVNErrorMessage.create(SVNErrorCode.BAD_FILENAME, filePath + " is not a valid file"));
-    }
-    if (nodeKind == SVNNodeKind.FILE && overwrite == false) {
-      Message.info("Overwrite set to false so ignoring " + filePath);
-      return null;
-    }
-
-    ISVNEditor editor = repository.getCommitEditor("Ivy publishing file", null);
-    editor.openRoot(-1);
-    if (nodeKind == SVNNodeKind.NONE) { // doesn't exist, adding new file
-      editor.addFile(filePath, null, -1);
-    } else if (nodeKind == SVNNodeKind.FILE && overwrite == true) { // overwriting existing file
-      editor.openFile(filePath, -1);
-    }
-    editor.applyTextDelta(filePath, null);
-    SVNDeltaGenerator deltaGenerator = new SVNDeltaGenerator();
-    String checksum = deltaGenerator.sendDelta(filePath, new ByteArrayInputStream(data), editor, true);
-    editor.closeFile(filePath, checksum);
-    editor.closeDir();
-    return editor.closeEdit();
   }
 
   /**

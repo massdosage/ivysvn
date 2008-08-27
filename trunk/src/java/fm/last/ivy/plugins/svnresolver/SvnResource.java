@@ -23,8 +23,6 @@ import org.apache.ivy.plugins.repository.Resource;
 
 /**
  * A Resource implementation for Subversion.
- * 
- * @author adrian
  */
 public class SvnResource implements Resource {
 

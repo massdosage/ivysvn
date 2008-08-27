@@ -16,24 +16,20 @@
  */
 package fm.last.ivy.plugins.svnresolver;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
+import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.util.Message;
 import org.tmatesoft.svn.core.SVNCommitInfo;
 import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNErrorMessage;
 import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.io.ISVNEditor;
 import org.tmatesoft.svn.core.io.SVNRepository;
-import org.tmatesoft.svn.core.io.diff.SVNDeltaGenerator;
 
 /**
  * Class that encapsulates actions required to perform a number of Ivy put requests as a single SVN commit. Note: All
@@ -43,11 +39,11 @@ import org.tmatesoft.svn.core.io.diff.SVNDeltaGenerator;
 public class SvnPublishTransaction {
 
   /**
-   * Repository that can be used to check for file existence and perform other operations without affecting commit
-   * editor (required as SVNKit doesn't allow many operations once commit editor is opened for a certain repository, but
-   * we need to figure out what files and folders to add/update).
+   * Data access object for accessing subversion. Can be used to check for file existence and perform other operations
+   * without affecting commit editor (required as SVNKit doesn't allow many operations once commit editor is opened for
+   * a certain repository, but we need to figure out what files and folders to add/update).
    */
-  private SVNRepository ancillaryRepository = null;
+  private SvnDao svnDAO = null;
 
   /**
    * Repository to use to perform commit operations.
@@ -55,14 +51,9 @@ public class SvnPublishTransaction {
   private SVNRepository commitRepository = null;
 
   /**
-   * List of Entry objects that need to be added/updated.
+   * List of PutOperations representing artifacts that need to be added/updated.
    */
-  private List<PutOperation> entries = new ArrayList<PutOperation>();
-
-  /**
-   * A "cache" of folders known to exist in svn, so we don't have to hit repository to check every time.
-   */
-  private Set<String> existingFolderPaths = new HashSet<String>();
+  private List<PutOperation> putOperations = new ArrayList<PutOperation>();
 
   /**
    * Svn commit message.
@@ -73,37 +64,47 @@ public class SvnPublishTransaction {
    * Editor that to use for performing various operations within a commit transaction.
    */
   private ISVNEditor commitEditor;
-  
-  private boolean commitInProgress = false;
 
+  /**
+   * Indicates whether a SVN commit has been started or not.
+   */
+  private boolean commitStarted = false;
+
+  /**
+   * Indicates whether a binary diff should be performed or not.
+   */
   private boolean binaryDiff = false;
 
-  private String binaryDiffLocation;
+  /**
+   * The Ivy module revision string.
+   */
+  private String revision;
+
+  /**
+   * The path to the (intermediate) binary diff folder in svn.
+   */
+  private String binaryDiffFolderPath = null;
+  
+  /**
+   * The path to the (ultimate) destination folder in svn.
+   */
+  private String releaseFolderPath = null;
 
   /**
    * Constructs a new instance of this class, which will use the passed message when a commit is performed.
    * 
-   * @param commitMessage Commit message.
-   * @param binaryDiffLocation
-   * @param binaryDiff
+   * @param svnDAO
+   * @param commitMessage The message to use for commit operations.
+   * @param binaryDiff Whether to perform a binary diff.
    */
-  public SvnPublishTransaction(String commitMessage, boolean binaryDiff, String binaryDiffLocation) {
-    this.commitMessage = commitMessage;
+  public SvnPublishTransaction(SvnDao svnDAO, ModuleRevisionId mrid, boolean binaryDiff) {
+    this.svnDAO = svnDAO;
     this.binaryDiff = binaryDiff;
-    this.binaryDiffLocation = binaryDiffLocation;
-  }
-
-  /**
-   * Set the repository to use for performing non-commit operations. This will have its location set to the repository
-   * root and should not be used outside of this class.
-   * 
-   * @param repository The repository to use for ancillary operations.
-   * @throws SVNException If an error occurs setting the repository to its root.
-   */
-  public void setAncillaryRepository(SVNRepository repository) throws SVNException {
-    this.ancillaryRepository = repository;
-    SVNURL root = ancillaryRepository.getRepositoryRoot(false);
-    ancillaryRepository.setLocation(root, false);
+    this.revision = mrid.getRevision();
+    StringBuilder comment = new StringBuilder();
+    comment.append("Ivy publishing ").append(mrid.getOrganisation()).append("#");
+    comment.append(mrid.getName()).append(";").append(mrid.getRevision());
+    this.commitMessage = comment.toString();
   }
 
   /**
@@ -129,14 +130,19 @@ public class SvnPublishTransaction {
    *          first "/" in any svn paths (often the case).
    * @throws IOException If the file data cannot be read from disk or the file paths cannot be determined.
    */
-  public void addPutOperation(File source, String destinationPath, boolean overwrite, String repositoryPath)
-    throws IOException {
-    // NOTE: file contents are stored in memory...
-    this.entries.add(new PutOperation(source, destinationPath, overwrite, repositoryPath));
-  }
-  
-  public void addPutOperation(PutOperation operation) {
-    this.entries.add(operation);
+  public void addPutOperation(File source, String destinationPath, boolean overwrite, String repositoryPath,
+      String binaryDiffFolderName) throws IOException {
+    PutOperation operation = new PutOperation(source, destinationPath, overwrite, repositoryPath);
+    releaseFolderPath = operation.getFolderPath(); // store the final intended destination for later
+    if (binaryDiff) {
+      // TODO: allow revision to appear in path once but not only at the end
+      if (!releaseFolderPath.endsWith(revision)) {
+        throw new IllegalStateException("Ivy destination folder does not end with revision");
+      }
+      binaryDiffFolderPath = releaseFolderPath.substring(0, releaseFolderPath.indexOf(revision));
+      binaryDiffFolderPath += binaryDiffFolderName; // store intermediate binary diff destination for later
+    }
+    this.putOperations.add(operation);
   }
 
   /**
@@ -149,16 +155,34 @@ public class SvnPublishTransaction {
     SVNURL root = commitRepository.getRepositoryRoot(true);
     commitRepository.setLocation(root, false);
     commitEditor = commitRepository.getCommitEditor(commitMessage, null);
-    commitInProgress = true;
+    commitStarted = true;
     commitEditor.openRoot(-1);
-    int committedEntryCount = performPutOperations();
-    commitEditor.closeDir();
-    if (committedEntryCount == 0) {
+    int putFileCount = performPutOperations(); // put all the files scheduled to be put
+    if (putFileCount == 0) {
       commitEditor.abortEdit();
       Message.info("Nothing to commit");
     } else {
+      if (binaryDiff && svnDAO.folderExists(releaseFolderPath)) {
+        // remove existing final dest so we can copy from binary diff location to it (SVNKit doesn't support overwriting
+        // folders), SVNKit doesn't allow this in final transaction so we have to do it here
+        Message.info("Deleting " + releaseFolderPath);
+        commitEditor.deleteEntry(releaseFolderPath, -1);
+      }
+      commitEditor.closeDir(); // close root
       SVNCommitInfo info = commitEditor.closeEdit();
       Message.info("Commit finished " + info);
+      if (binaryDiff) {
+        // we need a second commit for binary diff as impossible to do all in one (SVNKit can't handle
+        // creating a dir AND doing deletes AND copying dir to another location in one transaction)
+        long rev = commitRepository.getLatestRevision(); // copying dirs requires valid revision
+        commitEditor = commitRepository.getCommitEditor(commitMessage, null);
+        commitEditor.openRoot(-1);
+        Message.info("Copying from " + binaryDiffFolderPath + " to " + releaseFolderPath);
+        commitEditor.addDir(releaseFolderPath, binaryDiffFolderPath, rev);
+        commitEditor.closeDir();
+        commitEditor.closeDir();
+        Message.info("Binary diff finished : " + commitEditor.closeEdit());
+      }
     }
   }
 
@@ -170,109 +194,20 @@ public class SvnPublishTransaction {
    */
   private int performPutOperations() throws SVNException {
     checkCommitEditor();
-    int committedEntryCount = 0;
-    for (PutOperation entry : entries) {
-      String destinationPath = entry.getFullPath();
-      boolean ignoreEntry = false;
-      if (fileExists(destinationPath)) {
-        if (entry.isOverwrite()) {
-          Message.info("Updating file " + destinationPath);
-          commitEditor.openFile(destinationPath, -1);
-        } else {
-          Message.info("Overwrite set to false, ignoring " + destinationPath);
-          ignoreEntry = true;
-        }
-      } else {
-        createFolders(commitEditor, entry.getFolderPath());
-        Message.info("Adding file " + destinationPath);
-        commitEditor.addFile(destinationPath, null, -1);
+    int putFileCount = 0;
+    for (PutOperation operation : putOperations) {
+      String destinationFolderPath = releaseFolderPath; // assume we are publishing directly
+      boolean overwrite = operation.isOverwrite();
+      if (binaryDiff) { // publishing to intermediate binary diff location, override values set above
+        destinationFolderPath = binaryDiffFolderPath;
+        overwrite = true;
       }
-      if (!ignoreEntry) {
-        committedEntryCount++;
-        commitEditor.applyTextDelta(destinationPath, null);
-        SVNDeltaGenerator deltaGenerator = new SVNDeltaGenerator();
-        String checksum = deltaGenerator.sendDelta(destinationPath, new ByteArrayInputStream(entry.getData()),
-            commitEditor, true);
-        commitEditor.closeFile(destinationPath, checksum);
+      // destinationFolderPath and overwrite will be set according to whether binary diff or not
+      if (svnDAO.putFile(commitEditor, operation.getData(), destinationFolderPath, operation.getFileName(), overwrite)) {
+        putFileCount++;
       }
     }
-    return committedEntryCount;
-  }
-
-  /**
-   * Creates the passed path in the repository, existing folders are left alone and only the parts of the path which
-   * don't exist are created.
-   * 
-   * @param repository An initialised and authenticated SVNRepository.
-   * @param directoryPath The directory path to create.
-   * @throws SVNException If an invalid path is passed or the path could not be created.
-   */
-  private void createFolders(ISVNEditor editor, String directoryPath) throws SVNException {
-    // run through all directories in path and create whatever is necessary
-    String[] folders = directoryPath.substring(1).split("/");
-    int i = 0;
-    StringBuffer existingPath = new StringBuffer("/");
-    StringBuffer pathToCheck = new StringBuffer("/" + folders[0]);
-    while (folderExists(pathToCheck.toString())) {
-      existingPath.append(folders[i] + "/");
-      if (++i == folders.length) {
-        break;// no more paths to check, entire path exists so break out of here
-      } else {
-        pathToCheck.append("/" + folders[i]); // add the next part of path
-      }
-    }
-
-    if (i < folders.length) { // 1 or more dirs need to be created
-      editor.openRoot(-1); // only open root ONCE
-      for (; i < folders.length; i++) { // build up path to create
-        StringBuffer pathToAdd = new StringBuffer(existingPath);
-        if (pathToAdd.charAt(pathToAdd.length() - 1) != '/') { // if we need a separator char
-          pathToAdd.append("/");
-        }
-        pathToAdd.append(folders[i]);
-        Message.info("Creating folder " + pathToAdd);
-        editor.addDir(pathToAdd.toString(), null, -1);
-        existingPath = pathToAdd; // added to svn so this is new existing path
-        existingFolderPaths.add(pathToAdd.toString());
-      }
-      editor.closeDir(); // close dir ONCE
-    }
-  }
-
-  /**
-   * Determines whether the passed folder exists.
-   * 
-   * @param folderPath Folder path.
-   * @return true if the folder exists, false otherwise.
-   * @throws SVNException If an error occurs determining whether the folder exists.
-   */
-  private boolean folderExists(String folderPath) throws SVNException {
-    if (existingFolderPaths.contains(folderPath)) { // first check if this path is known to exist
-      return true;
-    } else {
-      // not previously cached, so check against repository
-      SVNNodeKind nodeKind = ancillaryRepository.checkPath(folderPath.toString(), -1);
-      if (SVNNodeKind.DIR == nodeKind) {
-        existingFolderPaths.add(folderPath);
-        return true;
-      }
-      return false;
-    }
-  }
-
-  /**
-   * Determines whether the passed file exists.
-   * 
-   * @param path File path.
-   * @return true if the file exists, false otherwise.
-   * @throws SVNException If an error occurs determining whether the file exists.
-   */
-  private boolean fileExists(String path) throws SVNException {
-    SVNNodeKind kind = ancillaryRepository.checkPath(path, -1);
-    if (kind == SVNNodeKind.FILE) {
-      return true;
-    }
-    return false;
+    return putFileCount;
   }
 
   /**
@@ -298,17 +233,12 @@ public class SvnPublishTransaction {
   }
 
   /**
-   * @return the rootRepository
+   * Returns whether a commit operation has been started or not.
+   * 
+   * @return True if a commit has been started, false otherwise.
    */
-  public SVNRepository getAncillaryRepository() {
-    return ancillaryRepository;
+  public boolean commitStarted() {
+    return commitStarted;
   }
 
-  /**
-   * @return the commitInProgress
-   */
-  public boolean isCommitInProgress() {
-    return commitInProgress;
-  }
-  
 }

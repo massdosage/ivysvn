@@ -2,10 +2,11 @@ ivy-svn Change Log
 
 Release 2.0 TBA
 ~~~~~~~~~~~~~~~
-  - Publish now results in one svn commit per publish call instead of per file.
+  - Added ability to do perform binary diffs (based on code and concepts contributed by Xavier Hanin).
+  - Publish now results in one svn commit per publish call instead of per file (based on code and 
+    concepts contributed by Stephane Bailliez).
   - Upgraded to SVNKit 1.1.8.
 	- Trim all values set on SvnResolver to avoid annoying issues with whitespace.
-	- Build file modifications for .deb version (XML files now copied to ANT_HOME/lib as part of install)
 
 Release 1.4 2008-03-19
 ~~~~~~~~~~~~~~~~~~~~~~
