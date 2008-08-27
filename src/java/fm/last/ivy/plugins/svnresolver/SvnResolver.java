@@ -80,7 +80,7 @@ public class SvnResolver extends RepositoryResolver {
    * 
    * @param keyFile Key file.
    */
-  public void setKeyfile(String keyFilePath) {
+  public void setKeyFile(String keyFilePath) {
     if (validParameter(keyFilePath)) {
       File keyFile = new File(keyFilePath.trim());
       if (keyFile.exists()) {
@@ -96,7 +96,7 @@ public class SvnResolver extends RepositoryResolver {
    * 
    * @param passPhrase
    */
-  public void setPassphrase(String passPhrase) {
+  public void setSshPassphrase(String passPhrase) {
     if (validParameter(passPhrase)) {
       getSvnRepository().setPassPhrase(passPhrase.trim());
     }
@@ -107,7 +107,7 @@ public class SvnResolver extends RepositoryResolver {
    * 
    * @param portNumber
    */
-  public void setPort(String port) {
+  public void setSshPort(String port) {
     if (validParameter(port)) {
       int portNumber = Integer.parseInt(port.trim());
       getSvnRepository().setPortNumber(portNumber);
@@ -119,7 +119,7 @@ public class SvnResolver extends RepositoryResolver {
    * 
    * @param certFile SSL Certificate file.
    */
-  public void setCertfile(String certFilePath) {
+  public void setCertFile(String certFilePath) {
     if (validParameter(certFilePath)) {
       File certFile = new File(certFilePath.trim());
       if (certFile.exists()) {
@@ -135,7 +135,7 @@ public class SvnResolver extends RepositoryResolver {
    * 
    * @param storageAllowed Whether to store authentication credentials or not.
    */
-  public void setStorageallowed(String storageAllowedString) {
+  public void setStorageAllowed(String storageAllowedString) {
     if (validParameter(storageAllowedString)) {
       boolean storageAllowed = Boolean.parseBoolean(storageAllowedString.trim());
       getSvnRepository().setStorageAllowed(storageAllowed);
@@ -161,7 +161,7 @@ public class SvnResolver extends RepositoryResolver {
    * 
    * @param userName The svn username.
    */
-  public void setUsername(String userName) {
+  public void setUserName(String userName) {
     if (validParameter(userName)) {
       getSvnRepository().setUserName(userName.trim());
     }
@@ -172,7 +172,7 @@ public class SvnResolver extends RepositoryResolver {
    * 
    * @param userPassword The svn password.
    */
-  public void setUserpassword(String userPassword) {
+  public void setUserPassword(String userPassword) {
     if (validParameter(userPassword)) {
       getSvnRepository().setUserPassword(userPassword.trim());
     }
@@ -195,7 +195,7 @@ public class SvnResolver extends RepositoryResolver {
    * 
    * @param folderName The binary diff folder name.
    */
-  public void setBinaryDiffFolderName(String folderName) {
+  public void setBinaryDiffFoldername(String folderName) {
     if (validParameter(folderName)) {
       getSvnRepository().setBinaryDiffFolderName(folderName.trim());
     }

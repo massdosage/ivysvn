@@ -1,5 +1,5 @@
 <!-- 
-  Copyright 2007 Last.fm
+  Copyright 2008 Last.fm
  
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,21 +17,24 @@
 	
 	<typedef name="svn" classname="fm.last.ivy.plugins.svnresolver.SvnResolver"/>
 	
-	<resolvers>
+  <resolvers>
     <!-- If you want to specify a base repository url you can add the following attribute below:
-      
-         repositoryURL="svn+ssh://HOSTNAME/PATH_TO_BASE_OF_IVY_REPOSITORY"
-      
-        if you omit this then the base repository url is assumed to be the path up to the first "/" in 
-        "PATH_TO_YOUR_IVY_REPOSITORY" below.
+    
+    repositoryURL="svn+ssh://HOSTNAME/PATH_TO_BASE_OF_IVY_REPOSITORY"
+    
+    if you omit this then the base repository url is assumed to be the path up to the first "/" in 
+    "PATH_TO_YOUR_IVY_REPOSITORY" below.
     -->
-	<svn name="ivysvn" username="${svn.user.name}" userpassword="${svn.user.password}"
-      keyfile="${ssh.keyfile}" port="${ssh.port}" passphrase="${ssh.keyfile.passphrase}"
-      certfile="${ssl.certfile}" storageallowed="${svn.storageallowed}">
-			<ivy pattern="svn+ssh://HOSTNAME/PATH_TO_YOUR_IVY_REPOSITORY/[organisation]/[module]/[revision]/ivy.xml"/>
-			<artifact pattern="svn+ssh://HOSTNAME/PATH_TO_YOUR_IVY_REPOSITORY/[organisation]/[module]/[revision]/[artifact].[ext]"/>
-		</svn>
-	</resolvers>
+    <svn name="ivysvn" userName="${svn.user.name}" userPassword="${svn.user.password}"
+      keyFile="${ssh.keyfile}" sshPort="${ssh.port}" sshPassphrase="${ssh.keyfile.passphrase}"
+      certFile="${ssl.certfile}" storageAllowed="${svn.storageallowed}"
+      binaryDiff="${svn.binarydiff}">
+      <ivy
+        pattern="svn+ssh://HOSTNAME/PATH_TO_YOUR_IVY_REPOSITORY/[organisation]/[module]/[revision]/ivy.xml"/>
+      <artifact
+        pattern="svn+ssh://HOSTNAME/PATH_TO_YOUR_IVY_REPOSITORY/[organisation]/[module]/[revision]/[artifact].[ext]"/>
+    </svn>
+  </resolvers>
 
 	<settings defaultResolver="ivysvn" />
 	

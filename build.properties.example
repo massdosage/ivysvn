@@ -1,5 +1,5 @@
 #
-# Copyright 2007 Last.fm
+# Copyright 2008 Last.fm
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -26,6 +26,9 @@
 
 #set this to have ivy clean its cache (useful if dependencies update behind your back)
 #ivy.clean.cache
+
+#Whether to perform binary diffs (optional, defaults to false)
+#svn.binarydiff=
 
 #Authentication values to use to connect to Subversion repository.
 #Based on the passed parameters a set of one or more valid authentication mechanisms will be decided on. 
