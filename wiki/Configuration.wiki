@@ -44,11 +44,11 @@ For more information on the values in ivysettings.xml refer to the [http://ant.a
 || *Attribute* || *Description* || *Required* ||
 || name        || Name of the resolver || Always ||
 || userName || Subversion user name || Always ||
-|| userPassword || Subversion password || For svn+ssh:// and http(s):// connections that require username and password authentication ||
-|| keyFile || Path to SSH key file || For svn+ssh:// connections that require username and keyfile authentication ||
-|| sshPassphrase || The SSH key file passphrase (if any) || For svn+ssh:// connections that require username and keyfile authentication with a keyfile requiring a passphrase ||
-|| sshPort || The SSH port || For svn+ssh:// connections where the SSH server is listening on a port other than 22 ||
-|| certFile || Path to client side certificate file || For https:// connections that require client side certificates for authentication ||
+|| userPassword || Subversion password || Only for svn+ssh:// and http(s):// connections that require username and password authentication ||
+|| keyFile || Path to SSH key file || Only for svn+ssh:// connections that require username and keyfile authentication ||
+|| sshPassphrase || The SSH key file passphrase (if any) || Only for svn+ssh:// connections that require username and keyfile authentication with a keyfile requiring a passphrase ||
+|| sshPort || The SSH port || No, defaults to 22, only used if protocol is svn+ssh ||
+|| certFile || Path to client side certificate file || Only for https:// connections that require client side certificates for authentication ||
 || storageAllowed || Whether to store credentials in global authentication cache or not || No, defaults to "false" ||
 || binaryDiff || Whether to publish to an intermediate folder to take advantage of Subversion's binary diff mechanism || No, defaults to "false" ||
 || binaryDiffFolderName || Name of the intermediate folder to publish to if binaryDiff is set to "true" || No, defaults to "LATEST" ||
