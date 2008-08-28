@@ -21,7 +21,6 @@ import java.io.IOException;
 
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.plugins.resolver.RepositoryResolver;
-import org.tmatesoft.svn.core.SVNException;
 
 /**
  * An Ivy resolver for Subversion repositories.
@@ -142,6 +141,8 @@ public class SvnResolver extends RepositoryResolver {
     }
   }
 
+  // TODO: need confirmation from users who requested this feature that it works without it
+  // if so, go thru code and remove all references
   /**
    * Sets the path to the base of the repository. This is optional, if not set then the base of the repository is
    * assumed to be the path up to the first "/" in paths to artifacts to be published. Set this if the base of the
@@ -150,11 +151,11 @@ public class SvnResolver extends RepositoryResolver {
    * @param repositoryURL SVN URL representing the base of the repository.
    * @throws SVNException If an error occurs parsing the passed repositoryURL as a SVNURL.
    */
-  public void setRepositoryURL(String repositoryURL) throws SVNException {
+  /*public void setRepositoryURL(String repositoryURL) throws SVNException {
     if (validParameter(repositoryURL)) {
       getSvnRepository().setSvnRepositoryURL(repositoryURL.trim());
     }
-  }
+  }*/
 
   /**
    * Set the user name to use to connect to the svn repository.
