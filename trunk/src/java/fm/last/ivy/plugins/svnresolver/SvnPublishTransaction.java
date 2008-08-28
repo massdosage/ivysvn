@@ -84,11 +84,16 @@ public class SvnPublishTransaction {
    * The path to the (intermediate) binary diff folder in svn.
    */
   private String binaryDiffFolderPath = null;
-  
+
   /**
    * The path to the (ultimate) destination folder in svn.
    */
   private String releaseFolderPath = null;
+
+  /**
+   * Whether overwrite is set to true.
+   */
+  private boolean overwrite;
 
   /**
    * Constructs a new instance of this class, which will use the passed message when a commit is performed.
@@ -134,6 +139,7 @@ public class SvnPublishTransaction {
       String binaryDiffFolderName) throws IOException {
     PutOperation operation = new PutOperation(source, destinationPath, overwrite, repositoryPath);
     releaseFolderPath = operation.getFolderPath(); // store the final intended destination for later
+    this.overwrite = overwrite;
     if (binaryDiff) {
       // TODO: allow revision to appear in path once but not only at the end
       if (!releaseFolderPath.endsWith(revision)) {
@@ -162,16 +168,22 @@ public class SvnPublishTransaction {
       commitEditor.abortEdit();
       Message.info("Nothing to commit");
     } else {
+      boolean copyDiff = true;
       if (binaryDiff && svnDAO.folderExists(releaseFolderPath)) {
-        // remove existing final dest so we can copy from binary diff location to it (SVNKit doesn't support overwriting
-        // folders), SVNKit doesn't allow this in final transaction so we have to do it here
-        Message.info("Deleting " + releaseFolderPath);
-        commitEditor.deleteEntry(releaseFolderPath, -1);
+        if (overwrite) {
+          // remove existing final dest so we can copy from binary diff location to it (SVNKit doesn't support
+          // overwriting folders), SVNKit doesn't allow this in final transaction so we have to do it here
+          Message.info("Deleting " + releaseFolderPath);
+          commitEditor.deleteEntry(releaseFolderPath, -1);
+        } else {
+          Message.info("Overwrite set to false, ignoring copy to " + releaseFolderPath);
+          copyDiff = false;
+        }
       }
       commitEditor.closeDir(); // close root
       SVNCommitInfo info = commitEditor.closeEdit();
       Message.info("Commit finished " + info);
-      if (binaryDiff) {
+      if (copyDiff) {
         // we need a second commit for binary diff as impossible to do all in one (SVNKit can't handle
         // creating a dir AND doing deletes AND copying dir to another location in one transaction)
         long rev = commitRepository.getLatestRevision(); // copying dirs requires valid revision
