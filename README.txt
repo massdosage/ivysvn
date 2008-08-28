@@ -48,7 +48,7 @@ that the Ivy Subversion resolver was built and tested against, your mileage with
 
 Ivy 2.0 beta 2 (http://ant.apache.org/ivy/)
 Trilead SSH-2 For Java build 211 (http://www.trilead.com/Products/Trilead-SSH-2-Java/)
-SVNKIt 1.1.6 (http://svnkit.com/)
+SVNKIt 1.1.8 (http://svnkit.com/)
 
 These files are included in the "lib" folder. 
 

@@ -1,14 +1,40 @@
 2.0
 ~~~
-- proper credit for Apache people who have provided code for transaction and binary diffs
 
--Binary diffs.
+-Check whether clean.cache works.
 
--Test and bundle with Ivy 2.0 jar when released. Rename ivy jar to ivy.jar so future updates don't 
-require you to manually remove old ivy as part of "install"
+-Documentation - upgrade from 1.4 need to remove Ivy beta jar and replace with ivy.jar, also need to change 
+case of attributes in ivysettings.xml and remove repositoryURL if using it.
+
+-Get older ivy users to try current HEAD release and see if repository path with more than one folder 
+works for them with repositoryPath attribute removed.
+
+-Document new stuff in Wiki - especially binary diff and overwrite and how these work. Give examples. 
+Should probably all go in "usage" section along with other ivysettings.xml example fragments
+
+-Review Xavier Hanin's binary diff patch and see how it differs from current code. Mail him any relevant 
+questions.
+
+-Other question for Xavier or Ivy devs - intermediate files deleted? (maybe only hashfiles? <- test, if so 
+then maybe we can override put which gets hash and only store those in mem, not all files). What is 
+best way of dealing with this? Can we avoid keeping entire file in memory?
+
+-Does an ivy path with revision not at the end of the path work in our current setup? If not try get working, 
+then will also need to catch case where revision is repeated twice.
+
+-Final review of all code, javadoc and documentation.
+
+-Change audioscrobbler site to point to new google code site.
+   
+-Make a RC release and mail all past ivysvn users and ask them to test it.
+
+-Ask ivy and ivymeetssvn projects to update link to google code site.
+
+-When 2.0 - announce on ivy list, javalobby etc.
+
 
 TBD
 ~~~
-
+-Test and bundle with Ivy 2.0 jar when released.
 -Make commit message configurable (maybe via a file template?)
 
