@@ -60,7 +60,7 @@ So an example ivysettings.xml for a Subversion repository accessed over SSH on t
   <typedef name="svn" classname="fm.last.ivy.plugins.svnresolver.SvnResolver"/>
 
   <resolvers>
-    <svn name="ivysvn" username="${svn.user.name}" userpassword="${svn.user.password}>
+    <svn name="ivysvn" userName="${svn.user.name}" userPassword="${svn.user.password}>
       <ivy pattern="svn+ssh://example.com/svn/someproject/[organisation]/[module]/[revision]/ivy.xml"/>
       <artifact pattern="svn+ssh://example.com/svn/someproject/[organisation]/[module]/[revision]/[artifact].[ext]"/>
     </svn>
