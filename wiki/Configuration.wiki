@@ -46,7 +46,7 @@ For more information on the values in ivysettings.xml refer to the [http://ant.a
 || userName || Subversion user name || Always ||
 || userPassword || Subversion password || Only for svn+ssh:// and http(s):// connections that require username and password authentication ||
 || keyFile || Path to SSH key file || Only for svn+ssh:// connections that require username and keyfile authentication ||
-|| sshPassphrase || The SSH key file passphrase (if any) || Only for svn+ssh:// connections that require username and keyfile authentication with a keyfile requiring a passphrase ||
+|| sshPassphrase || The SSH key file passphrase (if any) || Only for svn+ssh:// connections that require username and keyfile authentication with a keyfile requiring a passphrase, defaults to "" ||
 || sshPort || The SSH port || No, defaults to 22, only used if protocol is svn+ssh ||
 || certFile || Path to client side certificate file || Only for https:// connections that require client side certificates for authentication ||
 || storageAllowed || Whether to store credentials in global authentication cache or not || No, defaults to "false" ||
@@ -60,7 +60,7 @@ So an example ivysettings.xml for a Subversion repository accessed over SSH on t
   <typedef name="svn" classname="fm.last.ivy.plugins.svnresolver.SvnResolver"/>
 
   <resolvers>
-    <svn name="ivysvn" userName="${svn.user.name}" userPassword="${svn.user.password}>
+    <svn name="ivysvn" userName="USER" userPassword="PASSWORD">
       <ivy pattern="svn+ssh://example.com/svn/someproject/[organisation]/[module]/[revision]/ivy.xml"/>
       <artifact pattern="svn+ssh://example.com/svn/someproject/[organisation]/[module]/[revision]/[artifact].[ext]"/>
     </svn>
