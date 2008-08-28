@@ -28,6 +28,8 @@ then will also need to catch case where revision is repeated twice.
    
 -Make a RC release and mail all past ivysvn users and ask them to test it.
 
+-Test RC bin and src release on fresh machine following instructions on website and in README. 
+
 -Ask ivy and ivymeetssvn projects to update link to google code site.
 
 -When 2.0 - announce on ivy list, javalobby etc.
