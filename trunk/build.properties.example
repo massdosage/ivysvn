@@ -17,7 +17,7 @@
 #The following properties are for this project, and can also be used in any projects which
 #include ivy-common-targets.xml
 
-#Version of software (for publish), if you do not set this property then our publish target in
+#Version of software (for publish), if you do not set this property then the publish target in
 #ivy-common-targets.xml will try figure this out automatically
 #version=1.3
 

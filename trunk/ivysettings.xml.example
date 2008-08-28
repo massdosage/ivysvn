@@ -14,32 +14,23 @@
    limitations under the License.
  -->
 <ivysettings>
-	
-	<typedef name="svn" classname="fm.last.ivy.plugins.svnresolver.SvnResolver"/>
-	
+  
+  <typedef name="svn" classname="fm.last.ivy.plugins.svnresolver.SvnResolver"/>
+  
   <resolvers>
-    <!-- If you want to specify a base repository url you can add the following attribute below:
-    
-    repositoryURL="svn+ssh://HOSTNAME/PATH_TO_BASE_OF_IVY_REPOSITORY"
-    
-    if you omit this then the base repository url is assumed to be the path up to the first "/" in 
-    "PATH_TO_YOUR_IVY_REPOSITORY" below.
-    -->
     <svn name="ivysvn" userName="${svn.user.name}" userPassword="${svn.user.password}"
       keyFile="${ssh.keyfile}" sshPort="${ssh.port}" sshPassphrase="${ssh.keyfile.passphrase}"
-      certFile="${ssl.certfile}" storageAllowed="${svn.storageallowed}"
-      binaryDiff="${svn.binarydiff}">
+      certFile="${ssl.certfile}" storageAllowed="${svn.storage.allowed}"
+      binaryDiff="${svn.binarydiff}" binaryDiffFolderName="${svn.binarydiff.folder}">
       <ivy
-        pattern="svn+ssh://HOSTNAME/PATH_TO_YOUR_IVY_REPOSITORY/[organisation]/[module]/[revision]/ivy.xml"/>
+        pattern="PROTOCOL://HOSTNAME/PATH_TO_YOUR_IVY_REPOSITORY/[organisation]/[module]/[revision]/ivy.xml"/>
       <artifact
-        pattern="svn+ssh://HOSTNAME/PATH_TO_YOUR_IVY_REPOSITORY/[organisation]/[module]/[revision]/[artifact].[ext]"/>
+        pattern="PROTOCOL://HOSTNAME/PATH_TO_YOUR_IVY_REPOSITORY/[organisation]/[module]/[revision]/[artifact].[ext]"/>
     </svn>
   </resolvers>
-
-	<settings defaultResolver="ivysvn" />
-	
-	<modules>
-		<module organisation="YOUR_ORGANISATION" name="ivysvnresolver" resolver="ivysvn"/>
-	</modules>
-	
+  
+  <settings defaultResolver="ivysvn"/>
+  <modules>
+    <module organisation="YOUR_ORGANISATION" name="ivysvnresolver" resolver="ivysvn"/>
+  </modules>
 </ivysettings>
