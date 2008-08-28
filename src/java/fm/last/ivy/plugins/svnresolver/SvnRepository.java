@@ -236,12 +236,6 @@ public class SvnRepository extends AbstractRepository {
    * @throws IOException If an error occurs putting a file (invalid path, invalid login credentials etc.)
    */
   public void put(File source, String destination, boolean overwrite) throws IOException {
-    if (binaryDiff && !overwrite) {
-      String errorMessage = "Binary diff cannot be performed if overwrite is set to false";
-      Message.error(errorMessage);
-      throw new IOException(errorMessage);
-    }
-
     fireTransferInitiated(getResource(destination), TransferEvent.REQUEST_PUT);
     Message.info("Scheduling publish from " + source.getAbsolutePath() + " to " + destination);
 
