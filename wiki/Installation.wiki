@@ -9,7 +9,7 @@ The following steps describe how to install Ivysvn after you have downloaded and
   # Create an `ivysettings.xml` file containing a "svn" resolver element and set various properties on it as described in [Configuration].
 
 If you are upgrading from ivy-svn 1.4 or below you will also need to: 
-  # Modify 'ivysettings.xml' - many attribute names now contain mixed case (e.g. "keyfile" is now "keyFile") and some attribute names have changed (e.g. "port" is now "sshPort").
+  # Modify 'ivysettings.xml' - many attribute names now contain mixed case (e.g. "keyfile" is now "keyFile") and some attribute names have changed (e.g. "port" is now "sshPort"). For more information refer to [Configuration].
   # Remove previous Ivy jar files (e.g. 'ivy-2.0.0-beta2.jar') from 'ANT_HOME/lib/'. All future versions of Ivysvn will name this jar 'ivy.jar' so future upgrades can just replace this file instead of having to remove older versions.
 
 If you are upgrading from ivy-svn 1.3 or below you will also need to: 
