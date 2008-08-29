@@ -38,7 +38,8 @@ Testing that it works:
 ant retrieve
 }}}
  and the dependent files should be downloaded to the `lib` folder.
-  # Make sure the "version" property is set and run 
+
+ 3. Make sure the "version" property is set and run 
 {{{
 ant publish
 }}} 
