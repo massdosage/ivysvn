@@ -86,6 +86,7 @@ public class PutOperation {
       throw new IOException("Error determing paths from " + destination, e);
     }
     
+    // TODO: determine whether we need to store in memory or not...
     // When Ivy does a put it copies the files to a temp location and calls put from there, unfortunately it
     // deletes some files (e.g. hashes) inbetween calls so in order for us to send them as a transaction
     // we store entire file contents in memory.
@@ -138,6 +139,24 @@ public class PutOperation {
     this.folderPath = destinationPath.substring(rootPath.length(), fileNameIndex);
     // extract the name of the file
     this.fileName = destinationPath.substring(fileNameIndex + 1);
+  }
+  
+  /**
+   * For the passed values, determine the full binary diff folder path that should be used for the file represented by
+   * this operation.
+   * 
+   * @param revision The revision.
+   * @param binaryDiffFolderName The name of the binary diff folder.
+   * @return The binary diff folder path for this put operation's file.
+   */
+  public String determineBinaryDiffFolderPath(String revision, String binaryDiffFolderName) {
+    // TODO: allow revision to appear once in string, but not necessarily at the end
+    if (!this.folderPath.endsWith(revision)) {
+      throw new IllegalStateException("Ivy destination folder does not end with revision");
+    }
+    StringBuilder binaryDiffFolderPath = new StringBuilder(folderPath.substring(0, folderPath.indexOf(revision)));
+    binaryDiffFolderPath.append(binaryDiffFolderName);
+    return binaryDiffFolderPath.toString();
   }
 
   /**

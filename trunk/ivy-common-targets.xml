@@ -62,7 +62,6 @@ limitations under the License.
     <echo message="project ${ant.project.name} released with version ${publish.revision}"/>
   </target>
   
-  
   <!-- you must either overwrite this target in your build, or implement your own build-jar target -->
   <target name="dist" depends="build-jar"/>
   

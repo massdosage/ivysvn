@@ -69,7 +69,7 @@ public class SvnDao {
   public boolean putFile(ISVNEditor editor, byte[] data, String destinationFolder, String fileName, boolean overwrite)
     throws SVNException {
     String filePath = destinationFolder + "/" + fileName;
-    if (fileExists(filePath)) { // updating existing file
+    if (fileExists(filePath, -1)) { // updating existing file
       if (overwrite) {
         Message.info("Updating file " + filePath);
         editor.openFile(filePath, -1);
@@ -78,7 +78,7 @@ public class SvnDao {
         return false;
       }
     } else { // creating new file
-      createFolders(editor, destinationFolder);
+      createFolders(editor, destinationFolder, -1);
       Message.info("Adding file " + filePath);
       editor.addFile(filePath, null, -1);
     }
@@ -95,15 +95,16 @@ public class SvnDao {
    * 
    * @param readRepository An initialised and authenticated SVNRepository.
    * @param directoryPath The directory path to create.
+   * @param revision Revision to use.
    * @throws SVNException If an invalid path is passed or the path could not be created.
    */
-  private void createFolders(ISVNEditor editor, String directoryPath) throws SVNException {
+  private void createFolders(ISVNEditor editor, String directoryPath, long revision) throws SVNException {
     // run through all directories in path and create whatever is necessary
     String[] folders = directoryPath.substring(1).split("/");
     int i = 0;
     StringBuffer existingPath = new StringBuffer("/");
     StringBuffer pathToCheck = new StringBuffer("/" + folders[0]);
-    while (folderExists(pathToCheck.toString())) {
+    while (folderExists(pathToCheck.toString(), revision)) {
       existingPath.append(folders[i] + "/");
       if (++i == folders.length) {
         break;// no more paths to check, entire path exists so break out of here
@@ -113,7 +114,7 @@ public class SvnDao {
     }
 
     if (i < folders.length) { // 1 or more dirs need to be created
-      editor.openRoot(-1); // only open root ONCE
+      // editor.openRoot(-1); // only open root ONCE
       for (; i < folders.length; i++) { // build up path to create
         StringBuffer pathToAdd = new StringBuffer(existingPath);
         if (pathToAdd.charAt(pathToAdd.length() - 1) != '/') { // if we need a separator char
@@ -125,7 +126,7 @@ public class SvnDao {
         existingPath = pathToAdd; // added to svn so this is new existing path
         existingFolderPaths.add(pathToAdd.toString());
       }
-      editor.closeDir(); // close dir ONCE
+      // editor.closeDir(); // close dir ONCE
     }
   }
 
@@ -133,15 +134,16 @@ public class SvnDao {
    * Determines whether the passed folder exists.
    * 
    * @param folderPath Folder path.
+   * @param revision Revision to use.
    * @return true if the folder exists, false otherwise.
    * @throws SVNException If an error occurs determining whether the folder exists.
    */
-  public boolean folderExists(String folderPath) throws SVNException {
+  public boolean folderExists(String folderPath, long revision) throws SVNException {
     if (existingFolderPaths.contains(folderPath)) { // first check our cache if this path is known to exist
       return true;
     } else {
       // not previously cached, so check against repository
-      SVNNodeKind nodeKind = readRepository.checkPath(folderPath.toString(), -1);
+      SVNNodeKind nodeKind = readRepository.checkPath(folderPath.toString(), revision);
       if (SVNNodeKind.DIR == nodeKind) {
         existingFolderPaths.add(folderPath);
         return true;
@@ -154,11 +156,12 @@ public class SvnDao {
    * Determines whether the passed file exists.
    * 
    * @param path File path.
+   * @param revision Revision to use.
    * @return true if the file exists, false otherwise.
    * @throws SVNException If an error occurs determining whether the file exists.
    */
-  private boolean fileExists(String path) throws SVNException {
-    SVNNodeKind kind = readRepository.checkPath(path, -1);
+  private boolean fileExists(String path, long revision) throws SVNException {
+    SVNNodeKind kind = readRepository.checkPath(path, revision);
     if (kind == SVNNodeKind.FILE) {
       return true;
     }
