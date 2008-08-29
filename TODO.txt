@@ -3,6 +3,9 @@
 -Get older ivy users to try current HEAD release and see if repository path with more than one folder 
 works for them with repositoryPath attribute removed.
 
+- Add removal of repositoryPath to upgrade from 1.4 steps, also remove from docs and code once we 
+have confirmation that it works.
+
 -Document new stuff in Wiki - especially binary diff and overwrite and how these work. Give examples. 
 Should probably all go in "usage" section along with other ivysettings.xml example fragments.
 Binary diff requirement is for revision to appear in folder ONCE ONLY.
