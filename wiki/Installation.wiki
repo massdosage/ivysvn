@@ -3,11 +3,15 @@
 
 The following steps describe how to install Ivysvn after you have downloaded and unpacked the latest binary release.
 
-  # Copy all the third party libraries (Ivy, Trilead and SVNKit) from the "lib" folder to ANT_HOME/lib/ or to somewhere on your CLASSPATH. If you are upgrading from a previous version of Ivy-svn please remove any older versions of these libraries. 
-  # Copy ivysvnresolver.jar into ANT_HOME/lib/ or make sure it is on your CLASSPATH.
-  # Create a standard ivy.xml file for your project declaring your dependencies, publications etc.
-  # Create an ivysettings.xml file containing a "svn" resolver element and set various properties on it as described below
+  # Copy all the third party libraries (Ivy, Trilead and SVNKit) from the `lib` folder to `ANT_HOME/lib/` or to somewhere on your CLASSPATH. If you are upgrading from a previous version of Ivy-svn please remove any older versions of these libraries. 
+  # Copy `ivysvnresolver.jar` into `ANT_HOME/lib/` or make sure it is on your CLASSPATH.
+  # Create a standard `ivy.xml` file for your project declaring your dependencies, publications etc.
+  # Create an `ivysettings.xml` file containing a "svn" resolver element and set various properties on it as described in [Configuration].
+
+If you are upgrading from ivy-svn 1.4 or below you will also need to: 
+  # Modify 'ivysettings.xml' - many attribute names now contain mixed case (e.g. "keyfile" is now "keyFile") and some attribute names have changed (e.g. "port" is now "sshPort").
+  # Remove previous Ivy jar files (e.g. 'ivy-2.0.0-beta2.jar') from 'ANT_HOME/lib/'. All future versions of Ivysvn will name this jar 'ivy.jar' so future upgrades can just replace this file instead of having to remove older versions.
 
 If you are upgrading from ivy-svn 1.3 or below you will also need to: 
-  # Remove the contents of your local ivy2 cache (this is located in ~/.ivy2 on Linux, remove the folder and all its contents).
-  # Remove ANT_HOME/lib/ganymed.jar and previous versions of Ivy jar files from ANT_HOME/lib/.
+  # Remove the contents of your local ivy2 cache (this is located in '~/.ivy2' on Linux) - remove the folder and all its contents).
+  # Remove 'ANT_HOME/lib/ganymed.jar' and previous versions of Ivy jar files from 'ANT_HOME/lib/'.
