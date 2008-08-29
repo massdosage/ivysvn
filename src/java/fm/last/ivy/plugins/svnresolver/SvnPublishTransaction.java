@@ -142,8 +142,9 @@ public class SvnPublishTransaction {
    * Commits all files scheduled to be put.
    * 
    * @throws SVNException If an error occurs committing the transaction.
+   * @throws IOException If an error occurs reading any file data.
    */
-  public void commit() throws SVNException {
+  public void commit() throws SVNException, IOException {
     // reset the repository to its root and tell it to connect if necessary
     SVNURL root = commitRepository.getRepositoryRoot(true);
     commitRepository.setLocation(root, false);
@@ -168,8 +169,9 @@ public class SvnPublishTransaction {
    * 
    * @return The number of put operations that were performed.
    * @throws SVNException If an error occurs performing any of the put operations.
+   * @throws IOException If an error occurs reading any file data.
    */
-  private int performPutOperations() throws SVNException {
+  private int performPutOperations() throws SVNException, IOException {
     checkCommitEditor();
     int putFileCount = 0;
     for (PutOperation operation : putOperations) {
