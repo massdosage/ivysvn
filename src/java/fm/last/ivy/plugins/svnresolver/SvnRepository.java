@@ -201,7 +201,7 @@ public class SvnRepository extends AbstractRepository {
     try {
       publishTransaction.commit();
     } catch (SVNException e) {
-      throw new IOException("Error committing transaction", e);
+      throw new IOException("Error committing transaction " + e.getMessage(), e);
     }
   }
 
@@ -248,13 +248,13 @@ public class SvnRepository extends AbstractRepository {
         ancillaryRepository.setLocation(root, false);
         SvnDao svnDAO = new SvnDao(ancillaryRepository);
 
-        publishTransaction = new SvnPublishTransaction(svnDAO, moduleRevisionId, binaryDiff);
+        publishTransaction = new SvnPublishTransaction(svnDAO, moduleRevisionId, binaryDiff, binaryDiffFolderName);
         // now create another repository which transaction will use to do actual commits
         SVNRepository commitRepository = getRepository(destinationURL, false);
         publishTransaction.setCommitRepository(commitRepository);
       }
       // add all info needed to put the file to the transaction
-      publishTransaction.addPutOperation(source, destination, overwrite, repositoryPath, binaryDiffFolderName);
+      publishTransaction.addPutOperation(source, destination, overwrite, repositoryPath);
     } catch (SVNException e) {
       throw new IOException("Error putting " + destination, e);
     }

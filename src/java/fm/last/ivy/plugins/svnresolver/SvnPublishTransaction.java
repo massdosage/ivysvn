@@ -19,7 +19,12 @@ package fm.last.ivy.plugins.svnresolver;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.util.Message;
@@ -81,30 +86,22 @@ public class SvnPublishTransaction {
   private String revision;
 
   /**
-   * The path to the (intermediate) binary diff folder in svn.
+   * The name of the binary diff folder.
    */
-  private String binaryDiffFolderPath = null;
-
-  /**
-   * The path to the (ultimate) destination folder in svn.
-   */
-  private String releaseFolderPath = null;
-
-  /**
-   * Whether overwrite is set to true.
-   */
-  private boolean overwrite;
+  private String binaryDiffFolderName;
 
   /**
    * Constructs a new instance of this class, which will use the passed message when a commit is performed.
    * 
-   * @param svnDAO
-   * @param commitMessage The message to use for commit operations.
+   * @param svnDAO The subversion DAO to use.
+   * @param mrid The ivy Module Revision ID.
    * @param binaryDiff Whether to perform a binary diff.
+   * @param binaryDiffFolderName The name of the binary diff folder.
    */
-  public SvnPublishTransaction(SvnDao svnDAO, ModuleRevisionId mrid, boolean binaryDiff) {
+  public SvnPublishTransaction(SvnDao svnDAO, ModuleRevisionId mrid, boolean binaryDiff, String binaryDiffFolderName) {
     this.svnDAO = svnDAO;
     this.binaryDiff = binaryDiff;
+    this.binaryDiffFolderName = binaryDiffFolderName;
     this.revision = mrid.getRevision();
     StringBuilder comment = new StringBuilder();
     comment.append("Ivy publishing ").append(mrid.getOrganisation()).append("#");
@@ -135,19 +132,9 @@ public class SvnPublishTransaction {
    *          first "/" in any svn paths (often the case).
    * @throws IOException If the file data cannot be read from disk or the file paths cannot be determined.
    */
-  public void addPutOperation(File source, String destinationPath, boolean overwrite, String repositoryPath,
-      String binaryDiffFolderName) throws IOException {
+  public void addPutOperation(File source, String destinationPath, boolean overwrite, String repositoryPath)
+    throws IOException {
     PutOperation operation = new PutOperation(source, destinationPath, overwrite, repositoryPath);
-    releaseFolderPath = operation.getFolderPath(); // store the final intended destination for later
-    this.overwrite = overwrite;
-    if (binaryDiff) {
-      // TODO: allow revision to appear in path once but not only at the end
-      if (!releaseFolderPath.endsWith(revision)) {
-        throw new IllegalStateException("Ivy destination folder does not end with revision");
-      }
-      binaryDiffFolderPath = releaseFolderPath.substring(0, releaseFolderPath.indexOf(revision));
-      binaryDiffFolderPath += binaryDiffFolderName; // store intermediate binary diff destination for later
-    }
     this.putOperations.add(operation);
   }
 
@@ -168,33 +155,11 @@ public class SvnPublishTransaction {
       commitEditor.abortEdit();
       Message.info("Nothing to commit");
     } else {
-      boolean copyDiff = true;
-      if (binaryDiff && svnDAO.folderExists(releaseFolderPath)) {
-        if (overwrite) {
-          // remove existing final dest so we can copy from binary diff location to it (SVNKit doesn't support
-          // overwriting folders), SVNKit doesn't allow this in final transaction so we have to do it here
-          Message.info("Deleting " + releaseFolderPath);
-          commitEditor.deleteEntry(releaseFolderPath, -1);
-        } else {
-          Message.info("Overwrite set to false, ignoring copy to " + releaseFolderPath);
-          copyDiff = false;
-        }
-      }
+      Map<String, String> foldersToCopy = prepareBinaryDiff(); // prepare binary diff in existing transaction
       commitEditor.closeDir(); // close root
       SVNCommitInfo info = commitEditor.closeEdit();
       Message.info("Commit finished " + info);
-      if (copyDiff) {
-        // we need a second commit for binary diff as impossible to do all in one (SVNKit can't handle
-        // creating a dir AND doing deletes AND copying dir to another location in one transaction)
-        long rev = commitRepository.getLatestRevision(); // copying dirs requires valid revision
-        commitEditor = commitRepository.getCommitEditor(commitMessage, null);
-        commitEditor.openRoot(-1);
-        Message.info("Copying from " + binaryDiffFolderPath + " to " + releaseFolderPath);
-        commitEditor.addDir(releaseFolderPath, binaryDiffFolderPath, rev);
-        commitEditor.closeDir();
-        commitEditor.closeDir();
-        Message.info("Binary diff finished : " + commitEditor.closeEdit());
-      }
+      copyDiff(foldersToCopy);
     }
   }
 
@@ -208,11 +173,11 @@ public class SvnPublishTransaction {
     checkCommitEditor();
     int putFileCount = 0;
     for (PutOperation operation : putOperations) {
-      String destinationFolderPath = releaseFolderPath; // assume we are publishing directly
+      String destinationFolderPath = operation.getFolderPath(); // assume no binary diff
       boolean overwrite = operation.isOverwrite();
       if (binaryDiff) { // publishing to intermediate binary diff location, override values set above
-        destinationFolderPath = binaryDiffFolderPath;
-        overwrite = true;
+        destinationFolderPath = operation.determineBinaryDiffFolderPath(revision, binaryDiffFolderName);
+        overwrite = true; // force overwrite for binary diff
       }
       // destinationFolderPath and overwrite will be set according to whether binary diff or not
       if (svnDAO.putFile(commitEditor, operation.getData(), destinationFolderPath, operation.getFileName(), overwrite)) {
@@ -220,6 +185,60 @@ public class SvnPublishTransaction {
       }
     }
     return putFileCount;
+  }
+
+  /**
+   * Prepares the repository for the binary diff transaction, if necessary.
+   * 
+   * @return A Map of folders which need to be copied in the binary diff transaction, where the key is the ultimate
+   *         destination folder and the value is the intermediate binary diff folder.
+   * @throws SVNException If an error occurs deleting previous releases in the repository.
+   */
+  private Map<String, String> prepareBinaryDiff() throws SVNException {
+    Map<String, String> binaryDiffs = new HashMap<String, String>();
+    if (binaryDiff) {
+      Set<String> processedFolders = new HashSet<String>(); // most operations share a folder, so "cache" this
+      for (PutOperation operation : putOperations) {
+        String currentFolder = operation.getFolderPath();
+        if (!processedFolders.contains(currentFolder)) { // we haven't dealt with this folder yet
+          String binaryDiffFolderPath = operation.determineBinaryDiffFolderPath(revision, binaryDiffFolderName);
+          binaryDiffs.put(currentFolder, binaryDiffFolderPath); // schedule this to be processed later
+          if (svnDAO.folderExists(currentFolder, -1)) {
+            if (operation.isOverwrite()) {
+              // delete old release, we will copy over to release folder again in binary diff commit later
+              Message.info("Deleting " + currentFolder);
+              commitEditor.deleteEntry(currentFolder, -1);
+            } else {
+              Message.info("Overwrite set to false, ignoring copy to " + currentFolder);
+              binaryDiffs.remove(currentFolder);
+            }
+          }
+        }
+        processedFolders.add(currentFolder);
+      }
+    }
+    return binaryDiffs;
+  }
+
+  /**
+   * Performs any necessary binary diff copy operations as contained in the passed Map.
+   * 
+   * @param foldersToCopy Map of folders to copy where key is destination and value is source.
+   * @throws SVNException If an error occurs copying one or more folders.
+   */
+  private void copyDiff(Map<String, String> foldersToCopy) throws SVNException {
+    if (foldersToCopy.size() > 0) {
+      long rev = commitRepository.getLatestRevision(); // copying dirs requires valid revision
+      commitEditor = commitRepository.getCommitEditor(commitMessage, null);
+      commitEditor.openRoot(-1);
+      for (Entry<String, String> entry : foldersToCopy.entrySet()) {
+        Message.info("Copying from " + entry.getValue() + " to " + entry.getKey());
+        commitEditor.addDir(entry.getKey(), entry.getValue(), rev);
+        commitEditor.closeDir();
+      }
+      commitEditor.closeDir();
+      Message.info("Binary diff finished : " + commitEditor.closeEdit());
+    }
   }
 
   /**
