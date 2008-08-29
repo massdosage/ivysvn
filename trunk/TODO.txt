@@ -1,11 +1,5 @@
 2.0
 ~~~
-
--Check whether clean.cache works.
-
--Documentation - upgrade from 1.4 need to remove Ivy beta jar and replace with ivy.jar, also need to change 
-case of attributes in ivysettings.xml and remove repositoryURL if using it.
-
 -Get older ivy users to try current HEAD release and see if repository path with more than one folder 
 works for them with repositoryPath attribute removed.
 
@@ -14,10 +8,6 @@ Should probably all go in "usage" section along with other ivysettings.xml examp
 
 -Review Xavier Hanin's binary diff patch and see how it differs from current code. Mail him any relevant 
 questions.
-
--Other question for Xavier or Ivy devs - intermediate files deleted? (maybe only hashfiles? <- test, if so 
-then maybe we can override put which gets hash and only store those in mem, not all files). What is 
-best way of dealing with this? Can we avoid keeping entire file in memory?
 
 -Does an ivy path with revision not at the end of the path work in our current setup? If not try get working, 
 then will also need to catch case where revision is repeated twice.
