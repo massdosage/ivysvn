@@ -33,13 +33,11 @@ If you are upgrading from a previous version please remove any older versions of
 Testing that it works:
 
   # Edit `ivy.xml` so that it contains dependencies to artifacts in your repository.
-  # Run 
+  # Run the following command and the dependent files should be downloaded to the `lib` folder.
 {{{
 ant retrieve
 }}}
- and the dependent files should be downloaded to the `lib` folder.
-
- 3. Make sure the "version" property is set and run 
+  # Make sure the "version" property is set and run 
 {{{
 ant publish
 }}} 
