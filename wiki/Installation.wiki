@@ -33,10 +33,15 @@ If you are upgrading from a previous version please remove any older versions of
 Testing that it works:
 
   # Edit `ivy.xml` so that it contains dependencies to artifacts in your repository.
-  # Run {{{ant retrieve}}} and the dependent files should be downloaded to the `lib` folder.
+  # Run 
+{{{
+ant retrieve
+}}}
+ and the dependent files should be downloaded to the `lib` folder.
   # Make sure the "version" property is set and run 
 {{{
 ant publish
-}}} and the current version of `ivysvnresolver.jar` 
+}}} 
+and the current version of `ivysvnresolver.jar` 
 should be published to your repository. NOTE: Every time you do a publish you will need to use a different 
 version number (or set the property "publish.overwrite" to true).
