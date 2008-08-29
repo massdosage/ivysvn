@@ -36,7 +36,7 @@ public class SvnDao {
    * Repository to use to perform read operations.
    */
   private SVNRepository readRepository;
-  
+
   /**
    * A "cache" of folders known to exist in svn, so we don't have to hit repository to check every time.
    */
@@ -90,17 +90,32 @@ public class SvnDao {
   }
 
   /**
-   * Creates the passed path in the repository, existing folders are left alone and only the parts of the path which
+   * Creates any sub folders of the passed folder path.
+   * 
+   * @param editor An editor opened for performing commits.
+   * @param folderPath Path to create sub folders of.
+   * @param revision Revision to use.
+   * @throws SVNException If an error occurs creating the sub folders.
+   */
+  public void createSubFolders(ISVNEditor editor, String folderPath, long revision) throws SVNException {
+    int index = folderPath.lastIndexOf("/");
+    if (index > 0) {
+      createFolders(editor, folderPath.substring(0, index), revision);
+    }
+  }
+
+  /**
+   * Creates the passed folder in the repository, existing folders are left alone and only the parts of the path which
    * don't exist are created.
    * 
-   * @param readRepository An initialised and authenticated SVNRepository.
-   * @param directoryPath The directory path to create.
+   * @param editor An editor opened for performing commits.
+   * @param folderPath The path of the folder to create.
    * @param revision Revision to use.
    * @throws SVNException If an invalid path is passed or the path could not be created.
    */
-  private void createFolders(ISVNEditor editor, String directoryPath, long revision) throws SVNException {
+  public void createFolders(ISVNEditor editor, String folderPath, long revision) throws SVNException {
     // run through all directories in path and create whatever is necessary
-    String[] folders = directoryPath.substring(1).split("/");
+    String[] folders = folderPath.substring(1).split("/");
     int i = 0;
     StringBuffer existingPath = new StringBuffer("/");
     StringBuffer pathToCheck = new StringBuffer("/" + folders[0]);

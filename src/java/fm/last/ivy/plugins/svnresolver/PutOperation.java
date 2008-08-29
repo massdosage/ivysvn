@@ -161,15 +161,19 @@ public class PutOperation {
    * @param revision The revision.
    * @param binaryDiffFolderName The name of the binary diff folder.
    * @return The binary diff folder path for this put operation's file.
+   * @throws IllegalStateException If this operations fodler path does not contain the revision ONCE ONLY.
    */
   public String determineBinaryDiffFolderPath(String revision, String binaryDiffFolderName) {
-    // TODO: allow revision to appear once in string, but not necessarily at the end
-    if (!this.folderPath.endsWith(revision)) {
-      throw new IllegalStateException("Ivy destination folder does not end with revision");
+    if (!this.folderPath.contains(revision)) {
+      throw new IllegalStateException("Ivy destination folder '" + folderPath + "' does not contain revision '"
+          + revision + "'");
     }
-    StringBuilder binaryDiffFolderPath = new StringBuilder(folderPath.substring(0, folderPath.indexOf(revision)));
-    binaryDiffFolderPath.append(binaryDiffFolderName);
-    return binaryDiffFolderPath.toString();
+    String binaryDiffFolderPath = folderPath.replaceFirst(revision, binaryDiffFolderName);
+    if (binaryDiffFolderPath.contains(revision)) {
+      throw new IllegalStateException("Ivy destination folder '" + folderPath + "' contains revision '" + revision
+          + "' more than once");
+    }
+    return binaryDiffFolderPath;
   }
 
   /**

@@ -4,13 +4,11 @@
 works for them with repositoryPath attribute removed.
 
 -Document new stuff in Wiki - especially binary diff and overwrite and how these work. Give examples. 
-Should probably all go in "usage" section along with other ivysettings.xml example fragments
+Should probably all go in "usage" section along with other ivysettings.xml example fragments.
+Binary diff requirement is for revision to appear in folder ONCE ONLY.
 
 -Review Xavier Hanin's binary diff patch and see how it differs from current code. Mail him any relevant 
 questions.
-
--Does an ivy path with revision not at the end of the path work in our current setup? If not try get working, 
-then will also need to catch case where revision is repeated twice.
 
 -Final review of all code, javadoc and documentation.
 

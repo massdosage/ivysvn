@@ -235,6 +235,8 @@ public class SvnPublishTransaction {
       commitEditor.openRoot(-1);
       for (Entry<String, String> entry : foldersToCopy.entrySet()) {
         Message.info("Copying from " + entry.getValue() + " to " + entry.getKey());
+        // addDir can't handle creating sub folders so we have to do it
+        svnDAO.createSubFolders(commitEditor, entry.getKey(), rev);
         commitEditor.addDir(entry.getKey(), entry.getValue(), rev);
         commitEditor.closeDir();
       }
