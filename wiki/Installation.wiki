@@ -1,4 +1,5 @@
 #summary How to install Ivysvn.
+#labels Phase-Deploy
 = Installing Ivysvn from a binary release=
 
 The following steps describe how to install Ivysvn after you have downloaded and unpacked the latest binary release.
