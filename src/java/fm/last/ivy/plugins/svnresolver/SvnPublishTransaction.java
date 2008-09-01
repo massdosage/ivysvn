@@ -174,6 +174,7 @@ public class SvnPublishTransaction {
   private int performPutOperations() throws SVNException, IOException {
     checkCommitEditor();
     int putFileCount = 0;
+    Map<String, Set<String>> putFiles = new HashMap<String, Set<String>>();
     for (PutOperation operation : putOperations) {
       String destinationFolderPath = operation.getFolderPath(); // assume no binary diff
       boolean overwrite = operation.isOverwrite();
@@ -185,7 +186,28 @@ public class SvnPublishTransaction {
       if (svnDAO.putFile(commitEditor, operation.getData(), destinationFolderPath, operation.getFileName(), overwrite)) {
         putFileCount++;
       }
+      
+      Set<String> files = putFiles.get(destinationFolderPath);
+      if (files == null) {
+        files = new HashSet<String>();
+      }
+      files.add(operation.getFileName());
+      putFiles.put(destinationFolderPath, files); // keep track of each file we have put per folder
     }
+    
+    // now compare the files we have just put with current contents of folder
+    for (Entry<String, Set<String>> entry : putFiles.entrySet()) {
+      String folderPath = entry.getKey();
+      List<String> existingFiles = svnDAO.list(folderPath, -1);
+      for (String existingFile : existingFiles) {
+        if (!entry.getValue().contains(existingFile)) {
+          // existing file not in put set, i.e. no longer part of this publication, so delete it
+          Message.info("Deleting " + folderPath + "/" + existingFile);
+          commitEditor.deleteEntry(folderPath + "/" + existingFile, -1);
+        }
+      }
+    }
+    
     return putFileCount;
   }
 
@@ -205,7 +227,7 @@ public class SvnPublishTransaction {
         if (!processedFolders.contains(currentFolder)) { // we haven't dealt with this folder yet
           String binaryDiffFolderPath = operation.determineBinaryDiffFolderPath(revision, binaryDiffFolderName);
           binaryDiffs.put(currentFolder, binaryDiffFolderPath); // schedule this to be processed later
-          if (svnDAO.folderExists(currentFolder, -1)) {
+          if (svnDAO.folderExists(currentFolder, -1, true)) {
             if (operation.isOverwrite()) {
               // delete old release, we will copy over to release folder again in binary diff commit later
               Message.info("Deleting " + currentFolder);

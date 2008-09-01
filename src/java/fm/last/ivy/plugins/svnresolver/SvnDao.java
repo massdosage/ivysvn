@@ -17,10 +17,13 @@
 package fm.last.ivy.plugins.svnresolver;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.ivy.util.Message;
+import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.io.ISVNEditor;
@@ -119,7 +122,7 @@ public class SvnDao {
     int i = 0;
     StringBuffer existingPath = new StringBuffer("/");
     StringBuffer pathToCheck = new StringBuffer("/" + folders[0]);
-    while (folderExists(pathToCheck.toString(), revision)) {
+    while (folderExists(pathToCheck.toString(), revision, true)) {
       existingPath.append(folders[i] + "/");
       if (++i == folders.length) {
         break;// no more paths to check, entire path exists so break out of here
@@ -146,6 +149,26 @@ public class SvnDao {
   }
 
   /**
+   * Lists the files in the passed folder.
+   * 
+   * @param folderPath A folder path.
+   * @param revision The revision to use.
+   * @return A list of file names in the passed folder, this will be empty if the folder does not exist.
+   * @throws SVNException If an error occurs listing the contents.
+   */
+  public List<String> list(String folderPath, long revision) throws SVNException {
+    List<String> contents = new ArrayList<String>();
+    if (folderExists(folderPath, revision, false)) {
+      List<SVNDirEntry> entries = new ArrayList<SVNDirEntry>();
+      readRepository.getDir(folderPath, revision, false, entries);
+      for (SVNDirEntry entry : entries) {
+        contents.add(entry.getRelativePath());
+      }  
+    }
+    return contents;
+  }
+
+  /**
    * Determines whether the passed folder exists.
    * 
    * @param folderPath Folder path.
@@ -153,14 +176,16 @@ public class SvnDao {
    * @return true if the folder exists, false otherwise.
    * @throws SVNException If an error occurs determining whether the folder exists.
    */
-  public boolean folderExists(String folderPath, long revision) throws SVNException {
-    if (existingFolderPaths.contains(folderPath)) { // first check our cache if this path is known to exist
+  public boolean folderExists(String folderPath, long revision, boolean useCache) throws SVNException {
+    if (useCache && existingFolderPaths.contains(folderPath)) { // first check our cache if this path is known to exist
       return true;
     } else {
       // not previously cached, so check against repository
       SVNNodeKind nodeKind = readRepository.checkPath(folderPath.toString(), revision);
       if (SVNNodeKind.DIR == nodeKind) {
-        existingFolderPaths.add(folderPath);
+        if (useCache) {
+          existingFolderPaths.add(folderPath);
+        }
         return true;
       }
       return false;

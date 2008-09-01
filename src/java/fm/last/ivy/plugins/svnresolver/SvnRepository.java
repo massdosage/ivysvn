@@ -372,6 +372,7 @@ public class SvnRepository extends AbstractRepository {
   @Override
   public List<String> list(String source) throws IOException {
     Message.info("Getting list for " + source);
+    // TODO: change this to use SVNDAO?
     List<String> resources = new ArrayList<String>();
     try {
       SVNURL url = SVNURL.parseURIEncoded(source);
