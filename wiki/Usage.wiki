@@ -3,3 +3,103 @@
 = Usage =
 
 Provided you have followed the [Installation] and [Configuration] steps above you should be able to publish and retrieve files to and from your Ivy Subversion repository using the standard Ivy Ant tasks. For retrieving you will obviously need to set up your own repository in Subversion and add files and folders containing whatever your projects depend on. For publishing you will need write access to the repository
+
+For the examples below we will assume there is a Subversion repository setup with the root to the Ivy repository located at 
+{{{
+svn.acme.com/svn/java/repository
+}}}
+and that artifacts are ordered under this location matching the pattern
+{{{
+[organisation]/[module]/[revision]/[artifact].[ext]
+}}}
+So, for example, the full subversion path to the artifact "widgetlib.jar" for the organisation "acme", module "widgets" and revision "0.13." would be:
+{{{
+svn+ssh://svn.acme.com/svn/java/repository/acme/widgets/0.13/widgetlib.jar
+}}}
+We will also assume that the repository will be accessed using Subversion username and password authentication with the user name "testuser" and password "testpassword".
+
+You should create an ivysettings.xml file like so:
+{{{
+<ivysettings>
+  
+  <property name="svn.root" value="svn.acme.com/svn/java/repository"/>
+  
+  <typedef name="svn" classname="fm.last.ivy.plugins.svnresolver.SvnResolver"/>
+  
+  <resolvers>
+    <svn name="ivysvn" userName="testuser" userPassword="testpassword">
+      <ivy pattern="svn+ssh://${svn.root}/[organisation]/[module]/[revision]/ivy.xml"/>
+      <artifact pattern="svn+ssh://${svn.root}/[organisation]/[module]/[revision]/[artifact].[ext]"/>
+    </svn>
+  </resolvers>
+  
+  <settings defaultResolver="ivysvn"/>
+  
+  <modules>
+    <module organisation="acme" name="ivysvnresolver" resolver="ivysvn"/>
+  </modules>
+  
+</ivysettings>
+}}}
+
+
+==Retrieving artifacts==
+
+If your project depends on the aforementioned "widgetslib.jar" you should set Ivy up to depend on it following the steps below.
+
+First ensure that your ivy.xml file contains an "info" element like so:
+{{{
+<info organisation="acme" module="anothermodule"/>
+}}}
+
+To retrieve the 0.13 release of "widgetlib.jar" you would add the following dependency to your ivy.xml file within the "dependencies" attribute:
+{{{
+<dependency org="acme" name="widgets" rev="0.13" />
+}}}
+
+Perfoming an Ivy retrieve at this point should retrieve the "widgetslib.jar" file from the specified location in Subversion.
+
+==Publishing artifacts==
+
+If you are the maintainer of the "widgets" package and you would like to publish the new, 0.14 release you would follow the steps below.
+
+First ensure that your ivy.xml file contains an "info" element like so:
+{{{
+<info organisation="acme" module="widgets"/>
+}}}
+
+Next make sure that ivy.xml contains the artifact you want to publish within the "publications" element:
+{{{
+<artifact name="widgets" ext="jar"/>
+}}} 
+
+Your build file should now build "widgetslib.jar" and use the Ant Ivy publish target with "pubrevision=0.14" to publish it. The file should be published to your Subversion repository like so:
+
+{{{
+svn+ssh://svn.acme.com/svn/java/repository/acme/widgets/0.14/widgetlib.jar
+}}}
+
+==Overwriting previous publications==
+If you set Ivy's "overwrite" property to "false" and try to publish an artifact with a revision that has already been published before, IvySvn will notify you of this fact in that Ant output and will not publish the artifact. The Ant build will not fail.
+
+If you set "overwrite" to "true" then any existing artifacts will be updated (i.e. a Subversion diff takes place) and any artifacts which are no longer part of the publication will be deleted.
+
+==Publishing with binaryDiff==
+If you find yourself publishing large (or a large number) of artifacts and/or you publish often with a different version number each time you may find that your Subversion repository grows in size as each publish operation publishes a new version of each of the artifacts each time without doing any "diff'ing" between versions. If you would like to take advantage of Subversion's binary diff mechanism during publish actions then add the attribute "binaryDiff" to the "svn" element in ivysettings.xml and set it to true:
+{{{
+    <svn name="ivysvn" userName="testuser" userPassword="testpassword" binaryDiff="true">
+}}} 
+With this setup, the first time you do a publish, say of version 0.14, the following two folders will be created in Subversion, creating all your publish artifacts:
+{{{
+acme/widgets/LATEST/
+acme/widgets/0.14/
+}}}
+What IvySvn does is first publish to LATEST, and then copy from LATEST to 0.14. The first time you do this it doesn't save you any space (in fact Subversion uses more space as you now have the same data twice). However if you now release version 0.15, IvySvn will perform a Subversion diff between the 0.15 artifacts and the artifacts in LATEST, reducing the size of this commit operation, and will then copy LATEST to 0.15. If you have big binary files which change very little between publish operations this offers a significant space reduction in the Subversion repository.
+
+Note: Binary diffs only work if the "ivy" and "artifact" patterns contain [revision] _once only_.
+
+If you would like to use a folder name other than LATEST you can set add the attribute "binaryDiffFolderName":
+{{{
+    <svn name="ivysvn" userName="testuser" userPassword="testpassword" binaryDiff="true"
+         binaryDiffFolderName="SOMEOTHERFOLDER">
+}}} 
