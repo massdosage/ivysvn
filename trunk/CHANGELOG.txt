@@ -5,6 +5,7 @@ Release 2.0 TBA
   - Added ability to do perform binary diffs (based on code and concepts contributed by Xavier Hanin).
   - Publish now results in one svn commit per publish call instead of per file (based on code and 
     concepts contributed by Stephane Bailliez).
+  - When overwriting existing publications, files that are no longer part of publish are removed from repository.
   - Upgraded to SVNKit 1.1.8.
   - Modified params set on "svn" element in ivysettings.xml to use CamelCase, renamed "port" to "sshPort" and 
     "passphrase" to "sshPassphrase". 
