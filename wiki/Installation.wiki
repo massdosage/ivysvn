@@ -30,8 +30,6 @@ ant -Dskip.retrieve=true -Dversion=0 install
 }}} 
 which will compile the Java source code, build `ivysvnresolver.jar` into `build/dist` and then copy this, `ivysettings.xml`, `ivy-common-targets.xml` and the required 3rd party libraries to your `ANT_HOME/lib` folder.
 
-If you are upgrading from a previous version please remove any older versions of the files copied across in the above step from `ANT_HOME/lib`.
-
 Testing that it works:
 
   # Edit `ivy.xml` so that it contains dependencies to artifacts in your repository.
