@@ -3,16 +3,12 @@
 -Ask previous IvySvn users to try current HEAD release and see if repository path with more than one folder 
 works for them with repositoryPath attribute removed.
 
-- Remove repositoryPath from code once we have confirmation that it works.
+-Remove repositoryPath from code once we have confirmation that it works.
 
 -Final review of all code, javadoc and documentation.
 
 -Make a RC release and mail all past ivysvn users and ask them to test it.
 
--Test RC bin and src release on fresh machine following instructions on website and in README.
-
--Change audioscrobbler site to point to new google code site.
-   
 -Ask ivy and ivymeetssvn projects to update link to google code site.
 
 -When 2.0 - announce on ivy list, javalobby, last.fm blog etc.
