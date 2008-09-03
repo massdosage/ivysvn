@@ -1,8 +1,8 @@
-#summary How to install Ivysvn.
+#summary How to install IvySvn.
 #labels Phase-Deploy
-= Installing Ivysvn from a binary release=
+= Installing IvySvn from a binary release=
 
-The following steps describe how to install Ivysvn after you have downloaded and unpacked the latest binary release.
+The following steps describe how to install !IvySvn after you have downloaded and unpacked the latest binary release.
 
   # Copy all the third party libraries (Ivy, Trilead and SVNKit) from the `lib` folder to `ANT_HOME/lib/` or to somewhere on your CLASSPATH. If you are upgrading from a previous version of Ivysvn please remove any older versions of these libraries. 
   # Copy `ivysvnresolver.jar` into `ANT_HOME/lib/` or make sure it is on your CLASSPATH.
