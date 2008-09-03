@@ -78,12 +78,12 @@ svn+ssh://svn.acme.com/svn/java/repository/acme/widgets/0.14/widgetlib.jar
 }}}
 
 ==Overwriting previous publications==
-If you set Ivy's "overwrite" property to "false" and try to publish an artifact with a revision that has already been published, IvySvn will notify you of this fact in the Ant output and will not publish the artifact. The Ant build will not fail.
+If you set Ivy's "overwrite" property to "false" and try to publish an artifact with a revision that has already been published, !IvySvn will notify you of this fact in the Ant output and will not publish the artifact. The Ant build will not fail.
 
 If you set "overwrite" to "true" then any existing artifacts will be updated (i.e. a Subversion diff takes place) and any artifacts which are no longer part of the publication will be deleted.
 
 ==Publishing with binaryDiff==
-If you find yourself publishing large (or a large number) of artifacts and/or you publish often with a different revision each time you can reduce the space used in the Subversion repository by enabling IvySvn's "binaryDiff" feature. With "binaryDiff" set to false (the default) each publish operation publishes a new revision of the artifacts without doing any "diff'ing" with existing revisions. If you would like to take advantage of Subversion's binary diff mechanism during publish actions then add the attribute "binaryDiff" to the "svn" element in ivysettings.xml and set it to true:
+If you find yourself publishing large (or a large number) of artifacts and/or you publish often with a different revision each time you can reduce the space used in the Subversion repository by enabling !IvySvn's "binaryDiff" feature. With "binaryDiff" set to false (the default) each publish operation publishes a new revision of the artifacts without doing any "diff'ing" with existing revisions. If you would like to take advantage of Subversion's binary diff mechanism during publish actions then add the attribute "binaryDiff" to the "svn" element in ivysettings.xml and set it to true:
 {{{
     <svn name="ivysvn" userName="testuser" userPassword="testpassword" binaryDiff="true">
 }}} 
@@ -92,7 +92,7 @@ With this setup, the first time you do a publish, say of version 0.14, the follo
 acme/widgets/LATEST/
 acme/widgets/0.14/
 }}}
-In this case IvySvn first publishes the artifacts to LATEST, and then does a Subversion copy from LATEST to 0.14. If you now release version 0.15, IvySvn will perform a Subversion diff between the 0.15 artifacts and the artifacts in LATEST (reducing the size of this commit operation) and will then copy LATEST to 0.15. If you have big binary files which change very little between publish operations this offers a significant space reduction in the Subversion repository.
+In this case !IvySvn first publishes the artifacts to LATEST, and then does a Subversion copy from LATEST to 0.14. If you now release version 0.15, !IvySvn will perform a Subversion diff between the 0.15 artifacts and the artifacts in LATEST (reducing the size of this commit operation) and will then copy LATEST to 0.15. If you have big binary files which change very little between publish operations this offers a significant space reduction in the Subversion repository.
 
 Note: Binary diffs only work if the "ivy" and "artifact" patterns contain {{{[revision]}}} _once only_.
 
