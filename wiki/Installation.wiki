@@ -1,6 +1,6 @@
 #summary How to install IvySvn.
 #labels Phase-Deploy
-= Installing IvySvn from a binary release=
+= Installing !IvySvn from a binary release=
 
 The following steps describe how to install !IvySvn after you have downloaded and unpacked the latest binary release.
 
@@ -9,18 +9,18 @@ The following steps describe how to install !IvySvn after you have downloaded an
   # Create a standard `ivy.xml` file for your project declaring your dependencies, publications etc.
   # Create an `ivysettings.xml` file containing a "svn" resolver element and set various properties on it as described in [Configuration].
 
-If you are upgrading from Ivysvn 1.4 or below you will also need to: 
+If you are upgrading from !IvySvn 1.4 or below you will also need to: 
   # Modify `ivysettings.xml` - many attribute names now contain mixed case (e.g. "keyfile" is now "keyFile") and some attribute names have changed (e.g. "port" is now "sshPort"). For more information refer to [Configuration].
   # If you previously used the attribute "repositoryPath" on the "svn" element in ivysettings.xml, remove it as it is no longer required.
   # Remove previous Ivy jar files (e.g. 'ivy-2.0.0-beta2.jar') from `ANT_HOME/lib/`. All future versions of Ivysvn will name this jar `ivy.jar` so future upgrades can just replace this file instead of having to remove older versions.
 
-If you are upgrading from Ivysvn 1.3 or below you will also need to: 
+If you are upgrading from !IvySvn 1.3 or below you will also need to: 
   # Remove the contents of your local ivy2 cache (this is located in `~/.ivy2` on Linux) - remove the folder and all its contents).
   # Remove `ANT_HOME/lib/ganymed.jar` and previous versions of Ivy jar files from `ANT_HOME/lib/`.
 
 ----
 
-= Installing Ivysvn from a source release =
+= Installing !IvySvn from a source release =
 
   # Copy `ivysettings.xml.example` to `ivysettings.xml` and modify it to suit your setup.
   # Copy `build.properties.example` to `build.properties` and set the values according to your setup.
