@@ -1,11 +1,11 @@
-#summary Configuring Ivysvn.
+#summary Configuring IvySvn.
 #labels Phase-Deploy
 
-Configuring Ivysvn is explained below
+Configuring !IvySvn is explained below
 
 = Configuration =
 
-1. Create an ivysettings.xml file along the lines of the example file shown below. This example includes *all* possible values which can be set on the Ivysvn Resolver for reference purposes only. For real world use refer to the table below and only set the attributes you require and replacing the words which are all uppercase with values that suit your setup. 
+1. Create an ivysettings.xml file along the lines of the example file shown below. This example includes *all* possible values which can be set on the !IvySvn Resolver for reference purposes only. For real world use refer to the table below and only set the attributes you require and replacing the words which are all uppercase with values that suit your setup. 
  
 {{{
 <ivysettings>
