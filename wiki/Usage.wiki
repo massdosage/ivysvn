@@ -1,4 +1,4 @@
-#summary How to use Ivysvn.
+#summary How to use IvySvn.
 #labels Featured
 
 = Usage =
