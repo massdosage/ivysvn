@@ -40,7 +40,7 @@ import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
  * Utility class for performing common operations in subversion.
  */
 public class SvnUtils {
-  
+
   /**
    * Check that the passed node exists and represents a folder.
    * 
@@ -113,15 +113,15 @@ public class SvnUtils {
       authentications.add(svnSSHAuthentication);
     }
 
-    if (userName != null && userPassword != null) { //username and password auth 
+    if (userName != null && userPassword != null) { // username and password auth
       String protocol = url.getProtocol();
-      if (protocol.startsWith("svn+ssh")) { //2. SSH User name and Password authentication.
+      if (protocol.startsWith("svn+ssh")) { // 2. SSH User name and Password authentication.
         Message.info("Adding SSH user/pass authentication");
         SVNSSHAuthentication svnSSHAuthentication = new SVNSSHAuthentication(userName, userPassword, portNumber,
             storageAllowed);
         authentications.add(svnSSHAuthentication);
       } else { // default to SVN password auth, valid for svn://, http(s):// and hopefully others
-        //3. Subversion User name and Password authentication. 
+        // 3. Subversion User name and Password authentication.
         Message.info("Adding SVN user/pass authentication");
         SVNPasswordAuthentication svnPasswordAuthentication = new SVNPasswordAuthentication(userName, userPassword,
             storageAllowed);
