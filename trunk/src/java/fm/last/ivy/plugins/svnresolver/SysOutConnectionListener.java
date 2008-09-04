@@ -21,7 +21,7 @@ public class SysOutConnectionListener implements ISVNConnectionListener {
   public SysOutConnectionListener(String name) {
     this.name = name;
   }
-  
+
   public void connectionClosed(SVNRepository svnrepository) {
     System.out.println("\tConnection closed for " + name + " (" + svnrepository + ")");
   }

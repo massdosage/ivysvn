@@ -186,7 +186,7 @@ public class SvnPublishTransaction {
       if (svnDAO.putFile(commitEditor, operation.getData(), destinationFolderPath, operation.getFileName(), overwrite)) {
         putFileCount++;
       }
-      
+
       Set<String> files = putFiles.get(destinationFolderPath);
       if (files == null) {
         files = new HashSet<String>();
@@ -194,7 +194,7 @@ public class SvnPublishTransaction {
       files.add(operation.getFileName());
       putFiles.put(destinationFolderPath, files); // keep track of each file we have put per folder
     }
-    
+
     // now compare the files we have just put with current contents of folder
     for (Entry<String, Set<String>> entry : putFiles.entrySet()) {
       String folderPath = entry.getKey();
@@ -207,7 +207,7 @@ public class SvnPublishTransaction {
         }
       }
     }
-    
+
     return putFileCount;
   }
 

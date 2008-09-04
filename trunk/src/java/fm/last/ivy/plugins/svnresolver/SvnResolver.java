@@ -151,11 +151,10 @@ public class SvnResolver extends RepositoryResolver {
    * @param repositoryURL SVN URL representing the base of the repository.
    * @throws SVNException If an error occurs parsing the passed repositoryURL as a SVNURL.
    */
-  /*public void setRepositoryURL(String repositoryURL) throws SVNException {
-    if (validParameter(repositoryURL)) {
-      getSvnRepository().setSvnRepositoryURL(repositoryURL.trim());
-    }
-  }*/
+  /*
+   * public void setRepositoryURL(String repositoryURL) throws SVNException { if (validParameter(repositoryURL)) {
+   * getSvnRepository().setSvnRepositoryURL(repositoryURL.trim()); } }
+   */
 
   /**
    * Set the user name to use to connect to the svn repository.

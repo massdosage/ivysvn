@@ -163,7 +163,7 @@ public class SvnDao {
       readRepository.getDir(folderPath, revision, false, entries);
       for (SVNDirEntry entry : entries) {
         contents.add(entry.getRelativePath());
-      }  
+      }
     }
     return contents;
   }
