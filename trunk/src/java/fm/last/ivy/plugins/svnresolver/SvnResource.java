@@ -96,7 +96,6 @@ public class SvnResource implements Resource {
    * 
    * @return Whether the resource is available or not.
    */
-  @Override
   public boolean exists() {
     if (!resolved) {
       resolve();
@@ -108,7 +107,6 @@ public class SvnResource implements Resource {
    * (non-Javadoc)
    * @see org.apache.ivy.repository.Resource#getContentLength()
    */
-  @Override
   public long getContentLength() {
     if (!resolved) {
       resolve();
@@ -120,7 +118,6 @@ public class SvnResource implements Resource {
    * (non-Javadoc)
    * @see org.apache.ivy.repository.Resource#getLastModified()
    */
-  @Override
   public long getLastModified() {
     if (!resolved) {
       resolve();
@@ -132,7 +129,6 @@ public class SvnResource implements Resource {
    * (non-Javadoc)
    * @see org.apache.ivy.repository.Resource#getName()
    */
-  @Override
   public String getName() {
     return source;
   }
@@ -143,7 +139,6 @@ public class SvnResource implements Resource {
    * @return Currently always returns false.
    * @see org.apache.ivy.repository.Resource#isLocal()
    */
-  @Override
   public boolean isLocal() {
     // svn resources are not on the file system so return false
     return false;
@@ -156,7 +151,6 @@ public class SvnResource implements Resource {
    * @throw UnsupportedOperationException This is currently always thrown.
    * @see org.apache.ivy.repository.Resource#openStream()
    */
-  @Override
   public InputStream openStream() throws IOException {
     throw new UnsupportedOperationException("Opening an input stream on a SVN resource not currently supported");
   }

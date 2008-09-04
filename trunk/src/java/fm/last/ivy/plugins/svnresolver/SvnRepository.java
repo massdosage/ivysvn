@@ -278,7 +278,6 @@ public class SvnRepository extends AbstractRepository {
    * @param destination The location where the file should be retrieved to.
    * @throws IOException If an error occurs retrieving the file.
    */
-  @Override
   public void get(String source, File destination) throws IOException {
     fireTransferInitiated(getResource(source), TransferEvent.REQUEST_GET);
     Message.info("Getting file for user " + userName + " from  " + source + " to " + destination.getAbsolutePath());
@@ -323,7 +322,6 @@ public class SvnRepository extends AbstractRepository {
    * @return The resource.
    * @throws IOException Never thrown, just here to satisfy interface.
    */
-  @Override
   public Resource getResource(String source) throws IOException {
     Resource resource = (Resource) resourcesCache.get(source);
     if (resource == null) {
@@ -369,7 +367,6 @@ public class SvnRepository extends AbstractRepository {
    * @return A listing of the parent directory's file content, as a List of String.
    * @throws IOException On listing failure.
    */
-  @Override
   public List<String> list(String source) throws IOException {
     Message.info("Getting list for " + source);
     // TODO: change this to use SVNDAO?
