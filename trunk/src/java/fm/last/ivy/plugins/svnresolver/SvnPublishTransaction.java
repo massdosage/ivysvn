@@ -78,7 +78,7 @@ public class SvnPublishTransaction {
   /**
    * Indicates whether a binary diff should be performed or not.
    */
-  private boolean binaryDiff = false;
+  private boolean binaryDiff = true;
 
   /**
    * The Ivy module revision string.

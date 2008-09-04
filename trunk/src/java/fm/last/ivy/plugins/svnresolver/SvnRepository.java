@@ -103,7 +103,7 @@ public class SvnRepository extends AbstractRepository {
   /**
    * Whether to perform binary diffs or not.
    */
-  private boolean binaryDiff = false;
+  private boolean binaryDiff = true;
 
   /**
    * The default folder name for binary diffs.
