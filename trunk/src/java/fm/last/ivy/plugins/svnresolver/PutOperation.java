@@ -87,7 +87,7 @@ public class PutOperation {
     try {
       determinePaths();
     } catch (SVNException e) {
-      throw new IOException("Error determing paths from " + destination, e);
+      throw new IOException("Error determining paths from " + destination, e);
     }
   }
 
