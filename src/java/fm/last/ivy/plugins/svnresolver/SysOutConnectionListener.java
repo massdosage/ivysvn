@@ -22,12 +22,10 @@ public class SysOutConnectionListener implements ISVNConnectionListener {
     this.name = name;
   }
   
-  @Override
   public void connectionClosed(SVNRepository svnrepository) {
     System.out.println("\tConnection closed for " + name + " (" + svnrepository + ")");
   }
 
-  @Override
   public void connectionOpened(SVNRepository svnrepository) {
     System.out.println("\tConnection opened for " + name + " (" + svnrepository + ")");
   }
