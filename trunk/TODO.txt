@@ -10,6 +10,7 @@
 -Ask ivy and ivymeetssvn projects to update link to google code site.
 
 -When 2.0 - announce on ivy list, javalobby, last.fm blog, IvySvn mailing list etc.
+
   http://java.dzone.com/node/add/announcement
   http://www.theserverside.com/news/post.tss
   
@@ -49,10 +50,8 @@
   Thank you to everyone from the open source community (especially the peeps at Apache and Last.fm) who helped 
   contribute to this release by giving feedback, feature ideas, code patches and helping with testing.
 
-  
 TBD
 ~~~
 
 -Test and bundle with Ivy 2.0 jar when released.
 -Make commit message configurable (maybe via a file template?)
-
