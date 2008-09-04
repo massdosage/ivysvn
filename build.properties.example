@@ -27,7 +27,7 @@
 #set this to have ivy clean its cache (useful if dependencies update behind your back)
 #ivy.clean.cache
 
-#Whether to perform binary diffs (optional, defaults to false)
+#Whether to perform binary diffs (optional, defaults to true)
 #svn.binarydiff=
 
 #Authentication values to use to connect to Subversion repository.
