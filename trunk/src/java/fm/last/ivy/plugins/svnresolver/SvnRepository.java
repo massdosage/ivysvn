@@ -185,8 +185,7 @@ public class SvnRepository extends AbstractRepository {
    * @param mrid The SVN commit message to use for this publish transaction.
    */
   public void beginPublishTransaction(ModuleRevisionId mrid) {
-    // TODO: review all messages and their levels
-    Message.info("Starting transaction " + mrid + "...");
+    Message.debug("Starting transaction " + mrid + "...");
     this.moduleRevisionId = mrid;
   }
 
@@ -197,7 +196,7 @@ public class SvnRepository extends AbstractRepository {
    */
   public void commitPublishTransaction() throws IOException {
     ensurePublishTransaction();
-    Message.info("Committing transaction...");
+    Message.debug("Committing transaction...");
     try {
       publishTransaction.commit();
     } catch (SVNException e) {
@@ -237,7 +236,7 @@ public class SvnRepository extends AbstractRepository {
    */
   public void put(File source, String destination, boolean overwrite) throws IOException {
     fireTransferInitiated(getResource(destination), TransferEvent.REQUEST_PUT);
-    Message.info("Scheduling publish from " + source.getAbsolutePath() + " to " + destination);
+    Message.debug("Scheduling publish from " + source.getAbsolutePath() + " to " + destination);
 
     try {
       SVNURL destinationURL = SVNURL.parseURIEncoded(destination);
@@ -280,7 +279,7 @@ public class SvnRepository extends AbstractRepository {
    */
   public void get(String source, File destination) throws IOException {
     fireTransferInitiated(getResource(source), TransferEvent.REQUEST_GET);
-    Message.info("Getting file for user " + userName + " from  " + source + " to " + destination.getAbsolutePath());
+    Message.debug("Getting file for user " + userName + " from  " + source + " to " + destination.getAbsolutePath());
     BufferedOutputStream output = null;
     try {
       SVNURL url = SVNURL.parseURIEncoded(source);

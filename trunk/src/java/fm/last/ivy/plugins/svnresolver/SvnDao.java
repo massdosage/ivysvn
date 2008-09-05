@@ -139,7 +139,7 @@ public class SvnDao {
           pathToAdd.append("/");
         }
         pathToAdd.append(folders[i]);
-        Message.info("Creating folder " + pathToAdd);
+        Message.debug("Creating folder " + pathToAdd);
         editor.addDir(pathToAdd.toString(), null, -1);
         existingPath = pathToAdd; // added to svn so this is new existing path
         existingFolderPaths.add(pathToAdd.toString());
