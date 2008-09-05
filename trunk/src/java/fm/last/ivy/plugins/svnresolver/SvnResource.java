@@ -86,7 +86,6 @@ public class SvnResource implements Resource {
    * @param cloneName
    * @return A clone of this resource.
    */
-  @Override
   public Resource clone(String cloneName) {
     return new SvnResource(repository, cloneName);
   }
