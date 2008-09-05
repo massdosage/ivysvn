@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,8 +130,8 @@ public class SvnRepository extends AbstractRepository {
     try {
       Manifest manifest = getManifest(this.getClass());
       Attributes attributes = manifest.getMainAttributes();
-      Message.info("IvySvnResolver Build-Version: " + attributes.getValue("Build-Version"));
-      Message.info("IvySvnResolver Build-DateTime: " + attributes.getValue("Build-DateTime"));
+      Message.info("IvySvn Build-Version: " + attributes.getValue("Build-Version"));
+      Message.info("IvySvn Build-DateTime: " + attributes.getValue("Build-DateTime"));
     } catch (IOException e) {
       Message.warn(("Could not load manifest: " + e.getMessage()));
     }
@@ -363,30 +362,19 @@ public class SvnRepository extends AbstractRepository {
    * Return a listing of resource names.
    * 
    * @param parent The parent directory from which to generate the listing.
-   * @return A listing of the parent directory's file content, as a List of String.
+   * @return A listing of the parent directory's file content, as a List of Strings.
    * @throws IOException On listing failure.
    */
   public List<String> list(String source) throws IOException {
     Message.info("Getting list for " + source);
-    // TODO: change this to use SVNDAO?
-    List<String> resources = new ArrayList<String>();
     try {
       SVNURL url = SVNURL.parseURIEncoded(source);
       SVNRepository repository = getRepository(url, true);
-      SVNNodeKind nodeKind = repository.checkPath("", -1);
-      SVNErrorMessage error = SvnUtils.checkNodeIsFolder(nodeKind, url);
-      if (error != null) {
-        throw new IOException(error.getMessage());
-      }
-      List<SVNDirEntry> entries = new ArrayList<SVNDirEntry>();
-      repository.getDir("", -1, false, entries);
-      for (SVNDirEntry entry : entries) {
-        resources.add(entry.getRelativePath());
-      }
+      SvnDao svnDAO = new SvnDao(repository);
+      return svnDAO.list(source, -1);
     } catch (SVNException e) {
       throw new IOException("SVN error listing " + source + ":" + e.getMessage());
     }
-    return resources;
   }
 
   /**
