@@ -107,7 +107,7 @@ public class SvnUtils {
     List<SVNAuthentication> authentications = new ArrayList<SVNAuthentication>();
 
     if (keyFile != null && userName != null) { // 1. ssh key file authentication
-      Message.info("Adding SSH key file authentication");
+      Message.debug("Adding SSH key file authentication");
       SVNSSHAuthentication svnSSHAuthentication = new SVNSSHAuthentication(userName, keyFile, passPhrase, portNumber,
           storageAllowed);
       authentications.add(svnSSHAuthentication);
@@ -116,25 +116,25 @@ public class SvnUtils {
     if (userName != null && userPassword != null) { // username and password auth
       String protocol = url.getProtocol();
       if (protocol.startsWith("svn+ssh")) { // 2. SSH User name and Password authentication.
-        Message.info("Adding SSH user/pass authentication");
+        Message.debug("Adding SSH user/pass authentication");
         SVNSSHAuthentication svnSSHAuthentication = new SVNSSHAuthentication(userName, userPassword, portNumber,
             storageAllowed);
         authentications.add(svnSSHAuthentication);
       } else { // default to SVN password auth, valid for svn://, http(s):// and hopefully others
         // 3. Subversion User name and Password authentication.
-        Message.info("Adding SVN user/pass authentication");
+        Message.debug("Adding SVN user/pass authentication");
         SVNPasswordAuthentication svnPasswordAuthentication = new SVNPasswordAuthentication(userName, userPassword,
             storageAllowed);
         authentications.add(svnPasswordAuthentication);
       }
     } else if (userName != null && userPassword == null) { // 4. svn username auth
-      Message.info("Adding user authentication");
+      Message.debug("Adding user authentication");
       SVNUserNameAuthentication userNameAuthentication = new SVNUserNameAuthentication(userName, storageAllowed);
       authentications.add(userNameAuthentication);
     }
 
     if (certFile != null && userPassword != null) { // 5.ssl authentication
-      Message.info("Adding SSL certificate authentication");
+      Message.debug("Adding SSL certificate authentication");
       SVNSSLAuthentication svnSSLAuthentication = new SVNSSLAuthentication(certFile, userPassword, storageAllowed);
       authentications.add(svnSSLAuthentication);
     }
