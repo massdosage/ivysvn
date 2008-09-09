@@ -200,7 +200,7 @@ public class SvnDao {
    * @return true if the file exists, false otherwise.
    * @throws SVNException If an error occurs determining whether the file exists.
    */
-  private boolean fileExists(String path, long revision) throws SVNException {
+  public boolean fileExists(String path, long revision) throws SVNException {
     SVNNodeKind kind = readRepository.checkPath(path, revision);
     if (kind == SVNNodeKind.FILE) {
       return true;
