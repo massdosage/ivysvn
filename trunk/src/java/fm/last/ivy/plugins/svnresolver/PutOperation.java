@@ -87,7 +87,7 @@ public class PutOperation {
     try {
       determinePaths();
     } catch (SVNException e) {
-      throw new IOException("SVN Error determining paths from " + destination + ":" + e.getMessage());
+      throw (IOException) new IOException().initCause(e);
     }
   }
 
