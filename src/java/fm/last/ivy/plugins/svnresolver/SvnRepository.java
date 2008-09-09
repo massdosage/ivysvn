@@ -199,7 +199,7 @@ public class SvnRepository extends AbstractRepository {
     try {
       publishTransaction.commit();
     } catch (SVNException e) {
-      throw new IOException("SVN Error committing transaction: " + e.getMessage());
+      throw (IOException) new IOException().initCause(e);
     }
   }
 
@@ -221,7 +221,7 @@ public class SvnRepository extends AbstractRepository {
     try {
       publishTransaction.abort();
     } catch (SVNException e) {
-      throw new IOException("SVN Error aborting transaction: " + e.getMessage());
+      throw (IOException) new IOException().initCause(e);
     }
   }
 
@@ -254,7 +254,7 @@ public class SvnRepository extends AbstractRepository {
       // add all info needed to put the file to the transaction
       publishTransaction.addPutOperation(source, destination, overwrite, repositoryPath);
     } catch (SVNException e) {
-      throw new IOException("SVN Error putting " + destination + ": " + e.getMessage());
+      throw (IOException) new IOException().initCause(e);
     }
   }
 
@@ -374,7 +374,7 @@ public class SvnRepository extends AbstractRepository {
       List<String> list = svnDAO.list("", -1); // repository is already set to full path, so list ""
       return list;
     } catch (SVNException e) {
-      throw new IOException("SVN error listing " + source + ":" + e.getMessage());
+      throw (IOException) new IOException().initCause(e);
     }
   }
 
