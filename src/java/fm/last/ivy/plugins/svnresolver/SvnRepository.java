@@ -344,7 +344,7 @@ public class SvnRepository extends AbstractRepository {
       SVNRepository repository = getRepository(url, true);
       SVNNodeKind nodeKind = repository.checkPath("", -1);
       if (nodeKind == SVNNodeKind.NONE) {
-        Message.info("No resource found at " + source + ", returning default resource");
+        Message.debug("No resource found at " + source + ", returning default resource");
         result = new SvnResource();
       } else {
         Message.debug("Resource found at " + source + ", returning resolved resource");
@@ -366,12 +366,13 @@ public class SvnRepository extends AbstractRepository {
    * @throws IOException On listing failure.
    */
   public List<String> list(String source) throws IOException {
-    Message.info("Getting list for " + source);
+    Message.debug("Getting list for " + source);
     try {
       SVNURL url = SVNURL.parseURIEncoded(source);
       SVNRepository repository = getRepository(url, true);
       SvnDao svnDAO = new SvnDao(repository);
-      return svnDAO.list(source, -1);
+      List<String> list = svnDAO.list("", -1); // repository is already set to full path, so list ""
+      return list;
     } catch (SVNException e) {
       throw new IOException("SVN error listing " + source + ":" + e.getMessage());
     }
