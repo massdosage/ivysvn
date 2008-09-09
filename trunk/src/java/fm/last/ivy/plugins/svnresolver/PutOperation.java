@@ -177,6 +177,15 @@ public class PutOperation {
   }
 
   /**
+   * Gets the full path to the file.
+   * 
+   * @return The file path.
+   */
+  public String getFilePath() {
+    return folderPath + "/" + fileName;
+  }
+
+  /**
    * @return the folderPath
    */
   public String getFolderPath() {

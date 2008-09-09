@@ -179,6 +179,10 @@ public class SvnPublishTransaction {
       String destinationFolderPath = operation.getFolderPath(); // assume no binary diff
       boolean overwrite = operation.isOverwrite();
       if (binaryDiff) { // publishing to intermediate binary diff location, override values set above
+        if (!operation.isOverwrite() && svnDAO.folderExists(operation.getFolderPath(), -1, true)) {
+          Message.info("Overwrite set to false, ignoring " + operation.getFilePath());
+          continue;
+        }
         destinationFolderPath = operation.determineBinaryDiffFolderPath(revision, binaryDiffFolderName);
         overwrite = true; // force overwrite for binary diff
       }
