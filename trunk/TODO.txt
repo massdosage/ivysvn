@@ -6,7 +6,7 @@
   binaryDiff set to true by default, update docs to reflect this (config and upgrade instructions, 
   upgrade should mention being able to set svn.binarydiff=false to get existing behaviour back)
   
-  now Java 5 compatible(also comment on issue mentioning that Java 5 now supported and update front page)
+  now Java 5 compatible (also comment on issue mentioning that Java 5 now supported and update front page)
   
   changed some messages to debug level, run ant with -d to see them
 
