@@ -21,11 +21,12 @@
     <svn name="ivysvn" userName="${svn.user.name}" userPassword="${svn.user.password}"
       keyFile="${ssh.keyfile}" sshPort="${ssh.port}" sshPassphrase="${ssh.keyfile.passphrase}"
       certFile="${ssl.certfile}" storageAllowed="${svn.storage.allowed}"
-      binaryDiff="${svn.binarydiff}" binaryDiffFolderName="${svn.binarydiff.folder}">
+      binaryDiff="${svn.binarydiff}" binaryDiffFolderName="${svn.binarydiff.folder}"
+      repositoryRoot="PROTOCOL://HOSTNAME/PATH_TO_YOUR_SVN_REPOSITORY">
       <ivy
-        pattern="PROTOCOL://HOSTNAME/PATH_TO_YOUR_IVY_REPOSITORY/[organisation]/[module]/[revision]/ivy.xml"/>
+        pattern="PATH_TO_YOUR_IVY_REPOSITORY/[organisation]/[module]/[revision]/ivy.xml"/>
       <artifact
-        pattern="PROTOCOL://HOSTNAME/PATH_TO_YOUR_IVY_REPOSITORY/[organisation]/[module]/[revision]/[artifact].[ext]"/>
+        pattern="PATH_TO_YOUR_IVY_REPOSITORY/[organisation]/[module]/[revision]/[artifact].[ext]"/>
     </svn>
   </resolvers>
   

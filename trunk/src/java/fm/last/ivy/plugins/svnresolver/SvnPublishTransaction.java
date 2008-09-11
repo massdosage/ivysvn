@@ -128,13 +128,11 @@ public class SvnPublishTransaction {
    * @param source The file to put.
    * @param destinationPath The full svn path to the file's location in svn.
    * @param overwrite Whether an overwrite should be performed if the file already exists.
-   * @param repositoryPath The SVN base repository path, if null, the base with will be assumed to be the path up to the
-   *          first "/" in any svn paths (often the case).
    * @throws IOException If the file data cannot be read from disk or the file paths cannot be determined.
    */
-  public void addPutOperation(File source, String destinationPath, boolean overwrite, String repositoryPath)
+  public void addPutOperation(File source, String destinationPath, boolean overwrite)
     throws IOException {
-    PutOperation operation = new PutOperation(source, destinationPath, overwrite, repositoryPath);
+    PutOperation operation = new PutOperation(source, destinationPath, overwrite);
     this.putOperations.add(operation);
   }
 
@@ -262,7 +260,10 @@ public class SvnPublishTransaction {
       for (Entry<String, String> entry : foldersToCopy.entrySet()) {
         Message.info("Copying from " + entry.getValue() + " to " + entry.getKey());
         // addDir can't handle creating sub folders so we have to do it
-        svnDAO.createSubFolders(commitEditor, entry.getKey(), rev);
+        String subFolder = svnDAO.createSubFolders(commitEditor, entry.getKey(), rev);
+        if (subFolder != null) { // add dir is relative to last path, so change to subfolder first
+          commitEditor.openDir(subFolder, rev);
+        }
         commitEditor.addDir(entry.getKey(), entry.getValue(), rev);
         commitEditor.closeDir();
       }
