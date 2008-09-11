@@ -1,7 +1,11 @@
 2.0
 ~~~
 
+
+
 -Make a b2 release, changes are:
+
+  repositoryRoot change -> update docs, add known issue for web dav only works with binaryDiff=true (shouldn't be a problem for most)
 
   binaryDiff set to true by default, update docs to reflect this (config and upgrade instructions, 
   upgrade should mention being able to set svn.binarydiff=false to get existing behaviour back)
@@ -13,8 +17,6 @@
   binary diff with overwrite set to true will no longer update files in LATEST if release folder already in svn
 
 -----------------------------------
-
--Remove repositoryPath from code once we have confirmation that it works.
 
 -Final review of all code, javadoc and documentation.
 

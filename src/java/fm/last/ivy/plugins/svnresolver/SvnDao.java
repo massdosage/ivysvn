@@ -93,18 +93,22 @@ public class SvnDao {
   }
 
   /**
-   * Creates any sub folders of the passed folder path.
+   * Creates any sub folders of the passed folder path and returns the sub folder path.
    * 
    * @param editor An editor opened for performing commits.
    * @param folderPath Path to create sub folders of.
    * @param revision Revision to use.
+   * @return The sub folder path or null if there are no subfolders.
    * @throws SVNException If an error occurs creating the sub folders.
    */
-  public void createSubFolders(ISVNEditor editor, String folderPath, long revision) throws SVNException {
+  public String createSubFolders(ISVNEditor editor, String folderPath, long revision) throws SVNException {
     int index = folderPath.lastIndexOf("/");
     if (index > 0) {
-      createFolders(editor, folderPath.substring(0, index), revision);
+      String subFolderPath = folderPath.substring(0, index);
+      createFolders(editor, subFolderPath, revision);
+      return subFolderPath;
     }
+    return null;
   }
 
   /**
@@ -112,11 +116,14 @@ public class SvnDao {
    * don't exist are created.
    * 
    * @param editor An editor opened for performing commits.
-   * @param folderPath The path of the folder to create.
+   * @param folderPath The path of the folder to create, must be relative to the root of the repository.
    * @param revision Revision to use.
    * @throws SVNException If an invalid path is passed or the path could not be created.
    */
   public void createFolders(ISVNEditor editor, String folderPath, long revision) throws SVNException {
+    if (!folderPath.startsWith("/")) { // force all paths to be relative to root of repository
+      folderPath = "/" + folderPath;
+    }
     // run through all directories in path and create whatever is necessary
     String[] folders = folderPath.substring(1).split("/");
     int i = 0;

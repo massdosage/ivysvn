@@ -90,9 +90,9 @@ public class SvnRepository extends AbstractRepository {
   private Map<String, Resource> resourcesCache = new HashMap<String, Resource>();
 
   /**
-   * The (optional) path to the base of the repository.
+   * The path to the root of the repository.
    */
-  private String repositoryPath;
+  private String repositoryRoot;
 
   /**
    * The svn transaction for putting files.
@@ -238,7 +238,7 @@ public class SvnRepository extends AbstractRepository {
     Message.debug("Scheduling publish from " + source.getAbsolutePath() + " to " + destination);
 
     try {
-      SVNURL destinationURL = SVNURL.parseURIEncoded(destination);
+      SVNURL destinationURL = SVNURL.parseURIEncoded(getRepositoryRoot() + destination);
       if (publishTransaction == null) { // haven't initialised transaction on a previous put
         // first create a repository which transaction can use for various file checks
         SVNRepository ancillaryRepository = getRepository(destinationURL, false);
@@ -252,7 +252,7 @@ public class SvnRepository extends AbstractRepository {
         publishTransaction.setCommitRepository(commitRepository);
       }
       // add all info needed to put the file to the transaction
-      publishTransaction.addPutOperation(source, destination, overwrite, repositoryPath);
+      publishTransaction.addPutOperation(source, destination, overwrite);
     } catch (SVNException e) {
       throw (IOException) new IOException().initCause(e);
     }
@@ -278,10 +278,12 @@ public class SvnRepository extends AbstractRepository {
    */
   public void get(String source, File destination) throws IOException {
     fireTransferInitiated(getResource(source), TransferEvent.REQUEST_GET);
-    Message.debug("Getting file for user " + userName + " from  " + source + " to " + destination.getAbsolutePath());
+    String repositorySource = getRepositoryRoot() + source;
+    Message.debug("Getting file for user " + userName + " from  " + repositorySource + " to "
+        + destination.getAbsolutePath());
     BufferedOutputStream output = null;
     try {
-      SVNURL url = SVNURL.parseURIEncoded(source);
+      SVNURL url = SVNURL.parseURIEncoded(repositorySource);
       SVNRepository repository = getRepository(url, true);
       repository.setLocation(url, false);
 
@@ -337,22 +339,23 @@ public class SvnRepository extends AbstractRepository {
    * @return SvnResource filled with the needed informations
    */
   public SvnResource resolveResource(String source) {
-    Message.debug("Resolving resource for " + source);
+    String repositorySource = getRepositoryRoot() + source;
+    Message.debug("Resolving resource for " + repositorySource);
     SvnResource result = null;
     try {
-      SVNURL url = SVNURL.parseURIEncoded(source);
+      SVNURL url = SVNURL.parseURIEncoded(repositorySource);
       SVNRepository repository = getRepository(url, true);
       SVNNodeKind nodeKind = repository.checkPath("", -1);
       if (nodeKind == SVNNodeKind.NONE) {
-        Message.debug("No resource found at " + source + ", returning default resource");
+        Message.debug("No resource found at " + repositorySource + ", returning default resource");
         result = new SvnResource();
       } else {
-        Message.debug("Resource found at " + source + ", returning resolved resource");
+        Message.debug("Resource found at " + repositorySource + ", returning resolved resource");
         SVNDirEntry entry = repository.info("", -1);
-        result = new SvnResource(this, source, true, entry.getDate().getTime(), entry.getSize());
+        result = new SvnResource(this, repositorySource, true, entry.getDate().getTime(), entry.getSize());
       }
     } catch (SVNException e) {
-      Message.error("Error resolving resource " + source + ", " + e.getMessage());
+      Message.error("Error resolving resource " + repositorySource + ", " + e.getMessage());
       result = new SvnResource();
     }
     return result;
@@ -366,9 +369,10 @@ public class SvnRepository extends AbstractRepository {
    * @throws IOException On listing failure.
    */
   public List<String> list(String source) throws IOException {
-    Message.debug("Getting list for " + source);
+    String repositorySource = getRepositoryRoot();
+    Message.debug("Getting list for " + repositorySource);
     try {
-      SVNURL url = SVNURL.parseURIEncoded(source);
+      SVNURL url = SVNURL.parseURIEncoded(repositorySource);
       SVNRepository repository = getRepository(url, true);
       SvnDao svnDAO = new SvnDao(repository);
       List<String> list = svnDAO.list("", -1); // repository is already set to full path, so list ""
@@ -442,18 +446,29 @@ public class SvnRepository extends AbstractRepository {
   }
 
   /**
-   * The Subversion repository URL
+   * Sets the repository root. This MUST be set before any operations are performed on this repository.
    * 
-   * @param svnRepositoryURL
-   * @throws SVNException
+   * @param The repository root.
    */
-  public void setSvnRepositoryURL(String svnRepositoryURL) throws SVNException {
-    SVNURL url = SVNURL.parseURIEncoded(svnRepositoryURL);
-    repositoryPath = url.getPath();
-    // append a slash, makes it compatible with previous code base
-    if (!repositoryPath.endsWith("/")) {
-      repositoryPath += "/";
+  public void setRepositoryRoot(String repositoryRoot) {
+    if (!repositoryRoot.endsWith("/")) {
+      repositoryRoot += "/";
     }
+    this.repositoryRoot = repositoryRoot;
+  }
+
+  /**
+   * Gets the current value for the repository root.
+   * 
+   * @return The repository root.
+   * @throws IllegalStateException If the repository root is null.
+   */
+  private String getRepositoryRoot() {
+    if (repositoryRoot == null) {
+      throw new IllegalStateException(
+          "No repository root defined, you must set the 'repositoryRoot' attribute on 'svn' in your ivy settings");
+    }
+    return repositoryRoot;
   }
 
   /**

@@ -141,20 +141,16 @@ public class SvnResolver extends RepositoryResolver {
     }
   }
 
-  // TODO: need confirmation from users who requested this feature that it works without it
-  // if so, go thru code and remove all references
   /**
-   * Sets the path to the base of the repository. This is optional, if not set then the base of the repository is
-   * assumed to be the path up to the first "/" in paths to artifacts to be published. Set this if the base of the
-   * repository does not match this assumption.
+   * Sets the path to the base of the repository. This must be set for all repositories.
    * 
-   * @param repositoryURL SVN URL representing the base of the repository.
-   * @throws SVNException If an error occurs parsing the passed repositoryURL as a SVNURL.
+   * @param repositoryRoot The full repository root including the protocol.
    */
-  /*
-   * public void setRepositoryURL(String repositoryURL) throws SVNException { if (validParameter(repositoryURL)) {
-   * getSvnRepository().setSvnRepositoryURL(repositoryURL.trim()); } }
-   */
+  public void setRepositoryRoot(String repositoryRoot) {
+    if (validParameter(repositoryRoot)) {
+      getSvnRepository().setRepositoryRoot(repositoryRoot.trim());
+    }
+  }
 
   /**
    * Set the user name to use to connect to the svn repository.
