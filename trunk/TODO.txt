@@ -1,20 +1,7 @@
 2.0
 ~~~
 
-
-
--Make a b2 release, changes are:
-
-  repositoryRoot change -> update docs, add known issue for web dav only works with binaryDiff=true (shouldn't be a problem for most)
-
-  binaryDiff set to true by default, update docs to reflect this (config and upgrade instructions, 
-  upgrade should mention being able to set svn.binarydiff=false to get existing behaviour back)
-  
-  now Java 5 compatible (also comment on issue mentioning that Java 5 now supported and update front page)
-  
-  changed some messages to debug level, run ant with -d to see them
-  
-  binary diff with overwrite set to true will no longer update files in LATEST if release folder already in svn
+2.0 beta 3 release?
 
 -----------------------------------
 
