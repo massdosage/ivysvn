@@ -4,7 +4,7 @@
 
 The following steps describe how to install !IvySvn after you have downloaded and unpacked the latest binary release.
 
-  # Copy all the third party libraries (Ivy, Trilead and SVNKit) from the `lib` folder to `ANT_HOME/lib/` or to somewhere on your CLASSPATH. If you are upgrading from a previous version of Ivysvn please remove any older versions of these libraries. 
+  # Copy all the third party libraries (Ivy, Trilead and SVNKit) from the `lib` folder to `ANT_HOME/lib/` or to somewhere on your CLASSPATH. If you are upgrading from a previous version of IvySvn please remove any older versions of these libraries. 
   # Copy `ivysvnresolver.jar` into `ANT_HOME/lib/` or make sure it is on your CLASSPATH.
   # Create a standard `ivy.xml` file for your project declaring your dependencies, publications etc.
   # Create an `ivysettings.xml` file containing a "svn" resolver element and set various properties on it as described in [Configuration].
