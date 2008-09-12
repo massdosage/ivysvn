@@ -3,10 +3,9 @@
 
 = Usage =
 
-Provided you have followed the [Installation] and [Configuration] steps you should be able to publish and retrieve files to and from your Ivy Subversion repository using the standard Ivy Ant tasks. You will obviously need to set up your own Ivy repository in Subversion and add files and folders containing whatever your projects depend on. For publishing you will also need write access to the repository.
+Provided you have followed the [Installation] and [Configuration] steps you should be able to publish and retrieve files to and from a Subversion repository using the standard Ivy Ant tasks. You will obviously need to set up your own Ivy repository in Subversion and add files and folders containing whatever your projects depend on. For publishing you will also need write access to the repository.
 
-The examples below assume that there is a Subversion repository on the host "svn.acme.com" with the root to the Ivy repository set to "svn/java/repository" 
-and that artifacts are found within this location via the pattern
+The examples below assume that the Subversion server is on the host "svn.acme.com" with the Subversion root set to the path "svn". Artifacts published and retrieved by Ivy are stored on this server under the "svn" root path in the folder "java/repository". The Ivy pattern for artifacts is
 {{{
 [organisation]/[module]/[revision]/[artifact].[ext]
 }}}
@@ -14,20 +13,20 @@ So, for example, the full Subversion path to the artifact "widgetlib.jar" for th
 {{{
 svn+ssh://svn.acme.com/svn/java/repository/acme/widgets/0.13/widgetlib.jar
 }}}
-We also assume that the repository is accessed using Subversion username and password authentication with the user name "testuser" and password "testpassword".
+The examples also assume that the repository is accessed using Subversion username and password authentication with the user name "testuser" and password "testpassword".
 
-You should create an ivysettings.xml file like so:
+= Example ivysettings.xml for svn+ssh =
+After installing IvySvn, setting up your project and creating an `ivy.xml` file you should create an `ivysettings.xml` file similar to the sample example below. This example access the repository via svn+ssh, there are examples below which show other forms of access like file:///, svn:// and http(s)://.
+
 {{{
 <ivysettings>
-  
-  <property name="svn.root" value="svn.acme.com/svn/java/repository"/>
   
   <typedef name="svn" classname="fm.last.ivy.plugins.svnresolver.SvnResolver"/>
   
   <resolvers>
-    <svn name="ivysvn" userName="testuser" userPassword="testpassword">
-      <ivy pattern="svn+ssh://${svn.root}/[organisation]/[module]/[revision]/ivy.xml"/>
-      <artifact pattern="svn+ssh://${svn.root}/[organisation]/[module]/[revision]/[artifact].[ext]"/>
+    <svn name="ivysvn" repositoryRoot="svn+ssh://svn.acme.com/svn" userName="testuser" userPassword="testpassword">
+      <ivy pattern="java/repository/[organisation]/[module]/[revision]/ivy.xml"/>
+      <artifact pattern="java/repository/[organisation]/[module]/[revision]/[artifact].[ext]"/>
     </svn>
   </resolvers>
   
@@ -45,12 +44,12 @@ You should create an ivysettings.xml file like so:
 
 If a project requires the aforementioned "widgetslib.jar" you should set Ivy up to depend on it following the steps below.
 
-First ensure that your ivy.xml file contains an "info" element like so:
+First ensure that your `ivy.xml` file contains an "info" element like so:
 {{{
 <info organisation="acme" module="anothermodule"/>
 }}}
 
-To retrieve the 0.13 release of "widgetlib.jar" you would add the following to the ivy.xml file within the "dependencies" attribute:
+To retrieve the 0.13 release of "widgetlib.jar" you would add the following to `ivy.xml`  within the "dependencies" attribute:
 {{{
 <dependency org="acme" name="widgets" rev="0.13" />
 }}}
@@ -61,12 +60,12 @@ Perfoming an Ivy retrieve at this point should retrieve the "widgetslib.jar" fil
 
 If you are the maintainer of the "widgets" package and you would like to publish the new, 0.14 release you would follow the steps below.
 
-First ensure that your ivy.xml file contains an "info" element like so:
+First ensure that `ivy.xml` contains an "info" element like so:
 {{{
 <info organisation="acme" module="widgets"/>
 }}}
 
-Next make sure that ivy.xml contains the artifact you want to publish within the "publications" element:
+Next make sure that `ivy.xml` references the artifact you want to publish within the "publications" element:
 {{{
 <artifact name="widgetslib" ext="jar"/>
 }}} 
@@ -78,23 +77,25 @@ svn+ssh://svn.acme.com/svn/java/repository/acme/widgets/0.14/widgetlib.jar
 }}}
 
 ==Overwriting previous publications==
-If you set Ivy's "overwrite" property to "false" and try to publish an artifact with a revision that has already been published, !IvySvn will notify you of this fact in the Ant output and will not publish the artifact. The Ant build will not fail.
+
+If you set Ivy's "overwrite" property to "false" and try to publish an artifact with a revision that has already been published !IvySvn will notify you of this fact in the Ant output and will ignore the publish request. The Ant build will not fail but nothing will be published.
 
 If you set "overwrite" to "true" then any existing artifacts will be updated (i.e. a Subversion diff takes place) and any artifacts which are no longer part of the publication will be deleted.
 
 ==Publishing with binaryDiff==
-If you find yourself publishing large (or a large number) of artifacts and/or you publish often with a different revision each time you can reduce the space used in the Subversion repository by enabling !IvySvn's "binaryDiff" feature. With "binaryDiff" set to false (the default) each publish operation publishes a new revision of the artifacts without doing any "diff'ing" with existing revisions. If you would like to take advantage of Subversion's binary diff mechanism during publish actions then add the attribute "binaryDiff" to the "svn" element in ivysettings.xml and set it to true:
+
+If you need to publish large (or a large number) of artifacts and/or you publish often with a different revision each time you can reduce the space used in the Subversion repository with !IvySvn's "binaryDiff" feature. This is set to true by default but can be disabled by adding the attribute "binaryDiff" to the "svn" element and setting it to "false":
 {{{
-    <svn name="ivysvn" userName="testuser" userPassword="testpassword" binaryDiff="true">
+    <svn name="ivysvn" userName="testuser" userPassword="testpassword" binaryDiff="false">
 }}} 
-With this setup, the first time you do a publish, say of version 0.14, the following two folders will be created in Subversion, containing your publish artifacts:
+If binaryDiff is not enabled then each publish operation publishes a new revision of the artifacts without doing any "diff'ing" with existing revisions which means that the Subversion repository grows in size by the size of the published artifacts. However, with binaryDiff enabled, !IvySvn takes advantage of Subversion's binary diff mechanism during publish actions. The first time you do a publish, say of version 0.14, the following two folders will be created in Subversion, containing your publish artifacts:
 {{{
 acme/widgets/LATEST/
 acme/widgets/0.14/
 }}}
 In this case !IvySvn first publishes the artifacts to LATEST, and then does a Subversion copy from LATEST to 0.14. If you now release version 0.15, !IvySvn will perform a Subversion diff between the 0.15 artifacts and the artifacts in LATEST (reducing the size of this commit operation) and will then copy LATEST to 0.15. If you have big binary files which change very little between publish operations this offers a significant space reduction in the Subversion repository.
 
-Note: Binary diffs only work if the "ivy" and "artifact" patterns contain {{{[revision]}}} _once only_.
+Note: Binary diffs require the "ivy" and "artifact" patterns to contain {{{[revision]}}} _once only_.
 
 If you would like to use a folder name other than LATEST, set the attribute "binaryDiffFolderName":
 {{{
