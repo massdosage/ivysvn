@@ -15,8 +15,8 @@ svn+ssh://svn.acme.com/svn/java/repository/acme/widgets/0.13/widgetlib.jar
 }}}
 The examples also assume that the repository is accessed using Subversion username and password authentication with the user name "testuser" and password "testpassword".
 
-= Example ivysettings.xml for svn+ssh =
-After installing IvySvn, setting up your project and creating an `ivy.xml` file you should create an `ivysettings.xml` file similar to the sample example below. This example access the repository via svn+ssh, there are examples below which show other forms of access like file:///, svn:// and http(s)://.
+==Example ivysettings.xml for svn+ssh==
+After installing !IvySvn, setting up your project and creating an `ivy.xml` file you should create an `ivysettings.xml` file similar to the sample example below. This example access the repository via svn+ssh, there are examples below which show other forms of access like file:///, svn:// and http(s)://.
 
 {{{
 <ivysettings>
