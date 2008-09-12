@@ -24,9 +24,9 @@
       certFile="${ssl.certfile}" storageAllowed="${svn.storage.allowed}"
       binaryDiff="${svn.binarydiff}" binaryDiffFolderName="${svn.binarydiff.folder}">
       <ivy
-        pattern="PATH_TO_YOUR_IVY_REPOSITORY/[organisation]/[module]/[revision]/ivy.xml"/>
+        pattern="PATH_TO_ARTIFACT_FOLDER/[organisation]/[module]/[revision]/ivy.xml"/>
       <artifact
-        pattern="PATH_TO_YOUR_IVY_REPOSITORY/[organisation]/[module]/[revision]/[artifact].[ext]"/>
+        pattern="PATH_TO_ARTIFACT_FOLDER/[organisation]/[module]/[revision]/[artifact].[ext]"/>
     </svn>
   </resolvers>
   
