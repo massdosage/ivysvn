@@ -16,7 +16,7 @@ svn+ssh://svn.acme.com/svn/java/repository/acme/widgets/0.13/widgetlib.jar
 The examples also assume that the repository is accessed using Subversion username and password authentication with the user name "testuser" and password "testpassword".
 
 ==Example ivysettings.xml for svn+ssh:// acess==
-After installing !IvySvn, setting up your project and creating an `ivy.xml` file you should create an `ivysettings.xml` file similar to the sample example below. This example access the repository via svn+ssh, there are examples below which show other forms of access like svn:// and http(s)://.
+This example shows how to access the repository via svn+ssh, there are more examples below which show other forms of access like svn:// and http(s)://.
 
 {{{
 <ivysettings>
@@ -44,12 +44,12 @@ After installing !IvySvn, setting up your project and creating an `ivy.xml` file
 
 If a project requires the aforementioned "widgetslib.jar" you should set Ivy up to depend on it following the steps below.
 
-First ensure that your `ivy.xml` file contains an "info" element like so:
+First ensure that `ivy.xml` contains an "info" element like so:
 {{{
 <info organisation="acme" module="anothermodule"/>
 }}}
 
-To retrieve the 0.13 release of "widgetlib.jar" you would add the following to `ivy.xml`  within the "dependencies" attribute:
+To retrieve the 0.13 release of "widgetlib.jar", add the following element to `ivy.xml`  within the "dependencies" element:
 {{{
 <dependency org="acme" name="widgets" rev="0.13" />
 }}}
@@ -58,7 +58,7 @@ Perfoming an Ivy retrieve at this point should retrieve the "widgetslib.jar" fil
 
 ==Publishing artifacts==
 
-If you are the maintainer of the "widgets" package and you would like to publish the new, 0.14 release you would follow the steps below.
+If you are the maintainer of the "widgets" package and you would like to publish the new, 0.14, release you would follow the steps below.
 
 First ensure that `ivy.xml` contains an "info" element like so:
 {{{
@@ -88,16 +88,16 @@ If you need to publish large (or a large number) of artifacts and/or you publish
 {{{
     <svn name="ivysvn" userName="testuser" userPassword="testpassword" binaryDiff="false">
 }}} 
-If binaryDiff is not enabled then each publish operation publishes a new revision of the artifacts without doing any "diff'ing" with existing revisions which means that the Subversion repository grows in size by the size of the published artifacts. However, with binaryDiff enabled, !IvySvn takes advantage of Subversion's binary diff mechanism during publish actions. The first time you do a publish, say of version 0.14, the following two folders will be created in Subversion, containing your publish artifacts:
+If binaryDiff is not enabled then !IvySvn publishes a new revision of the artifacts without doing any "diff'ing" with existing revisions which means that the Subversion repository grows by the size of the published artifacts for each publish operation that occurs. However, with binaryDiff enabled, !IvySvn takes advantage of Subversion's binary diff mechanism during publish operations. The first time you do a publish, say of version 0.14, the following two folders will be created in Subversion, containing your published artifacts:
 {{{
 acme/widgets/LATEST/
 acme/widgets/0.14/
 }}}
 In this case !IvySvn first publishes the artifacts to LATEST, and then does a Subversion copy from LATEST to 0.14. If you now release version 0.15, !IvySvn will perform a Subversion diff between the 0.15 artifacts and the artifacts in LATEST (reducing the size of this commit operation) and will then copy LATEST to 0.15. If you have big binary files which change very little between publish operations this offers a significant space reduction in the Subversion repository.
 
-Note: Binary diffs require the "ivy" and "artifact" patterns to contain {{{[revision]}}} _once only_.
+*Note:* Binary diffs require the "ivy" and "artifact" patterns to contain {{{[revision]}}} _once only_.
 
-If you would like to use a folder name other than LATEST, set the attribute "binaryDiffFolderName":
+If you would like to use a folder name other than LATEST for storing the binaryDiff artifacts you can set the attribute "binaryDiffFolderName":
 {{{
     <svn name="ivysvn" userName="testuser" userPassword="testpassword" binaryDiff="true"
          binaryDiffFolderName="SOMEOTHERFOLDER">
@@ -105,7 +105,7 @@ If you would like to use a folder name other than LATEST, set the attribute "bin
 
 ==Example ivysettings.xml for svn:// access==
 
-This example `ivysetttings.xml` file shows how to set up access to a repository using direct svn access:
+This example `ivysettings.xml` file shows how to set up access to a repository using direct svn access:
 {{{
 <ivysettings>
   
@@ -129,7 +129,9 @@ This example `ivysetttings.xml` file shows how to set up access to a repository 
 
 ==Example ivysettings.xml for http:// (!WebDav) access==
 
-This example `ivysetttings.xml` file shows how to set up access to a repository over http. *Note:* Publishing artifacts over !WebDav _requires_ the use of the binaryDiff feature described above, do not attempt to publish anything with this set to false. This example file assumes you have configured HTTP authentication.
+This example `ivysettings.xml` file shows how to set up access to a repository over http and assumes you have setup http authentication.
+
+*Note:* Publishing artifacts over !WebDav _requires_ the binaryDiff feature described above to be enabled, do not attempt to publish anything with binaryDiff set to false. 
 {{{
 <ivysettings>
   
