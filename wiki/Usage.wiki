@@ -138,7 +138,7 @@ This example `ivysettings.xml` file shows how to set up access to a repository o
   <typedef name="svn" classname="fm.last.ivy.plugins.svnresolver.SvnResolver"/>
   
   <resolvers>
-    <svn name="ivysvn" repositoryRoot="http://svn.acme.com/svn" userName="testuser" userPassword="testpassword">
+    <svn name="ivysvn" repositoryRoot="http://svn.acme.com/svn" userName="testuser" userPassword="testpassword" binaryDiff="true">
       <ivy pattern="java/repository/[organisation]/[module]/[revision]/ivy.xml"/>
       <artifact pattern="java/repository/[organisation]/[module]/[revision]/[artifact].[ext]"/>
     </svn>
