@@ -5,7 +5,7 @@ Configuring !IvySvn is explained below
 
 = Configuration =
 
-1. Create an ivysettings.xml file along the lines of the example file shown below. This example includes *all* possible values which can be set on the !IvySvn Resolver for reference purposes only. For real world use refer to the table below and only set the attributes you require and replacing the words which are all uppercase with values that suit your setup. 
+1. Create an `ivysettings.xml` file along the lines of the example file shown below. This example includes *all* possible values which can be set on the !IvySvn Resolver for reference purposes only. For real world use refer to the table below and only set the attributes you require and replacing the words which are all uppercase with values that suit your setup. 
  
 {{{
 <ivysettings>
@@ -16,6 +16,7 @@ Configuring !IvySvn is explained below
     <svn name="ivysvn" 
          userName="${svn.user.name}" 
          userPassword="${svn.user.password}" 
+         repositoryRoot="PROTOCOL://HOSTNAME/PATH_TO_YOUR_SVN_REPOSITORY"
          keyFile="${ssh.keyfile}" 
          sshPort="${ssh.port}" 
          sshPassphrase="${ssh.keyfile.passphrase}" 
@@ -23,8 +24,8 @@ Configuring !IvySvn is explained below
          storageAllowed="${svn.storage.allowed}"
          binaryDiff="${svn.binarydiff}"
          binaryDiffFolderName="${svn.binarydiff.folder}">
-      <ivy pattern="PROTOCOL://HOSTNAME/PATH_TO_YOUR_IVY_REPOSITORY/[organisation]/[module]/[revision]/ivy.xml"/>
-      <artifact pattern="PROTOCOL://HOSTNAME/PATH_TO_YOUR_IVY_REPOSITORY/[organisation]/[module]/[revision]/[artifact].[ext]"/>
+      <ivy pattern="PATH_TO_ARTIFACT_FOLDER/[organisation]/[module]/[revision]/ivy.xml"/>
+      <artifact pattern="PATH_TO_ARTIFACT_FOLDER/[organisation]/[module]/[revision]/[artifact].[ext]"/>
     </svn>
   </resolvers>
 
@@ -35,7 +36,7 @@ Configuring !IvySvn is explained below
 </ivysettings>
 }}}
 
-For more information on the values in ivysettings.xml refer to the [http://ant.apache.org/ivy/history/trunk/configuration.html Ivy documentation]. Make sure that this file is included in your Ant build file before you call any Ivy ant targets like ivy:retrieve, ivy:publish etc. You include it with a line like so:
+For more information on the values in `ivysettings.xml` refer to the [http://ant.apache.org/ivy/history/trunk/configuration.html Ivy documentation]. Make sure that this file is included in your Ant build file before you call any Ivy ant targets like ivy:retrieve, ivy:publish etc. You include it with a line like so:
 {{{
 <ivy:settings file="ivysettings.xml" />
 }}}
@@ -46,12 +47,13 @@ For more information on the values in ivysettings.xml refer to the [http://ant.a
 || name        || Name of the resolver || Always ||
 || userName || Subversion user name || Always ||
 || userPassword || Subversion password || Only for svn+ssh:// and http(s):// connections that require username and password authentication ||
+|| repositoryRoot || SVN repository root location (including protocol, host and subversion root path) || Always ||
 || keyFile || Path to SSH key file || Only for svn+ssh:// connections that require username and keyfile authentication ||
 || sshPassphrase || The SSH key file passphrase (if any) || Only for svn+ssh:// connections that require username and keyfile authentication with a keyfile requiring a passphrase, defaults to "" ||
 || sshPort || The SSH port || No, defaults to 22, only used if protocol is svn+ssh ||
 || certFile || Path to client side certificate file || Only for https:// connections that require client side certificates for authentication ||
 || storageAllowed || Whether to store credentials in global authentication cache or not || No, defaults to "false" ||
-|| binaryDiff || Whether to publish to an intermediate folder to take advantage of Subversion's binary diff mechanism || No, defaults to "false" ||
+|| binaryDiff || Whether to publish to an intermediate folder to take advantage of Subversion's binary diff mechanism || No, defaults to "true". For !WebDav access this must be set to true. ||
 || binaryDiffFolderName || Name of the intermediate folder to publish to if binaryDiff is set to "true" || No, defaults to "LATEST" ||
 
 So an example ivysettings.xml for a Subversion repository accessed over SSH on the default SSH port using SSH username and password authentication would be:
@@ -61,9 +63,9 @@ So an example ivysettings.xml for a Subversion repository accessed over SSH on t
   <typedef name="svn" classname="fm.last.ivy.plugins.svnresolver.SvnResolver"/>
 
   <resolvers>
-    <svn name="ivysvn" userName="USER" userPassword="PASSWORD">
-      <ivy pattern="svn+ssh://example.com/svn/someproject/[organisation]/[module]/[revision]/ivy.xml"/>
-      <artifact pattern="svn+ssh://example.com/svn/someproject/[organisation]/[module]/[revision]/[artifact].[ext]"/>
+    <svn name="ivysvn" repositoryRoot="svn+ssh://example.com/svn" userName="USER" userPassword="PASSWORD">
+      <ivy pattern="ivyrep/[organisation]/[module]/[revision]/ivy.xml"/>
+      <artifact pattern="ivyrep/[organisation]/[module]/[revision]/[artifact].[ext]"/>
     </svn>
   </resolvers>
 
