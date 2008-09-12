@@ -229,7 +229,7 @@ public class SvnRepository extends AbstractRepository {
    * Handles a request to add/update a file to/in the repository.
    * 
    * @param source The source file.
-   * @param destination The location of the file in the repository.
+   * @param destination The location of the file in the repository, relative to the repository root.
    * @param overwrite Whether to overwite the file if it already exists.
    * @throws IOException If an error occurs putting a file (invalid path, invalid login credentials etc.)
    */
@@ -272,7 +272,7 @@ public class SvnRepository extends AbstractRepository {
   /**
    * Handles a request to retrieve a file from the repository.
    * 
-   * @param source The location in the repository of the file to retrieve.
+   * @param source The location in the repository of the file to retrieve, relative to the repository root.
    * @param destination The location where the file should be retrieved to.
    * @throws IOException If an error occurs retrieving the file.
    */
@@ -316,17 +316,18 @@ public class SvnRepository extends AbstractRepository {
   }
 
   /**
-   * Gets a SvnResource for the passed svn string.
+   * Gets a SvnResource.
    * 
-   * @param source Subversion string identifying the resource.
+   * @param source Path to the resource in Subversion, relative to the repository root.
    * @return The resource.
    * @throws IOException Never thrown, just here to satisfy interface.
    */
   public Resource getResource(String source) throws IOException {
-    Resource resource = (Resource) resourcesCache.get(source);
+    String repositorySource = getRepositoryRoot() + source;
+    Resource resource = (Resource) resourcesCache.get(repositorySource);
     if (resource == null) {
-      resource = new SvnResource(this, source);
-      resourcesCache.put(source, resource);
+      resource = new SvnResource(this, repositorySource);
+      resourcesCache.put(repositorySource, resource);
     }
     return resource;
   }
@@ -335,11 +336,10 @@ public class SvnRepository extends AbstractRepository {
    * Fetch the needed file information for a given file (size, last modification time) and report it back in a
    * SvnResource.
    * 
-   * @param source Subversion string identifying the resource.
+   * @param repositorySource Full path to resource in subversion (including host, protocol etc.)
    * @return SvnResource filled with the needed informations
    */
-  public SvnResource resolveResource(String source) {
-    String repositorySource = getRepositoryRoot() + source;
+  public SvnResource resolveResource(String repositorySource) {
     Message.debug("Resolving resource for " + repositorySource);
     SvnResource result = null;
     try {
@@ -362,9 +362,10 @@ public class SvnRepository extends AbstractRepository {
   }
 
   /**
-   * Return a listing of resource names.
+   * Return a listing of resource located at a certain location.
    * 
-   * @param parent The parent directory from which to generate the listing.
+   * @param source The path to the folder in subversion from which to generate the listing, relative to the repository
+   *          root.
    * @return A listing of the parent directory's file content, as a List of Strings.
    * @throws IOException On listing failure.
    */
@@ -375,7 +376,7 @@ public class SvnRepository extends AbstractRepository {
       SVNURL url = SVNURL.parseURIEncoded(repositorySource);
       SVNRepository repository = getRepository(url, true);
       SvnDao svnDAO = new SvnDao(repository);
-      List<String> list = svnDAO.list("", -1); // repository is already set to full path, so list ""
+      List<String> list = svnDAO.list(source, -1);
       return list;
     } catch (SVNException e) {
       throw (IOException) new IOException().initCause(e);
