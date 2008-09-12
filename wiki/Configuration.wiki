@@ -47,7 +47,7 @@ For more information on the values in `ivysettings.xml` refer to the [http://ant
 || name        || Name of the resolver. || Always. ||
 || userName || Subversion user name. || Always. ||
 || userPassword || Subversion password. || Only for password authentication. ||
-|| repositoryRoot || SVN repository root location (including protocol, host and Subversion root path) || Always. ||
+|| repositoryRoot || SVN repository root location (including protocol, host and Subversion root path). || Always. ||
 || keyFile || Path to SSH key file. || Only for svn+ssh:// connections that require username and keyfile authentication. ||
 || sshPassphrase || The SSH key file passphrase (if any). || Only for svn+ssh:// connections that require username and keyfile authentication with a keyfile requiring a passphrase, defaults to "". ||
 || sshPort || The SSH port. || Only for svn+ssh:// connections where the SSH port is not the default of 22. ||
