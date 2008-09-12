@@ -10,8 +10,9 @@ The following steps describe how to install !IvySvn after you have downloaded an
   # Create an `ivysettings.xml` file containing a "svn" resolver element and set various properties on it as described in [Configuration].
 
 If you are upgrading from !IvySvn 1.4 or below you will also need to: 
-  # Modify `ivysettings.xml` - many attribute names now contain mixed case (e.g. "keyfile" is now "keyFile") and some attribute names have changed (e.g. "port" is now "sshPort"). For more information refer to [Configuration].
-  # If you previously used the attribute "repositoryPath" on the "svn" element in ivysettings.xml, remove it as it is no longer required.
+  # Modify `ivysettings.xml` - You must now specify a "repositoryRoot" attribute pointing to the root of your repository (e.g. repositoryRoot="svn+ssh://host.foo.com/svn") and then modify your ivy and artifact patterns to contain paths relative to this root. Also, 
+many attribute names now contain mixed case (e.g. "keyfile" is now "keyFile") and some attribute names have changed (e.g. "port" is now "sshPort"). For more information refer to [Configuration].
+  # If you previously used the attribute "repositoryURL" on the "svn" element in ivysettings.xml, remove it as it is no longer required and has been superceded by the new mandatory parameter "repositoryRoot" described above.
   # Remove previous Ivy jar files (e.g. 'ivy-2.0.0-beta2.jar') from `ANT_HOME/lib/`. All future versions of !IvySvn will name this jar `ivy.jar` so future upgrades can just replace this file instead of having to remove older versions.
 
 If you are upgrading from !IvySvn 1.3 or below you will also need to: 
