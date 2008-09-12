@@ -15,8 +15,8 @@ svn+ssh://svn.acme.com/svn/java/repository/acme/widgets/0.13/widgetlib.jar
 }}}
 The examples also assume that the repository is accessed using Subversion username and password authentication with the user name "testuser" and password "testpassword".
 
-==Example ivysettings.xml for svn+ssh==
-After installing !IvySvn, setting up your project and creating an `ivy.xml` file you should create an `ivysettings.xml` file similar to the sample example below. This example access the repository via svn+ssh, there are examples below which show other forms of access like file:///, svn:// and http(s)://.
+==Example ivysettings.xml for svn+ssh:// acess==
+After installing !IvySvn, setting up your project and creating an `ivy.xml` file you should create an `ivysettings.xml` file similar to the sample example below. This example access the repository via svn+ssh, there are examples below which show other forms of access like svn:// and http(s)://.
 
 {{{
 <ivysettings>
@@ -102,3 +102,51 @@ If you would like to use a folder name other than LATEST, set the attribute "bin
     <svn name="ivysvn" userName="testuser" userPassword="testpassword" binaryDiff="true"
          binaryDiffFolderName="SOMEOTHERFOLDER">
 }}} 
+
+==Example ivysettings.xml for svn:// access==
+
+This example `ivysetttings.xml` file shows how to set up access to a repository using direct svn access:
+{{{
+<ivysettings>
+  
+  <typedef name="svn" classname="fm.last.ivy.plugins.svnresolver.SvnResolver"/>
+  
+  <resolvers>
+    <svn name="ivysvn" repositoryRoot="svn://svn.acme.com/svn" userName="testuser" userPassword="testpassword">
+      <ivy pattern="java/repository/[organisation]/[module]/[revision]/ivy.xml"/>
+      <artifact pattern="java/repository/[organisation]/[module]/[revision]/[artifact].[ext]"/>
+    </svn>
+  </resolvers>
+  
+  <settings defaultResolver="ivysvn"/>
+  
+  <modules>
+    <module organisation="acme" name="ivysvnresolver" resolver="ivysvn"/>
+  </modules>
+  
+</ivysettings>
+}}}
+
+==Example ivysettings.xml for http:// (!WebDav) access==
+
+This example `ivysetttings.xml` file shows how to set up access to a repository over http. *Note:* Publishing artifacts over !WebDav _requires_ the use of the binaryDiff feature described above, do not attempt to publish anything with this set to false. This example file assumes you have configured HTTP authentication.
+{{{
+<ivysettings>
+  
+  <typedef name="svn" classname="fm.last.ivy.plugins.svnresolver.SvnResolver"/>
+  
+  <resolvers>
+    <svn name="ivysvn" repositoryRoot="http://svn.acme.com/svn" userName="testuser" userPassword="testpassword">
+      <ivy pattern="java/repository/[organisation]/[module]/[revision]/ivy.xml"/>
+      <artifact pattern="java/repository/[organisation]/[module]/[revision]/[artifact].[ext]"/>
+    </svn>
+  </resolvers>
+  
+  <settings defaultResolver="ivysvn"/>
+  
+  <modules>
+    <module organisation="acme" name="ivysvnresolver" resolver="ivysvn"/>
+  </modules>
+  
+</ivysettings>
+}}}
