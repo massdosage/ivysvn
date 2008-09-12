@@ -5,7 +5,7 @@ Configuring !IvySvn is explained below
 
 = Configuration =
 
-1. Create an `ivysettings.xml` file along the lines of the example file shown below. This example includes *all* possible values which can be set on the !IvySvn Resolver for reference purposes only. For real world use refer to the table below and only set the attributes you require and replacing the words which are all uppercase with values that suit your setup. 
+1. Create an `ivysettings.xml` file along the lines of the example file shown below. This example includes *all* possible values which can be set on the !IvySvn Resolver for reference purposes only. For real world use refer to the table below and only set the attributes you require, replacing the values which are all uppercase with values that suit your setup. 
  
 {{{
 <ivysettings>
@@ -41,20 +41,20 @@ For more information on the values in `ivysettings.xml` refer to the [http://ant
 <ivy:settings file="ivysettings.xml" />
 }}}
 
-2. Remove, add and set attributes of the "svn" element to suit your environment as per the table below (we recommend setting them via properties in your ant build file) and the above examples are coded accordingly.
+2. Remove, add and set attributes of the "svn" element to suit your environment as per the table below (we recommend setting them via properties in your Ant build file) as shown in the example above.
 
 || *Attribute* || *Description* || *Required* ||
-|| name        || Name of the resolver || Always ||
-|| userName || Subversion user name || Always ||
-|| userPassword || Subversion password || Only for svn+ssh:// and http(s):// connections that require username and password authentication ||
-|| repositoryRoot || SVN repository root location (including protocol, host and subversion root path) || Always ||
-|| keyFile || Path to SSH key file || Only for svn+ssh:// connections that require username and keyfile authentication ||
-|| sshPassphrase || The SSH key file passphrase (if any) || Only for svn+ssh:// connections that require username and keyfile authentication with a keyfile requiring a passphrase, defaults to "" ||
-|| sshPort || The SSH port || No, defaults to 22, only used if protocol is svn+ssh ||
-|| certFile || Path to client side certificate file || Only for https:// connections that require client side certificates for authentication ||
-|| storageAllowed || Whether to store credentials in global authentication cache or not || No, defaults to "false" ||
-|| binaryDiff || Whether to publish to an intermediate folder to take advantage of Subversion's binary diff mechanism || No, defaults to "true". For !WebDav access this must be set to true. ||
-|| binaryDiffFolderName || Name of the intermediate folder to publish to if binaryDiff is set to "true" || No, defaults to "LATEST" ||
+|| name        || Name of the resolver. || Always. ||
+|| userName || Subversion user name. || Always. ||
+|| userPassword || Subversion password. || Only for password authentication. ||
+|| repositoryRoot || SVN repository root location (including protocol, host and Subversion root path) || Always. ||
+|| keyFile || Path to SSH key file. || Only for svn+ssh:// connections that require username and keyfile authentication. ||
+|| sshPassphrase || The SSH key file passphrase (if any). || Only for svn+ssh:// connections that require username and keyfile authentication with a keyfile requiring a passphrase, defaults to "". ||
+|| sshPort || The SSH port. || Only for svn+ssh:// connections where the SSH port is not the default of 22. ||
+|| certFile || Path to client side certificate file. || Only for https:// connections that require client side certificates for authentication. ||
+|| storageAllowed || Whether to store credentials in the global authentication cache or not. || No, defaults to "false". ||
+|| binaryDiff || Whether to publish to an intermediate folder to take advantage of Subversion's binary diff mechanism. || No, defaults to "true". For !WebDav access this _must_ be set to true. ||
+|| binaryDiffFolderName || Name of the intermediate folder to publish to if binaryDiff is set to "true". || No, defaults to "LATEST". ||
 
 So an example ivysettings.xml for a Subversion repository accessed over SSH on the default SSH port using SSH username and password authentication would be:
 {{{
