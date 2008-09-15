@@ -278,7 +278,10 @@ public class SvnRepository extends AbstractRepository {
    */
   public void get(String source, File destination) throws IOException {
     fireTransferInitiated(getResource(source), TransferEvent.REQUEST_GET);
-    String repositorySource = getRepositoryRoot() + source;
+    String repositorySource = source;
+    if (!source.startsWith(repositoryRoot)) {
+      repositorySource = getRepositoryRoot() + source;
+    }
     Message.debug("Getting file for user " + userName + " from  " + repositorySource + " to "
         + destination.getAbsolutePath());
     BufferedOutputStream output = null;

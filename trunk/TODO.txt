@@ -2,7 +2,8 @@
 ~~~
 
 2.0 beta 3 release?
-
+ - fixed an issue where repositoryRoot is doubled during retrieve operations
+ 
 -----------------------------------
 
 -Final review of all code, javadoc and documentation.
