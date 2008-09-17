@@ -131,7 +131,7 @@ This example `ivysettings.xml` file shows how to set up access to a repository u
 
 This example `ivysettings.xml` file shows how to set up access to a repository over http and assumes you have setup http authentication.
 
-*Note:* Publishing artifacts over !WebDav _requires_ the binaryDiff feature described above to be enabled, do not attempt to publish anything with binaryDiff set to false. 
+*Note:* There are some KnownIssues related to publishing over !WebDav. 
 {{{
 <ivysettings>
   
