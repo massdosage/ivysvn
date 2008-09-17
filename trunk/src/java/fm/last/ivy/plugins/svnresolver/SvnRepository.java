@@ -226,17 +226,27 @@ public class SvnRepository extends AbstractRepository {
   }
 
   /**
+   * Ensures that a transaction has been created.
+   * 
+   * @throws IllegalArgumentException If a transaction has not been created.
+   */
+  private void ensurePublishTransaction() {
+    if (publishTransaction == null) {
+      throw new IllegalStateException("Transaction not initialised");
+    }
+  }
+
+  /**
    * Handles a request to add/update a file to/in the repository.
    * 
    * @param source The source file.
-   * @param destination The location of the file in the repository, relative to the repository root.
+   * @param destination The location of the file in the repository.
    * @param overwrite Whether to overwite the file if it already exists.
    * @throws IOException If an error occurs putting a file (invalid path, invalid login credentials etc.)
    */
   public void put(File source, String destination, boolean overwrite) throws IOException {
     fireTransferInitiated(getResource(destination), TransferEvent.REQUEST_PUT);
-    Message.debug("Scheduling publish from " + source.getAbsolutePath() + " to " + destination);
-
+    Message.debug("Scheduling publish from " + source.getAbsolutePath() + " to " + getRepositoryRoot() + destination);
     try {
       SVNURL destinationURL = SVNURL.parseURIEncoded(getRepositoryRoot() + destination);
       if (publishTransaction == null) { // haven't initialised transaction on a previous put
@@ -259,20 +269,9 @@ public class SvnRepository extends AbstractRepository {
   }
 
   /**
-   * Ensures that a transaction has been created.
-   * 
-   * @throws IllegalArgumentException If a transaction has not been created.
-   */
-  private void ensurePublishTransaction() {
-    if (publishTransaction == null) {
-      throw new IllegalStateException("Transaction not initialised");
-    }
-  }
-
-  /**
    * Handles a request to retrieve a file from the repository.
    * 
-   * @param source The location in the repository of the file to retrieve, relative to the repository root.
+   * @param source Path to the resource to retrieve, including the repository root.
    * @param destination The location where the file should be retrieved to.
    * @throws IOException If an error occurs retrieving the file.
    */
@@ -374,7 +373,7 @@ public class SvnRepository extends AbstractRepository {
    */
   public List<String> list(String source) throws IOException {
     String repositorySource = getRepositoryRoot();
-    Message.debug("Getting list for " + repositorySource);
+    Message.debug("Getting list for " + repositorySource + source);
     try {
       SVNURL url = SVNURL.parseURIEncoded(repositorySource);
       SVNRepository repository = getRepository(url, true);

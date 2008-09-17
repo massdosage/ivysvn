@@ -1,8 +1,6 @@
 2.0
 ~~~
-
-2.0 beta 3 release?
- - fixed an issue where repositoryRoot is doubled during retrieve operations
+2.0 beta 4 release?
  
 -----------------------------------
 
