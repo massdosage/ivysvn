@@ -44,7 +44,6 @@ Installing from source:
 into build/dist and then copy this, ivysettings.xml, ivy-common-targets.xml and the required 3rd party libraries to your 
 ANT_HOME/lib folder.
 
-
 If you are upgrading from a previous version please remove any older versions of the files copied across 
 in the above step from ANT_HOME/lib.
 
