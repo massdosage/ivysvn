@@ -22,7 +22,8 @@
       userName="${svn.user.name}" userPassword="${svn.user.password}"
       keyFile="${ssh.keyfile}" sshPort="${ssh.port}" sshPassphrase="${ssh.keyfile.passphrase}"
       certFile="${ssl.certfile}" storageAllowed="${svn.storage.allowed}"
-      binaryDiff="${svn.binarydiff}" binaryDiffFolderName="${svn.binarydiff.folder}">
+      binaryDiff="${svn.binarydiff}" binaryDiffFolderName="${svn.binarydiff.folder}"
+      retrieveRevision="${svn.retrieve.revision}">
       <ivy
         pattern="PATH_TO_ARTIFACT_FOLDER/[organisation]/[module]/[revision]/ivy.xml"/>
       <artifact

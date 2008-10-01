@@ -196,4 +196,17 @@ public class SvnResolver extends RepositoryResolver {
       getSvnRepository().setBinaryDiffFolderName(folderName.trim());
     }
   }
+
+  /**
+   * Set the SVN revision to use for retrieve operations.
+   * 
+   * @param retrieveRevision The SVN revision to use for retrieve operations.
+   */
+  public void setRetrieveRevision(String retrieveRevision) {
+    if (validParameter(retrieveRevision)) {
+      long svnRetrieveRevision = Long.parseLong(retrieveRevision);
+      getSvnRepository().setSvnRetrieveRevision(svnRetrieveRevision);
+    }
+  }
+
 }
