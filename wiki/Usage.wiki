@@ -76,13 +76,13 @@ Your build process should build "widgetslib.jar" and use the Ant Ivy publish tar
 svn+ssh://svn.acme.com/svn/java/repository/acme/widgets/0.14/widgetlib.jar
 }}}
 
-==Overwriting previous publications==
+===Overwriting previous publications===
 
 If you set Ivy's "overwrite" property to "false" and try to publish an artifact with a revision that has already been published !IvySvn will notify you of this fact in the Ant output and will ignore the publish request. The Ant build will not fail but nothing will be published.
 
 If you set "overwrite" to "true" then any existing artifacts will be updated (i.e. a Subversion diff takes place) and any artifacts which are no longer part of the publication will be deleted.
 
-==Publishing with binaryDiff==
+===Publishing with binaryDiff===
 
 If you need to publish large (or a large number) of artifacts and/or you publish often with a different revision each time you can reduce the space used in the Subversion repository with !IvySvn's "binaryDiff" feature. This is set to true by default but can be disabled by adding the attribute "binaryDiff" to the "svn" element and setting it to "false":
 {{{
