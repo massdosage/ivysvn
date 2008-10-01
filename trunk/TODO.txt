@@ -12,8 +12,6 @@ Changes:
 
 -Final review of all code, javadoc and documentation.
 
--Any where else to use http://groups.google.com/group/ivysvn ?
-
 -Ask ivy and ivymeetssvn projects to update link to google code site.
 
 -When 2.0 - announce on ivy list, javalobby, last.fm blog, IvySvn mailing list etc.
