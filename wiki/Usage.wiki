@@ -56,6 +56,14 @@ To retrieve the 0.13 release of "widgetlib.jar", add the following element to `i
 
 Perfoming an Ivy retrieve at this point should retrieve the "widgetslib.jar" file from the specified location in Subversion.
 
+===Retrieving artifacts using a specific Subversion revision===
+
+By default, retrieve operations as explained above retrieve artifacts using the latest ("HEAD") revision from Subversion. To specify a different revision to use for retrieve operations, add a "retrieveRevision" attribute to the "svn" element. For example, to retrieve artifacts with the Subversion revision 3389 you would add the following:
+{{{
+retrieveRevision="3389"
+}}}
+*Note:* If you have previously retrieved the artifact you *must* remove it from the local Ivy cache before calling retrieve, otherwise Ivy will use the cached version (which might have a different revision) instead of retrieving the revision requested from Subversion.
+
 ==Publishing artifacts==
 
 If you are the maintainer of the "widgets" package and you would like to publish the new, 0.14, release you would follow the steps below.
