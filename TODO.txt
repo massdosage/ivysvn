@@ -1,6 +1,11 @@
 2.0
 ~~~
-2.0 beta 4 release?
+2.0 beta 4 release
+
+Changes:
+- "ivy-init" target sets a property to prevent itself being called more than once.
+- upgraded to Ivy 2.0.0 RC1
+ 
  
 -----------------------------------
 
@@ -51,8 +56,45 @@
   Thank you to everyone from the open source community (especially the peeps at Apache and Last.fm) who helped 
   contribute to this release by giving feedback, feature ideas, code patches and helping with testing.
 
-TBD
-~~~
+
+Future:
+~~~~~~~
 
 -Test and bundle with Ivy 2.0 jar when released.
 -Make commit message configurable (maybe via a file template?)
+
+-Add unit tests!!!
+ This could be tricky to test all possible setups but we could at least start with svn:// and file:/// url's. svn+ssh:// 
+ and http:// will require more setup and infrastructure to be present to run tests.
+ Can go for two approaches:
+ 
+ 1. Call ant programmatically from the tests on a variety of ivy.xml files and then check the side effects in svn using svnkit calls.
+    see also http://www.ibm.com/developerworks/websphere/library/techarticles/0502_gawor/0502_gawor.html
+    Might be tricky as ivy is not a core ant task, not sure how to set up optional tasks. 
+ 
+ 2. Call Ivy more directly using code like such (lifted from a discussion on ivy users mailing list):
+ 
+        Ivy ivy = Ivy.newInstance();
+        ivy.configureDefault();
+
+        File ivyfile = File.createTempFile("ivy", ".xml");
+        ivyfile.deleteOnExit();
+        String[] dep = new String[]{"commons-lang", "commons-lang", "1.0"};
+        DefaultModuleDescriptor md = DefaultModuleDescriptor
+                .newDefaultInstance(ModuleRevisionId.newInstance(dep[0],
+                        dep[1] + "-caller", "working"));
+        DefaultDependencyDescriptor dd = new DefaultDependencyDescriptor(md,
+                ModuleRevisionId.newInstance(dep[0], dep[1], dep[2]), false, false, true);
+        md.addDependency(dd);
+        XmlModuleDescriptorWriter.write(md, ivyfile);
+
+        String[] confs = new String[]{"default"};
+        ResolveOptions resolveOptions = new ResolveOptions().setConfs(confs);
+        ResolveReport report = ivy.resolve(ivyfile.toURL(), resolveOptions);
+        
+ (also have a look at the other unit tests packaged with Ivy itself)
+
+
+
+
+

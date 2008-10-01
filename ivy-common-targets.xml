@@ -32,9 +32,11 @@ limitations under the License.
     <ivy:cleancache/>
   </target>
   
-  <target name="ivy-init" description="Initialise ivy by loading ivysettings.xml">
+  <target name="ivy-init" description="Initialise ivy by loading ivysettings.xml"
+    unless="ivy.initialised">
     <ivy:settings file="${ivysettings.dir}/${ivysettings.file.name}"/>
     <ivy:resolve file="ivy.xml"/>
+    <property name="ivy.initialised" value="true"/>
   </target>
   
   <target name="retrieve" depends="clean-cache, ivy-init" description="Retrieve dependencies with ivy"
