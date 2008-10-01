@@ -120,6 +120,11 @@ public class SvnRepository extends AbstractRepository {
   private ModuleRevisionId moduleRevisionId;
 
   /**
+   * The SVN revision value to use when retrieving artifacts.
+   */
+  private long svnRetrieveRevision = -1; // default to -1 which is equivalent to HEAD
+
+  /**
    * Initialises repository to accept requests for svn protocol.
    */
   public SvnRepository() {
@@ -281,8 +286,8 @@ public class SvnRepository extends AbstractRepository {
     if (!source.startsWith(repositoryRoot)) {
       repositorySource = getRepositoryRoot() + source;
     }
-    Message.debug("Getting file for user " + userName + " from  " + repositorySource + " to "
-        + destination.getAbsolutePath());
+    Message.debug("Getting file for user " + userName + " from " + repositorySource + " [revision="
+        + svnRetrieveRevision + "] to " + destination.getAbsolutePath());
     BufferedOutputStream output = null;
     try {
       SVNURL url = SVNURL.parseURIEncoded(repositorySource);
@@ -292,15 +297,14 @@ public class SvnRepository extends AbstractRepository {
       Resource resource = getResource(source);
       fireTransferInitiated(resource, TransferEvent.REQUEST_GET);
 
-      SVNNodeKind nodeKind = repository.checkPath("", -1);
+      SVNNodeKind nodeKind = repository.checkPath("", svnRetrieveRevision);
       SVNErrorMessage error = SvnUtils.checkNodeIsFile(nodeKind, url);
       if (error != null) {
         throw new IOException(error.getMessage());
       }
 
       output = new BufferedOutputStream(new FileOutputStream(destination));
-      // Gets the contents of the latest revision of the file
-      repository.getFile("", -1, null, output);
+      repository.getFile("", svnRetrieveRevision, null, output);
 
       fireTransferCompleted(destination.length());
     } catch (SVNException e) {
@@ -342,18 +346,18 @@ public class SvnRepository extends AbstractRepository {
    * @return SvnResource filled with the needed informations
    */
   public SvnResource resolveResource(String repositorySource) {
-    Message.debug("Resolving resource for " + repositorySource);
+    Message.debug("Resolving resource for " + repositorySource + " [revision=" + svnRetrieveRevision + "]");
     SvnResource result = null;
     try {
       SVNURL url = SVNURL.parseURIEncoded(repositorySource);
       SVNRepository repository = getRepository(url, true);
-      SVNNodeKind nodeKind = repository.checkPath("", -1);
+      SVNNodeKind nodeKind = repository.checkPath("", svnRetrieveRevision);
       if (nodeKind == SVNNodeKind.NONE) {
         Message.debug("No resource found at " + repositorySource + ", returning default resource");
         result = new SvnResource();
       } else {
         Message.debug("Resource found at " + repositorySource + ", returning resolved resource");
-        SVNDirEntry entry = repository.info("", -1);
+        SVNDirEntry entry = repository.info("", svnRetrieveRevision);
         result = new SvnResource(this, repositorySource, true, entry.getDate().getTime(), entry.getSize());
       }
     } catch (SVNException e) {
@@ -373,12 +377,12 @@ public class SvnRepository extends AbstractRepository {
    */
   public List<String> list(String source) throws IOException {
     String repositorySource = getRepositoryRoot();
-    Message.debug("Getting list for " + repositorySource + source);
+    Message.debug("Getting list for " + repositorySource + source + " [revision=" + svnRetrieveRevision + "]");
     try {
       SVNURL url = SVNURL.parseURIEncoded(repositorySource);
       SVNRepository repository = getRepository(url, true);
       SvnDao svnDAO = new SvnDao(repository);
-      List<String> list = svnDAO.list(source, -1);
+      List<String> list = svnDAO.list(source, svnRetrieveRevision);
       return list;
     } catch (SVNException e) {
       throw (IOException) new IOException().initCause(e);
@@ -490,6 +494,15 @@ public class SvnRepository extends AbstractRepository {
    */
   public void setBinaryDiffFolderName(String binaryDiffFolderName) {
     this.binaryDiffFolderName = binaryDiffFolderName;
+  }
+
+  /**
+   * Sets the SVN revision number to use for retrieve operations, if not set will default to -1 (i.e. HEAD).
+   * 
+   * @param svnRetrieveRevision The SVN revision number to use for retrieve operations.
+   */
+  public void setSvnRetrieveRevision(long svnRetrieveRevision) {
+    this.svnRetrieveRevision = svnRetrieveRevision;
   }
 
 }

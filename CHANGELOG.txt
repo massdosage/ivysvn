@@ -12,8 +12,10 @@ Release 2.0 TBA
     protocol, patterns are relative to this. 
   - Modified attributes set on "svn" element in ivysettings.xml to use CamelCase, renamed "port" to "sshPort" and 
     "passphrase" to "sshPassphrase". 
-  - "ivy-init" target sets a property to prevent itself being called more than once.
+  - Added a "retrieveRevision" attribute to the "svn" element to allow SVN revision used for retrieve operations to be 
+    specified. 
 	- Values set on SvnResolver are trimmed to avoid annoying issues with whitespace.
+	- "ivy-init" target in "common-targets.xml" sets a property to prevent itself being called more than once.
 
 Release 1.4 2008-03-19
 ~~~~~~~~~~~~~~~~~~~~~~

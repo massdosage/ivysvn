@@ -5,7 +5,8 @@
 Changes:
 - "ivy-init" target sets a property to prevent itself being called more than once.
 - upgraded to Ivy 2.0.0 RC1
- 
+- Added a "retrieveRevision" attribute to the "svn" element to allow SVN revision used for retrieve operations to be 
+  specified. 
  
 -----------------------------------
 
