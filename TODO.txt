@@ -61,6 +61,7 @@ Future:
 
 -Test and bundle with Ivy 2.0 jar when released.
 -Make commit message configurable (maybe via a file template?)
+-Use Google ant tasks for publishing new binary and source releases.
 
 -Add unit tests!!!
  This could be tricky to test all possible setups but we could at least start with svn:// and file:/// url's. svn+ssh:// 
