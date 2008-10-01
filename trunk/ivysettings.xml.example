@@ -18,7 +18,7 @@
   <typedef name="svn" classname="fm.last.ivy.plugins.svnresolver.SvnResolver"/>
   
   <resolvers>
-    <svn name="ivysvn" repositoryRoot="PROTOCOL://HOSTNAME/PATH_TO_YOUR_SVN_REPOSITORY"
+    <svn name="ivysvn" repositoryRoot="PROTOCOL://HOSTNAME/PATH_TO_SVN_REPOSITORY_ROOT"
       userName="${svn.user.name}" userPassword="${svn.user.password}"
       keyFile="${ssh.keyfile}" sshPort="${ssh.port}" sshPassphrase="${ssh.keyfile.passphrase}"
       certFile="${ssl.certfile}" storageAllowed="${svn.storage.allowed}"
