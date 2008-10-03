@@ -3,7 +3,7 @@
 2.0 beta 5/RC release
 
 Changes:
-- dist binaries now built with classes compiled with source/target=1.5. 
+- dist binaries now built with classes compiled with source/target=1.5. (Contributed by Martin Stenderup)
 -----------------------------------
 
 -Final review of all code, javadoc and documentation.
