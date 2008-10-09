@@ -1,6 +1,13 @@
 #summary Known issues for the latest release.
 
-= Known Issues for !IvySvn 2.0.0-beta3 =
+= Known Issues for !IvySvn 2.0.0-beta4 =
+
+== Setting binaryDiffFolderName ==
+The documentation states that to set the name of the folder to use for binary diffs, the attribute "binaryDiffFolderName" needs to be set. There is a bug that causes this not to work, instead one gets the error message:
+
+no set method found for binaryDiffFolderName on class fm.last.ivy.plugins.svnresolver.SvnResolver
+
+This issue is resolved in the trunk and will be in the next release. As a temporary workaround you can instead set the attribute "binaryDiffFoldername" (note the lower case "n" in "name"), but note that you will need to change this back again for future releases.
 
 == Publishing over !WebDav ==
 
