@@ -191,7 +191,7 @@ public class SvnResolver extends RepositoryResolver {
    * 
    * @param folderName The binary diff folder name.
    */
-  public void setBinaryDiffFoldername(String folderName) {
+  public void setBinaryDiffFolderName(String folderName) {
     if (validParameter(folderName)) {
       getSvnRepository().setBinaryDiffFolderName(folderName.trim());
     }
