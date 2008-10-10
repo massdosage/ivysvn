@@ -252,6 +252,7 @@ public class SvnRepository extends AbstractRepository {
   public void put(File source, String destination, boolean overwrite) throws IOException {
     fireTransferInitiated(getResource(destination), TransferEvent.REQUEST_PUT);
     Message.debug("Scheduling publish from " + source.getAbsolutePath() + " to " + getRepositoryRoot() + destination);
+    Message.info("Scheduling publish to " + getRepositoryRoot() + destination);
     try {
       SVNURL destinationURL = SVNURL.parseURIEncoded(getRepositoryRoot() + destination);
       if (publishTransaction == null) { // haven't initialised transaction on a previous put
@@ -300,6 +301,7 @@ public class SvnRepository extends AbstractRepository {
       SVNNodeKind nodeKind = repository.checkPath("", svnRetrieveRevision);
       SVNErrorMessage error = SvnUtils.checkNodeIsFile(nodeKind, url);
       if (error != null) {
+        Message.error("Error retrieving" + repositorySource + " [revision=" + svnRetrieveRevision + "]");
         throw new IOException(error.getMessage());
       }
 
@@ -308,12 +310,8 @@ public class SvnRepository extends AbstractRepository {
 
       fireTransferCompleted(destination.length());
     } catch (SVNException e) {
-      e.printStackTrace();
-      fireTransferError(e);
-    } catch (RuntimeException e) {
-      e.printStackTrace();
-      fireTransferError(e);
-      throw e;
+      Message.error("Error retrieving" + repositorySource + " [revision=" + svnRetrieveRevision + "]");
+      throw (IOException) new IOException().initCause(e);
     } finally {
       if (output != null) {
         output.close();
@@ -353,7 +351,7 @@ public class SvnRepository extends AbstractRepository {
       SVNRepository repository = getRepository(url, true);
       SVNNodeKind nodeKind = repository.checkPath("", svnRetrieveRevision);
       if (nodeKind == SVNNodeKind.NONE) {
-        Message.debug("No resource found at " + repositorySource + ", returning default resource");
+        Message.error("No resource found at " + repositorySource + ", returning default resource");
         result = new SvnResource();
       } else {
         Message.debug("Resource found at " + repositorySource + ", returning resolved resource");
@@ -385,6 +383,7 @@ public class SvnRepository extends AbstractRepository {
       List<String> list = svnDAO.list(source, svnRetrieveRevision);
       return list;
     } catch (SVNException e) {
+      Message.error("Error getting list for " + repositorySource + source + " [revision=" + svnRetrieveRevision + "]");
       throw (IOException) new IOException().initCause(e);
     }
   }

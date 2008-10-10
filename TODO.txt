@@ -3,6 +3,7 @@
 2.0 beta 5/RC release
 
 Changes:
+- logging modifications to show full paths being used for publish/retrieve operations, especially for error cases.
 - dist binaries now built with classes compiled with source/target=1.5 (Contributed by Martin Stenderup).
 - binaryDiffFolderName attribute can now be used as documented (was binaryDiffFoldername).
 -----------------------------------
