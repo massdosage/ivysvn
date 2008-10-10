@@ -74,7 +74,7 @@ public class SvnDao {
     String filePath = destinationFolder + "/" + fileName;
     if (fileExists(filePath, -1)) { // updating existing file
       if (overwrite) {
-        Message.info("Updating file " + filePath);
+        Message.debug("Updating file " + filePath);
         editor.openFile(filePath, -1);
       } else {
         Message.info("Overwrite set to false, ignoring " + filePath);
@@ -82,7 +82,7 @@ public class SvnDao {
       }
     } else { // creating new file
       createFolders(editor, destinationFolder, -1);
-      Message.info("Adding file " + filePath);
+      Message.debug("Adding file " + filePath);
       editor.addFile(filePath, null, -1);
     }
     editor.applyTextDelta(filePath, null);
