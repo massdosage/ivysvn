@@ -209,4 +209,16 @@ public class SvnResolver extends RepositoryResolver {
     }
   }
 
+  /**
+   * Set whether to cleanup (i.e. delete the contents of) the folder being published to during the publish operation.
+   * 
+   * @param cleanupPublishFolderString Whether to cleanup the publish folder or not.
+   */
+  public void setCleanupPublishFolder(String cleanupPublishFolderString) {
+    if (validParameter(cleanupPublishFolderString)) {
+      boolean cleanupPublishFolder = Boolean.parseBoolean(cleanupPublishFolderString.trim());
+      getSvnRepository().setCleanupPublishFolder(cleanupPublishFolder);
+    }
+  }
+
 }

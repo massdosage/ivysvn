@@ -91,18 +91,24 @@ public class SvnPublishTransaction {
   private String binaryDiffFolderName;
 
   /**
-   * Constructs a new instance of this class, which will use the passed message when a commit is performed.
+   * Whether to cleanup the contents of the publish folder during publish.
+   */
+  private boolean cleanupPublishFolder = false;
+
+  /**
+   * Constructs a new instance of this class.
    * 
    * @param svnDAO The subversion DAO to use.
    * @param mrid The ivy Module Revision ID.
-   * @param binaryDiff Whether to perform a binary diff.
-   * @param binaryDiffFolderName The name of the binary diff folder.
+   * @param commitRepository The repository to use for commits. This will have its location set to the repository root
+   *          and should not be used outside of this class.
+   * @throws SVNException If an error occurs setting the commit repository to its root.
    */
-  public SvnPublishTransaction(SvnDao svnDAO, ModuleRevisionId mrid, boolean binaryDiff, String binaryDiffFolderName) {
+  public SvnPublishTransaction(SvnDao svnDAO, ModuleRevisionId mrid, SVNRepository commitRepository)
+      throws SVNException {
     this.svnDAO = svnDAO;
-    this.binaryDiff = binaryDiff;
-    this.binaryDiffFolderName = binaryDiffFolderName;
     this.revision = mrid.getRevision();
+    setCommitRepository(commitRepository);
     StringBuilder comment = new StringBuilder();
     comment.append("Ivy publishing ").append(mrid.getOrganisation()).append("#");
     comment.append(mrid.getName()).append(";").append(mrid.getRevision());
@@ -118,6 +124,7 @@ public class SvnPublishTransaction {
    */
   public void setCommitRepository(SVNRepository repository) throws SVNException {
     commitRepository = repository;
+    // TODO: do we need to do this here as we also seem to do it in commit()?
     SVNURL commitRoot = commitRepository.getRepositoryRoot(false);
     commitRepository.setLocation(commitRoot, false);
   }
@@ -130,8 +137,7 @@ public class SvnPublishTransaction {
    * @param overwrite Whether an overwrite should be performed if the file already exists.
    * @throws IOException If the file data cannot be read from disk or the file paths cannot be determined.
    */
-  public void addPutOperation(File source, String destinationPath, boolean overwrite)
-    throws IOException {
+  public void addPutOperation(File source, String destinationPath, boolean overwrite) throws IOException {
     PutOperation operation = new PutOperation(source, destinationPath, overwrite);
     this.putOperations.add(operation);
   }
@@ -197,7 +203,22 @@ public class SvnPublishTransaction {
       putFiles.put(destinationFolderPath, files); // keep track of each file we have put per folder
     }
 
-    // now compare the files we have just put with current contents of folder
+    // only clean up if set to AND we are actually going to publish something
+    if (cleanupPublishFolder && putFileCount > 0) {
+      cleanupPublishFolder(putFiles);
+    }
+
+    return putFileCount;
+  }
+
+  /**
+   * Deletes any files in the publish folder which are not part of this transaction's set of files to publish.
+   * 
+   * @param putFiles Files to publish as part of this transaction.
+   * @throws SVNException If an error occurs listing the publish folder or deleting files.
+   */
+  private void cleanupPublishFolder(Map<String, Set<String>> putFiles) throws SVNException {
+    // compare the files we have just put with current contents of folder
     for (Entry<String, Set<String>> entry : putFiles.entrySet()) {
       String folderPath = entry.getKey();
       List<String> existingFiles = svnDAO.list(folderPath, -1);
@@ -209,8 +230,6 @@ public class SvnPublishTransaction {
         }
       }
     }
-
-    return putFileCount;
   }
 
   /**
@@ -301,6 +320,33 @@ public class SvnPublishTransaction {
    */
   public boolean commitStarted() {
     return commitStarted;
+  }
+
+  /**
+   * Set whether to perform a binary diff or not.
+   * 
+   * @param binaryDiff
+   */
+  public void setBinaryDiff(boolean binaryDiff) {
+    this.binaryDiff = binaryDiff;
+  }
+
+  /**
+   * Sets the folder name to use for binary diffs, if not set will default to DEFAULT_BINARY_DIFF_LOCATION
+   * 
+   * @param binaryDiffFolderName The folder name to use for binary diffs.
+   */
+  public void setBinaryDiffFolderName(String binaryDiffFolderName) {
+    this.binaryDiffFolderName = binaryDiffFolderName;
+  }
+
+  /**
+   * Set whether to cleanup (i.e. delete the contents of) the folder being published to during the publish operation.
+   * 
+   * @param cleanupPublishFolder Whether to cleanup the publish folder or not.
+   */
+  public void setCleanupPublishFolder(boolean cleanupPublishFolder) {
+    this.cleanupPublishFolder = cleanupPublishFolder;
   }
 
 }
