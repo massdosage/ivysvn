@@ -5,6 +5,9 @@
 == Binary version not compiled for Java 5 ==
 The classes in the binary distribution were compiled on a Java 6 machine without setting the compiler flags to 1.5. Running the binary version on a Java 5 JVM will probably not work. Workaround for this issue is to download the source release and compile it yourself using a Java 5 JDK (the source *is* Java 5 compatible) or build from the trunk where this issue has been fixed.
 
+== Publish folder contents are deleted ==
+!IvySvn removes all files from the folder being published to on each publish operation. This allows for artifacts that are no longer part of a publication to be deleted. However, some use cases require the use of the same folder for various different publications and the delete behaviour is not desirable. The current workaround is to use a folder per revision or build from the trunk where this issue has been fixed.
+
 == Setting binaryDiffFolderName ==
 The documentation states that to set the name of the folder to use for binary diffs, the attribute "binaryDiffFolderName" needs to be set. There is a bug that causes this not to work, instead one gets the error message:
 
