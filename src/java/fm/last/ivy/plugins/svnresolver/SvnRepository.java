@@ -258,7 +258,7 @@ public class SvnRepository extends AbstractRepository {
     try {
       SVNURL destinationURL = SVNURL.parseURIEncoded(getRepositoryRoot() + destination);
       if (publishTransaction == null) { // haven't initialised transaction on a previous put
-        
+
         // first create a repository which transaction can use for various file checks
         SVNRepository ancillaryRepository = getRepository(destinationURL, false);
         SVNURL root = ancillaryRepository.getRepositoryRoot(false);
@@ -305,12 +305,12 @@ public class SvnRepository extends AbstractRepository {
 
       SvnDao svnDAO = new SvnDao(repository);
       svnDAO.getFile(url, destination, svnRetrieveRevision);
-      
+
       fireTransferCompleted(destination.length());
     } catch (SVNException e) {
       Message.error("Error retrieving" + repositorySource + " [revision=" + svnRetrieveRevision + "]");
       throw (IOException) new IOException().initCause(e);
-    } 
+    }
   }
 
   /**
@@ -345,7 +345,12 @@ public class SvnRepository extends AbstractRepository {
       SVNRepository repository = getRepository(url, true);
       SVNNodeKind nodeKind = repository.checkPath("", svnRetrieveRevision);
       if (nodeKind == SVNNodeKind.NONE) {
-        Message.error("No resource found at " + repositorySource + ", returning default resource");
+        if (repositorySource.endsWith("ivy.xml") || repositorySource.endsWith(".sha1")
+            || repositorySource.endsWith(".md5")) { // log at debug level for files which often aren't there
+          Message.debug("No resource found at " + repositorySource + ", returning default resource");
+        } else { // probably an artifact file, so if this couldn't be found, log an error
+          Message.error("No resource found at " + repositorySource + ", returning default resource");
+        }
         result = new SvnResource();
       } else {
         Message.debug("Resource found at " + repositorySource + ", returning resolved resource");
