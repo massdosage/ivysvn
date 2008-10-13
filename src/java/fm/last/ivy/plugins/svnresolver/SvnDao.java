@@ -16,7 +16,11 @@
  */
 package fm.last.ivy.plugins.svnresolver;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,8 +28,10 @@ import java.util.Set;
 
 import org.apache.ivy.util.Message;
 import org.tmatesoft.svn.core.SVNDirEntry;
+import org.tmatesoft.svn.core.SVNErrorMessage;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
+import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.io.ISVNEditor;
 import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.diff.SVNDeltaGenerator;
@@ -213,6 +219,35 @@ public class SvnDao {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Gets a file from the repository.
+   * 
+   * @param sourceURL The full path to the file, reachable via the read repository.
+   * @param destination The destination file.
+   * @param revision The subversion revision.
+   * @throws SVNException If an error occurs retrieving the file from Subversion.
+   * @throws IOException If an error occurs writing the file contents to disk.
+   */
+  public void getFile(SVNURL sourceURL, File destination, long revision) throws SVNException, IOException {
+    readRepository.setLocation(sourceURL, false);
+    SVNNodeKind nodeKind = readRepository.checkPath("", revision);
+    SVNErrorMessage error = SvnUtils.checkNodeIsFile(nodeKind, sourceURL);
+    if (error != null) {
+      // TODO: could we just put below message into IOException's message?
+      Message.error("Error retrieving" + sourceURL + " [revision=" + revision + "]");
+      throw new IOException(error.getMessage());
+    }
+    BufferedOutputStream output = null;
+    try {
+      output = new BufferedOutputStream(new FileOutputStream(destination));
+      readRepository.getFile("", revision, null, output);
+    } finally {
+      if (output != null) {
+        output.close();
+      }
+    }
   }
 
 }
