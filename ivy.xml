@@ -20,9 +20,8 @@
       <artifact name="ivysvnresolver" ext="jar" />
     </publications>
     
-    <!--  this project doesn't actually depend on these, but they are used for testing whether retrieving works -->
+    <!--  dependencies are only used for quick testing of whether retrieving works -->
     <dependencies>
         <dependency org="apache" name="commons-collections" rev="3.1" />
-        <dependency org="junit.org" name="junit" rev="3.8.1" />
     </dependencies>
 </ivy-module>
