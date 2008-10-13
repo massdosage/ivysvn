@@ -1,5 +1,5 @@
 <!-- 
-Copyright 2007 Last.fm
+Copyright 2008 Last.fm
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,11 +16,19 @@ limitations under the License.
 <project name="ivysvnresolver" default="build">
 
 	<property name="lib.dir" value="${basedir}/lib" />
-	<property name="build.dir" value="${basedir}/build" />
-	<property name="dist.dir" value="${build.dir}/dist" />
-	<property name="classes.dir" value="${build.dir}/classes" />
+	
 	<property name="src.dir" value="${basedir}/src" />
 	<property name="java.src.dir" value="${src.dir}/java" />
+  
+  <property name="test.dir" location="test"/>
+  <property name="test.conf.dir" location="${test.dir}/conf"/>
+  <property name="test.data.dir" location="${test.dir}/data"/>
+  <property name="test.java.dir" location="${test.dir}/java"/>
+  
+  <property name="build.dir" value="${basedir}/build" />
+  <property name="dist.dir" value="${build.dir}/dist" />
+  <property name="classes.dir" value="${build.dir}/classes" />
+  <property name="junit.report.dir" location="${build.dir}/junit"/>
 
 	<property name="ivysettings.dir" value="${basedir}" />
 	<property file="build.properties" />
@@ -33,8 +41,17 @@ limitations under the License.
 
 	<!-- paths used for compilation  -->
 	<path id="lib.path.id">
-		<fileset dir="${lib.dir}" />
+		<fileset refid="dependencies" />
 	</path>
+  
+    <!-- classpath used when compiling and running tests -->
+  <path id="test-classpath">
+    <pathelement location="${test.conf.dir}"/>
+    <pathelement location="${classes.dir}"/>
+    <fileset dir="${lib.dir}">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
 
 	<import file="ivy-common-targets.xml" />
 
@@ -62,12 +79,48 @@ limitations under the License.
 		<delete dir="${build.dir}" />
 	</target>
 
-  <target name="compile">
+  <target name="compile" depends="compile-source, compile-test"/>
+  
+  <target name="compile-source">
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${java.src.dir}" destdir="${classes.dir}" classpathref="lib.path.id" debug="true"
       source="1.5" target="1.5"/>
   </target>
 
+  <target name="compile-test" depends="compile-source">
+    <mkdir dir="${classes.dir}"/>
+    <javac srcdir="${test.java.dir}" destdir="${classes.dir}" debug="true">
+      <classpath>
+        <path refid="test-classpath"/>
+      </classpath>
+    </javac>
+  </target>
+  
+<target name="test" depends="compile" description="Run the unit tests">
+    <delete dir="${junit.report.dir}"/>
+    <mkdir dir="${junit.report.dir}"/>
+    
+    <property name="junit.includes" value="**/*Test.java"/>
+    <property name="junit.excludes" value="nothing.by.default"/>
+    
+    <junit printsummary="yes" failureproperty="testfailed" showoutput="true" fork="true">
+      <classpath refid="test-classpath"/>
+      <formatter type="xml" usefile="true"/>
+      <batchtest todir="${junit.report.dir}">
+        <fileset dir="${test.java.dir}" includes="${junit.includes}" excludes="${junit.excludes}"/>
+      </batchtest>
+    </junit>
+    
+    <junitreport todir="${junit.report.dir}">
+      <fileset dir="${junit.report.dir}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="noframes" todir="${junit.report.dir}"/>
+    </junitreport>
+    
+    <fail if="testfailed" message="Some test(s) failed. See '${junit.report.dir}' for details."/>
+  </target>  
+    
 	<target name="check-for-ivysvn">
 		<available property="ivysvn.present" classname="fm.last.ivy.plugins.svnresolver.SvnResolver" />
 		<echo>Ivy Subversion already on classpath: ${ivysvn.present}</echo>
