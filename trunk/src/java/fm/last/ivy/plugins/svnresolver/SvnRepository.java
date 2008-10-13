@@ -16,9 +16,7 @@
  */
 package fm.last.ivy.plugins.svnresolver;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -33,7 +31,6 @@ import org.apache.ivy.plugins.repository.Resource;
 import org.apache.ivy.plugins.repository.TransferEvent;
 import org.apache.ivy.util.Message;
 import org.tmatesoft.svn.core.SVNDirEntry;
-import org.tmatesoft.svn.core.SVNErrorMessage;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNURL;
@@ -123,6 +120,11 @@ public class SvnRepository extends AbstractRepository {
    * The SVN revision value to use when retrieving artifacts.
    */
   private long svnRetrieveRevision = -1; // default to -1 which is equivalent to HEAD
+
+  /**
+   * Whether to cleanup the contents of the publish folder during publish.
+   */
+  private boolean cleanupPublishFolder = false;
 
   /**
    * Initialises repository to accept requests for svn protocol.
@@ -256,16 +258,20 @@ public class SvnRepository extends AbstractRepository {
     try {
       SVNURL destinationURL = SVNURL.parseURIEncoded(getRepositoryRoot() + destination);
       if (publishTransaction == null) { // haven't initialised transaction on a previous put
+        
         // first create a repository which transaction can use for various file checks
         SVNRepository ancillaryRepository = getRepository(destinationURL, false);
         SVNURL root = ancillaryRepository.getRepositoryRoot(false);
         ancillaryRepository.setLocation(root, false);
         SvnDao svnDAO = new SvnDao(ancillaryRepository);
 
-        publishTransaction = new SvnPublishTransaction(svnDAO, moduleRevisionId, binaryDiff, binaryDiffFolderName);
         // now create another repository which transaction will use to do actual commits
         SVNRepository commitRepository = getRepository(destinationURL, false);
-        publishTransaction.setCommitRepository(commitRepository);
+
+        publishTransaction = new SvnPublishTransaction(svnDAO, moduleRevisionId, commitRepository);
+        publishTransaction.setBinaryDiff(binaryDiff);
+        publishTransaction.setBinaryDiffFolderName(binaryDiffFolderName);
+        publishTransaction.setCleanupPublishFolder(cleanupPublishFolder);
       }
       // add all info needed to put the file to the transaction
       publishTransaction.addPutOperation(source, destination, overwrite);
@@ -289,7 +295,6 @@ public class SvnRepository extends AbstractRepository {
     }
     Message.debug("Getting file for user " + userName + " from " + repositorySource + " [revision="
         + svnRetrieveRevision + "] to " + destination.getAbsolutePath());
-    BufferedOutputStream output = null;
     try {
       SVNURL url = SVNURL.parseURIEncoded(repositorySource);
       SVNRepository repository = getRepository(url, true);
@@ -298,25 +303,14 @@ public class SvnRepository extends AbstractRepository {
       Resource resource = getResource(source);
       fireTransferInitiated(resource, TransferEvent.REQUEST_GET);
 
-      SVNNodeKind nodeKind = repository.checkPath("", svnRetrieveRevision);
-      SVNErrorMessage error = SvnUtils.checkNodeIsFile(nodeKind, url);
-      if (error != null) {
-        Message.error("Error retrieving" + repositorySource + " [revision=" + svnRetrieveRevision + "]");
-        throw new IOException(error.getMessage());
-      }
-
-      output = new BufferedOutputStream(new FileOutputStream(destination));
-      repository.getFile("", svnRetrieveRevision, null, output);
-
+      SvnDao svnDAO = new SvnDao(repository);
+      svnDAO.getFile(url, destination, svnRetrieveRevision);
+      
       fireTransferCompleted(destination.length());
     } catch (SVNException e) {
       Message.error("Error retrieving" + repositorySource + " [revision=" + svnRetrieveRevision + "]");
       throw (IOException) new IOException().initCause(e);
-    } finally {
-      if (output != null) {
-        output.close();
-      }
-    }
+    } 
   }
 
   /**
@@ -502,6 +496,15 @@ public class SvnRepository extends AbstractRepository {
    */
   public void setSvnRetrieveRevision(long svnRetrieveRevision) {
     this.svnRetrieveRevision = svnRetrieveRevision;
+  }
+
+  /**
+   * Set whether to cleanup (i.e. delete the contents of) the folder being published to during the publish operation.
+   * 
+   * @param cleanupPublishFolder Whether to cleanup the publish folder or not.
+   */
+  public void setCleanupPublishFolder(boolean cleanupPublishFolder) {
+    this.cleanupPublishFolder = cleanupPublishFolder;
   }
 
 }
