@@ -25,9 +25,14 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl;
+import org.tmatesoft.svn.core.io.ISVNEditor;
+import org.tmatesoft.svn.core.io.SVNRepository;
+
+import fm.last.ivy.plugins.svnresolver.test.TestProperties;
 
 /**
  * Base class for IvySvn tests.
@@ -37,7 +42,13 @@ public abstract class BaseTestCase {
   protected static final String TEST_PATH = "test";
   protected static final String TEST_TMP_PATH = TEST_PATH + "/tmp";
   protected static final String TEST_DATA_PATH = TEST_PATH + "/data";
-  
+  protected static final String TEST_CONF_PATH = TEST_PATH + "/conf";
+
+  protected String repositoryRoot = TestProperties.getInstance().getProperty(
+      TestProperties.PROPERTY_SVN_REPOSITORY_ROOT);
+  protected String svnUserName = TestProperties.getInstance().getProperty(TestProperties.PROPERTY_SVN_USER_NAME);
+  protected String svnPassword = TestProperties.getInstance().getProperty(TestProperties.PROPERTY_SVN_PASSWORD);
+
   /**
    * A temporary folder which tests can use to write data while they run, will be cleaned inbetween each test.
    */
@@ -47,36 +58,43 @@ public abstract class BaseTestCase {
    * The base test data folder (i.e. test/data);
    */
   protected File baseTestDataFolder = new File(TEST_DATA_PATH);
-  
+
   /**
    * A test data folder for a specific test (only valid for tests which put their data in a folder under "data" which
    * matches their fully qualified class name).
    */
   protected File testDataFolder = new File(baseTestDataFolder, getClass().getName().replaceAll("\\.", "/"));
-  
+
   /**
    * Can override this in child classes (during debugging for example).
    */
   protected boolean cleanupTempFolder = true;
-  
+
+  protected SVNURL repositoryRootURL = null;
+  protected SVNRepository readRepository;
+
+  protected SvnDao svnDAO = null;
+
   @Before
   public void setUp() throws SVNException {
     FSRepositoryFactory.setup();
     DAVRepositoryFactory.setup();
     SVNRepositoryFactoryImpl.setup();
     testTempFolder.mkdirs();
+
+    repositoryRootURL = SVNURL.parseURIEncoded(repositoryRoot);
+    readRepository = SvnUtils
+        .createRepository(repositoryRootURL, svnUserName, svnPassword, null, null, -1, null, false);
+    svnDAO = new SvnDao(readRepository);
   }
-  
-  /**
-   * Fails the test.
-   * 
-   * @param t Throwable that should be used as the reason for failing.
-   */
-  protected void fail(Throwable t) {
-    t.printStackTrace();
-    throw new AssertionFailedError(t.getMessage());
+
+  @After
+  public void cleanupRepository() throws SVNException {
+    ISVNEditor commitEditor = getCommitEditor();
+    commitEditor.deleteEntry(TEST_PATH, -1);
+    commitEditor.closeEdit();
   }
-  
+
   /**
    * Cleanup the temp folder which tests can use to write data.
    * 
@@ -91,5 +109,31 @@ public abstract class BaseTestCase {
       }
     }
   }
-  
+
+  /**
+   * Utility function to get an editor that can be used for commit operations.
+   * 
+   * @return A commit editor.
+   * @throws SVNException If an error occurs getting the commit editor.
+   */
+  protected ISVNEditor getCommitEditor() throws SVNException {
+    SVNRepository commitRepository = SvnUtils.createRepository(repositoryRootURL, svnUserName, svnPassword, null, null,
+        -1, null, false);
+    SVNURL root = commitRepository.getRepositoryRoot(true);
+    commitRepository.setLocation(root, false);
+    ISVNEditor commitEditor = commitRepository.getCommitEditor("unit testing " + this.getClass().getName(), null);
+    commitEditor.openRoot(-1);
+    return commitEditor;
+  }
+
+  /**
+   * Fails the test.
+   * 
+   * @param t Throwable that should be used as the reason for failing.
+   */
+  protected void fail(Throwable t) {
+    t.printStackTrace();
+    throw new AssertionFailedError(t.getMessage());
+  }
+
 }

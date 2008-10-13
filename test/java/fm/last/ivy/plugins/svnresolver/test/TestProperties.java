@@ -33,6 +33,7 @@ public class TestProperties {
   public static final String PROPERTY_SVN_REPOSITORY_ROOT = "svn.repository.root";
   public static final String PROPERTY_SVN_USER_NAME = "svn.user.name";
   public static final String PROPERTY_SVN_PASSWORD = "svn.user.password";
+  public static final String PROPERTY_SVN_BINARY_DIFF = "svn.binarydiff";
 
   /**
    * Private constructor to prevent external instantiation.

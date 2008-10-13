@@ -25,61 +25,15 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.io.ISVNEditor;
-import org.tmatesoft.svn.core.io.SVNRepository;
-
-import fm.last.ivy.plugins.svnresolver.test.TestProperties;
 
 /**
  * Unit test case for the SvnDao.
  */
 public class SvnDaoTest extends BaseTestCase {
-
-  private String repositoryRoot = TestProperties.getInstance().getProperty(TestProperties.PROPERTY_SVN_REPOSITORY_ROOT);
-  private String svnUserName = TestProperties.getInstance().getProperty(TestProperties.PROPERTY_SVN_USER_NAME);
-  private String svnPassword = TestProperties.getInstance().getProperty(TestProperties.PROPERTY_SVN_PASSWORD);
-
-  private SVNURL repositoryRootURL = null;
-  private SVNRepository readRepository;
-
-  private SvnDao svnDAO = null;
-
-  @Before
-  public void setUp() throws SVNException {
-    super.setUp();
-    repositoryRootURL = SVNURL.parseURIEncoded(repositoryRoot);
-    readRepository = SvnUtils
-        .createRepository(repositoryRootURL, svnUserName, svnPassword, null, null, -1, null, false);
-    svnDAO = new SvnDao(readRepository);
-  }
-
-  @After
-  public void cleanupRepository() throws SVNException {
-    ISVNEditor commitEditor = getCommitEditor();
-    commitEditor.deleteEntry(TEST_PATH, -1);
-    commitEditor.closeEdit();
-  }
-
-  /**
-   * Utility function to get an editor that can be used for commit operations.
-   * 
-   * @return A commit editor.
-   * @throws SVNException If an error occurs getting the commit editor.
-   */
-  private ISVNEditor getCommitEditor() throws SVNException {
-    SVNRepository commitRepository = SvnUtils.createRepository(repositoryRootURL, svnUserName, svnPassword, null, null,
-        -1, null, false);
-    SVNURL root = commitRepository.getRepositoryRoot(true);
-    commitRepository.setLocation(root, false);
-    ISVNEditor commitEditor = commitRepository.getCommitEditor("unit testing " + this.getClass().getName(), null);
-    commitEditor.openRoot(-1);
-    return commitEditor;
-  }
 
   @Test
   public void testPutGetAndFileExists() throws SVNException, IOException {
