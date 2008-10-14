@@ -3,9 +3,11 @@
 2.0 beta 5/RC release
 
 TODO: upgrade to SVNKit 1.2 (see what's new etc)
+TODO: did adding readRepository.setLocation to getFile() help with any webdav issues? (unlikely)
 
 Changes:
-- cleanupPublishFolder (TODO: example files, documentation on site, mail user on ivy list who wanted this)
+- cleanupPublishFolder (TODO: example files, documentation on site, mail user on ivy list who wanted this) - also 
+  document clearly that binaryDiff=true always does a cleanup, cannot set the cleanup to false and binary diff to true)
 - logging modifications to show full paths being used for publish/retrieve operations, especially for error cases.
 - dist binaries now built with classes compiled with source/target=1.5 (Contributed by Martin Stenderup).
 - binaryDiffFolderName attribute can now be used as documented (was binaryDiffFoldername).

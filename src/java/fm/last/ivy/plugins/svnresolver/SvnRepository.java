@@ -104,7 +104,7 @@ public class SvnRepository extends AbstractRepository {
   /**
    * The default folder name for binary diffs.
    */
-  private static final String DEFAULT_BINARY_DIFF_FOLDER_NAME = "LATEST";
+  protected static final String DEFAULT_BINARY_DIFF_FOLDER_NAME = "LATEST";
 
   /**
    * The folder name for binary diffs.
@@ -124,7 +124,7 @@ public class SvnRepository extends AbstractRepository {
   /**
    * Whether to cleanup the contents of the publish folder during publish.
    */
-  private boolean cleanupPublishFolder = false;
+  private Boolean cleanupPublishFolder = null;
 
   /**
    * Initialises repository to accept requests for svn protocol.
@@ -482,6 +482,9 @@ public class SvnRepository extends AbstractRepository {
    * @param binaryDiff
    */
   public void setBinaryDiff(boolean binaryDiff) {
+    if (cleanupPublishFolder != null && !cleanupPublishFolder && binaryDiff) {
+      throw new IllegalStateException("If binaryDiff is enabled, then cleanupPublishFolder cannot be set to false");
+    }
     this.binaryDiff = binaryDiff;
   }
 
@@ -509,6 +512,9 @@ public class SvnRepository extends AbstractRepository {
    * @param cleanupPublishFolder Whether to cleanup the publish folder or not.
    */
   public void setCleanupPublishFolder(boolean cleanupPublishFolder) {
+    if (!cleanupPublishFolder && binaryDiff) {
+      throw new IllegalStateException("If binaryDiff is enabled, then cleanupPublishFolder cannot be set to false");
+    }
     this.cleanupPublishFolder = cleanupPublishFolder;
   }
 

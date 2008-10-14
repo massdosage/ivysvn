@@ -81,4 +81,6 @@ public class SvnRepositoryRetrieveTest extends BaseIvyTestCase {
   
   // TODO: test a retrieve with an inbetween dependency
 
+  // TODO: test a retrieve with specified retrieve revision
+
 }

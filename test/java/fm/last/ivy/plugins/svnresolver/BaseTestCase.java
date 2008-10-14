@@ -66,9 +66,14 @@ public abstract class BaseTestCase {
   protected File testDataFolder = new File(baseTestDataFolder, getClass().getName().replaceAll("\\.", "/"));
 
   /**
-   * Can override this in child classes (during debugging for example).
+   * Controls whether the temp folder should be deleted between tests.
    */
   protected boolean cleanupTempFolder = true;
+
+  /**
+   * Controls whether the temp folder in the Subversion repository should be deleted between tests.
+   */
+  protected boolean cleanupSvn = true;
 
   protected SVNURL repositoryRootURL = null;
   protected SVNRepository readRepository;
@@ -90,9 +95,11 @@ public abstract class BaseTestCase {
 
   @After
   public void cleanupRepository() throws SVNException {
-    ISVNEditor commitEditor = getCommitEditor();
-    commitEditor.deleteEntry(TEST_PATH, -1);
-    commitEditor.closeEdit();
+    if (cleanupSvn) {
+      ISVNEditor commitEditor = getCommitEditor();
+      commitEditor.deleteEntry(TEST_PATH, -1);
+      commitEditor.closeEdit();
+    }
   }
 
   /**

@@ -93,7 +93,7 @@ public class SvnPublishTransaction {
   /**
    * Whether to cleanup the contents of the publish folder during publish.
    */
-  private boolean cleanupPublishFolder = false;
+  private Boolean cleanupPublishFolder = null;
 
   /**
    * Constructs a new instance of this class.
@@ -204,7 +204,7 @@ public class SvnPublishTransaction {
     }
 
     // only clean up if set to AND we are actually going to publish something
-    if (cleanupPublishFolder && putFileCount > 0) {
+    if (cleanupPublishFolder != null && cleanupPublishFolder && putFileCount > 0) {
       cleanupPublishFolder(putFiles);
     }
 
@@ -251,7 +251,7 @@ public class SvnPublishTransaction {
           if (svnDAO.folderExists(currentFolder, -1, true)) {
             if (operation.isOverwrite()) {
               // delete old release, we will copy over to release folder again in binary diff commit later
-              Message.info("Deleting " + currentFolder);
+              Message.info("Binary diff deleting " + currentFolder);
               commitEditor.deleteEntry(currentFolder, -1);
             } else {
               Message.info("Overwrite set to false, ignoring copy to " + currentFolder);
@@ -345,7 +345,7 @@ public class SvnPublishTransaction {
    * 
    * @param cleanupPublishFolder Whether to cleanup the publish folder or not.
    */
-  public void setCleanupPublishFolder(boolean cleanupPublishFolder) {
+  public void setCleanupPublishFolder(Boolean cleanupPublishFolder) {
     this.cleanupPublishFolder = cleanupPublishFolder;
   }
 

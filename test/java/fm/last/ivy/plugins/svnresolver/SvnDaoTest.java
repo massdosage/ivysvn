@@ -68,9 +68,6 @@ public class SvnDaoTest extends BaseTestCase {
 
     String modifiedTestData = new String("test data-modified");
     commitEditor = getCommitEditor();
-    // TODO: a bit ugly that we have to reset readRepository here outside of dao, not sure if there is another
-    // way that won't affect publishing
-    readRepository.setLocation(readRepository.getRepositoryRoot(true), true);
     // send different data to same file with overwrite set to FALSE, put should get ignored
     svnDAO.putFile(commitEditor, modifiedTestData.getBytes(), TEST_PATH, fileName, false);
     commitEditor.closeEdit();
@@ -82,9 +79,6 @@ public class SvnDaoTest extends BaseTestCase {
     assertEquals(testData, FileUtils.readFileToString(retrieved));
 
     commitEditor = getCommitEditor();
-    // TODO: a bit ugly that we have to reset readRepository here outside of dao, not sure if there is another
-    // way that won't affect publishing
-    readRepository.setLocation(readRepository.getRepositoryRoot(true), true);
     // send different data to same file with overwrite set to TRUE
     svnDAO.putFile(commitEditor, modifiedTestData.getBytes(), TEST_PATH, fileName, true);
     commitEditor.closeEdit();
