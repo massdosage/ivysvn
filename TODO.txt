@@ -2,7 +2,10 @@
 ~~~
 2.0 beta 5/RC release
 
-TODO: upgrade to SVNKit 1.2 (see what's new etc)
+- Upgraded to SVNKit 1.2.0. (update wiki)
+- Upgraded to Trilead SSH for Java - Build 213. (update wiki)
+
+
 TODO: did adding readRepository.setLocation to getFile() help with any webdav issues? (unlikely)
 
 Changes:
