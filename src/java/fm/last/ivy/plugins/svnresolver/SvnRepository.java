@@ -140,7 +140,7 @@ public class SvnRepository extends AbstractRepository {
       Message.info("IvySvn Build-Version: " + attributes.getValue("Build-Version"));
       Message.info("IvySvn Build-DateTime: " + attributes.getValue("Build-DateTime"));
     } catch (IOException e) {
-      Message.warn(("Could not load manifest: " + e.getMessage()));
+      Message.warn("Could not load manifest: " + e.getMessage());
     }
   }
 
