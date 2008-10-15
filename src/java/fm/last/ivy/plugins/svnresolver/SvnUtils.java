@@ -26,7 +26,6 @@ import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
-import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.auth.SVNAuthentication;
 import org.tmatesoft.svn.core.auth.SVNPasswordAuthentication;
 import org.tmatesoft.svn.core.auth.SVNSSHAuthentication;
@@ -39,6 +38,11 @@ import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
  * Utility class for performing common operations in subversion.
  */
 public class SvnUtils {
+  
+  /**
+   * The proxy settings.
+   */
+  private static final ProxySettings proxySettings = new ProxySettings();
 
   /**
    * Check that the passed node exists and represents a folder.
@@ -142,8 +146,9 @@ public class SvnUtils {
       throw new SVNException(SVNErrorMessage.create(SVNErrorCode.AUTHZ_INVALID_CONFIG, "Missing authentication values"));
     }
 
-    ISVNAuthenticationManager authManager = new BasicAuthenticationManager(authentications
+    BasicAuthenticationManager authManager = new BasicAuthenticationManager(authentications
         .toArray(new SVNAuthentication[] {}));
+    proxySettings.setProxy(authManager); // if there are any proxy settings this will set them on the auth manager
     repository.setAuthenticationManager(authManager);
     return repository;
   }
