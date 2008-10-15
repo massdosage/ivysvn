@@ -96,9 +96,8 @@ public class SvnResolver extends RepositoryResolver {
    * @param passPhrase
    */
   public void setSshPassphrase(String passPhrase) {
-    if (validParameter(passPhrase)) {
-      getSvnRepository().setPassPhrase(passPhrase.trim());
-    }
+    // valid for passphrase to start with ${ and have spaces at start and end, so do no validation or trimming
+    getSvnRepository().setPassPhrase(passPhrase);
   }
 
   /**
@@ -169,9 +168,8 @@ public class SvnResolver extends RepositoryResolver {
    * @param userPassword The svn password.
    */
   public void setUserPassword(String userPassword) {
-    if (validParameter(userPassword)) {
-      getSvnRepository().setUserPassword(userPassword.trim());
-    }
+    // valid for password to start with ${ and have spaces at start and end, so do no validation or trimming
+    getSvnRepository().setUserPassword(userPassword);
   }
 
   /**

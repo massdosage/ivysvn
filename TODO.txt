@@ -11,9 +11,10 @@ TODO: did adding readRepository.setLocation to getFile() help with any webdav is
 Changes:
 - cleanupPublishFolder (TODO: example files, documentation on site, mail user on ivy list who wanted this) - also 
   document clearly that binaryDiff=true always does a cleanup, cannot set the cleanup to false and binary diff to true)
-- logging modifications to show full paths being used for publish/retrieve operations, especially for error cases.
-- dist binaries now built with classes compiled with source/target=1.5 (Contributed by Martin Stenderup).
-- binaryDiffFolderName attribute can now be used as documented (was binaryDiffFoldername).
+- logging modifications to show full paths being used for publish/retrieve operations, especially for error cases. (issue number?)
+- dist binaries now built with classes compiled with source/target=1.5 (Contributed by Martin Stenderup). (issue number?)
+- binaryDiffFolderName attribute can now be used as documented (was binaryDiffFoldername). (issue number?)
+- sshPassphrase and svn user password no longer trimmed or checked for starting with ${ (http://code.google.com/p/ivysvn/issues/detail?id=9)
 -----------------------------------
 
 -Final review of all code, javadoc and documentation.
