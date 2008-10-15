@@ -7,8 +7,10 @@
 
 
 TODO: did adding readRepository.setLocation to getFile() help with any webdav issues? (unlikely)
+TODO: add documentation in wiki for proxy stuff (will need to read up more on standard Java proxy properties used in the patch)
 
-Changes:
+Changes (TODO: add the changes which are valid here to the CHANGELOG.txt for 2.0):
+- Uses proxy settings if specified via Java system properties (http://code.google.com/p/ivysvn/issues/detail?id=7, contributed by Steve Brown)
 - cleanupPublishFolder (TODO: example files, documentation on site, mail user on ivy list who wanted this) - also 
   document clearly that binaryDiff=true always does a cleanup, cannot set the cleanup to false and binary diff to true)
 - logging modifications to show full paths being used for publish/retrieve operations, especially for error cases. (issue number?)
