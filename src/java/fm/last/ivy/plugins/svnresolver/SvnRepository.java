@@ -154,12 +154,11 @@ public class SvnRepository extends AbstractRepository {
   private Manifest getManifest(Class<?> someClass) throws IOException {
     String className = someClass.getSimpleName();
     String classFileName = className + ".class";
-    String classFilePath = someClass.getPackage().toString().replace('.', '/') + "/" + className;
+    String classFilePath = someClass.getName().replace('.', '/') + ".class";
     String pathToThisClass = someClass.getResource(classFileName).toString();
-    String pathToManifest = pathToThisClass.toString().substring(0,
-        pathToThisClass.length() + 2 - ("/" + classFilePath).length())
-        + "/META-INF/MANIFEST.MF";
-    Manifest manifest = new Manifest(new URL(pathToManifest).openStream());
+    String pathToManifest2 = pathToThisClass.toString().substring(0, pathToThisClass.length() - classFilePath.length())
+        + "META-INF/MANIFEST.MF";
+    Manifest manifest = new Manifest(new URL(pathToManifest2).openStream());
     return manifest;
   }
 

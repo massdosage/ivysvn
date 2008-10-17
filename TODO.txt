@@ -4,8 +4,10 @@
 
 - Upgraded to SVNKit 1.2.0. (update wiki)
 - Upgraded to Trilead SSH for Java - Build 213. (update wiki)
+- Changed loading of Manifest so it should work on earlier versions of ant (Contributed by jkytomak)
 
-
+Mail out, also mention unit tests, useful for debugging etc. (will need documentation on how to set up and 
+get running with tests).
 TODO: did adding readRepository.setLocation to getFile() help with any webdav issues? (unlikely)
 TODO: add documentation in wiki for proxy stuff (will need to read up more on standard Java proxy properties used in the patch)
 
