@@ -15,7 +15,8 @@ Release 2.0 TBA
     "passphrase" to "sshPassphrase". 
   - Added a "retrieveRevision" attribute to the "svn" element to allow SVN revision used for retrieve operations to be 
     specified. 
-	- Values set on SvnResolver are trimmed to avoid annoying issues with whitespace.
+  - Changed loading of Manifest so it should work on earlier versions of Ant (Contributed by jkytomak) (http://code.google.com/p/ivysvn/issues/detail?id=11).
+	- Values (other than sshPassphrase and userPassword) set on SvnResolver are trimmed to avoid annoying issues with whitespace.
 	- "ivy-init" target in "common-targets.xml" sets a property to prevent itself being called more than once.
 
 Release 1.4 2008-03-19
