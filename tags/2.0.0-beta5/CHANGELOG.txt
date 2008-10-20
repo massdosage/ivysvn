@@ -1,0 +1,62 @@
+IvySvn Change Log
+
+Release 2.0 TBA
+~~~~~~~~~~~~~~~
+  - Added ability to perform binary diffs (based on code and concepts contributed by Xavier Hanin).
+  - Publish now results in one/two svn commits per publish call instead of per file (based on code and 
+    concepts contributed by Stephane Bailliez).
+  - Upgraded to Ivy 2.0.0 RC1.
+  - Upgraded to SVNKit 1.2.0.  
+  - Upgraded to Trilead SSH for Java - Build 213.
+  - Made setting of "repositoryRoot" attribute mandatory. This should be full path to root of repository - including 
+    protocol - patterns are relative to this. 
+  - Modified attributes set on "svn" element in ivysettings.xml to use CamelCase, renamed "port" to "sshPort" and 
+    "passphrase" to "sshPassphrase". 
+  - Added a "retrieveRevision" attribute to the "svn" element to specify SVN revision to be used for retrieve operations.
+  - When overwriting existing publications, files that are no longer part of publish are removed from repository (this 
+    can be controlled by the "cleanupPublishFolder" attribute on the "svn" element.
+  - Uses proxy settings if specified via Java system properties (contributed by Steve Brown) (http://code.google.com/p/ivysvn/issues/detail?id=7).
+  - Changed loading of Manifest so it should work on earlier versions of Ant (contributed by jkytomak) (http://code.google.com/p/ivysvn/issues/detail?id=11).
+	- Values (other than sshPassphrase and userPassword) set on SvnResolver are trimmed to avoid annoying issues with whitespace.
+	- "ivy-init" target in "common-targets.xml" sets a property to prevent itself being called more than once.
+	- Java 5 source and binary compatibility.
+
+Release 1.4 2008-03-19
+~~~~~~~~~~~~~~~~~~~~~~
+	- Build version and datetime are now output during ivy-init.
+	- Added toString() to SvnResource (contributed by Peter Hannam).
+	- Added optional ability to specify path to repository root via "repositoryURL" attribute on the 
+	  "svn" element (contributed by Christoffer Soop).
+	- Fixed some ant build dependencies (source version).
+	- Compiled against Ivy 2.0.0 beta 2 and SVNKit 1.1.6.
+	- Replaced Ganymed SSH-2 build 210 with Trilead SSH-2 build 211.
+	- Added Ivy, Trilead and SVNKit jar files to binary distribution.
+	- Added repository caching to allow authentication credentials to be loaded once per operation instead of per file. 
+
+Release 1.3 2008-01-08
+~~~~~~~~~~~~~~~~~~~~~~ 
+	- Added support for the following authentication mechanisms:
+		Subversion User name and Password authentication (also used over http) (Contributed by Peter Hannam).
+	- Fixed bug in file publish over http (Contributed by Peter Hannam).
+	- Compiled against Ivy 2.0.0 beta 1.
+		
+Release 1.2 2007-12-19
+~~~~~~~~~~~~~~~~~~~~~~ 
+	-Fixed bug in source release where install did not depend on build-jar.
+	-Added support for the following authentication mechanisms: 
+		SSH KeyFile authentication.
+		SVN+SSH User name and password authentication.
+		Subversion User name authentication.
+		SSL certificate authentication.
+
+Release 1.1 2007-11-08
+~~~~~~~~~~~~~~~~~~~~~~
+	-Added support for DAV access to Subversion (Contributed by Dolan O'Toole).
+	-Added support for overwrite (Contributed by Dolan O'Toole).
+	-Added (optional) automatic build number generation in build.xml and common-targets.xml
+	-Classes now compiled with debug flags to improve stack traces etc. 
+
+Release 1.0 2007-10-24
+~~~~~~~~~~~~~~~~~~~~~~
+
+	-Initial release supporting svn+ssh access to Subversion.
