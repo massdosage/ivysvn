@@ -168,3 +168,4 @@ This example `ivysettings.xml` file shows how to set up access to a repository o
   
 </ivysettings>
 }}}
+----
