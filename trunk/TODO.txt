@@ -2,6 +2,8 @@
 ~~~
 2.0 beta 6/RC release?
 
+Next e-mail - mention unit tests, useful for debugging etc.
+
 -----------------------------------
 
 -Final review of all code, javadoc and documentation.
