@@ -48,7 +48,7 @@ version number (or set the property "publish.overwrite" to true).
 To run the unit tests:
   # Setup a test Subversion repository which the unit tests will use to publish, retrieve and delete artifacts. 
   # Copy the file `test.properties.example` (located in `src/test/conf`) to `test.properties` and fill in the properties required to connect to the test Subversion repository. 
-  # run 
+  # Run 
 {{{
 ant test
 }}}
