@@ -93,7 +93,7 @@ svn+ssh://svn.acme.com/svn/java/repository/acme/widgets/0.14/widgetlib.jar
 
 If you set Ivy's "overwrite" property to "false" and try to publish an artifact with a revision that has already been published !IvySvn will notify you of this fact in the Ant output and will ignore the publish request. The Ant build will not fail but nothing will be published.
 
-If you set "overwrite" to "true" then any existing artifacts will be updated (i.e. a Subversion diff takes place) and any artifacts which are no longer part of the publication will be deleted.
+If you set "overwrite" to "true" then any existing artifacts will be updated (i.e. a Subversion diff takes place). If binaryDiff is true then the folder being published to will be deleted and the files from the intermediate diff folder will be copied over to a folder with the same name.
 
 ===Publishing with binaryDiff===
 
@@ -115,6 +115,10 @@ If you would like to use a folder name other than LATEST for storing the binaryD
     <svn name="ivysvn" userName="testuser" userPassword="testpassword" binaryDiff="true"
          binaryDiffFolderName="SOMEOTHERFOLDER">
 }}} 
+
+===Cleaning up previously published artifacts===
+By default, when publishing with binaryDiff set to false, any artifacts in the folder being published to are left as is. However, if you want to clean up the folder being published to you may set the attribute "cleanupPublishFolder" on the "svn" element. This will delete the contents of the folder being published to as part of the publish operation. This can be useful if you repeatedly publish the same revision and the artifacts that are part of the publish change between publish operations - the cleanup will ensure that artifacts which are no longer part of the publication are removed. Setting binaryDiff to true implies this behaviour as the binary diff publish operation always deletes the final destination folder and copies the contents of LATEST to this location. If binaryDiff is set to true you cannot set "cleanupPublishFolder" to false, attempting this will cause the build to fail.
+
 ----
 
 ==Example ivysettings.xml for svn:// access==
