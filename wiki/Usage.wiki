@@ -38,9 +38,11 @@ This example shows how to access the repository via svn+ssh, there are more exam
   
 </ivysettings>
 }}}
+----
 
 ==Using a Proxy server==
-If you require the use of an HTTP proxy to access your repository you can specify this using the System properties "http.proxyHost", "http.proxyPort" (defaults to 3128 if not specified), "http.proxyUser", and "http.proxyPassword".
+If you require the use of an HTTP proxy to access your repository you can specify this using the System properties "http.proxyHost", "http.proxyPort" (defaults to 3128 if not specified), "http.proxyUser", and "http.proxyPassword". The property "java.net.useSystemProxies" is set to false by !IvySvn. 
+----
 
 ==Retrieving artifacts==
 
@@ -65,6 +67,7 @@ By default, retrieve operations as explained above retrieve artifacts using the 
 retrieveRevision="3389"
 }}}
 *Note:* If you have previously retrieved the artifact you *must* remove it from the local Ivy cache before calling retrieve, otherwise Ivy will use the cached version (which might have a different revision) instead of retrieving the revision requested from Subversion.
+----
 
 ==Publishing artifacts==
 
@@ -112,6 +115,7 @@ If you would like to use a folder name other than LATEST for storing the binaryD
     <svn name="ivysvn" userName="testuser" userPassword="testpassword" binaryDiff="true"
          binaryDiffFolderName="SOMEOTHERFOLDER">
 }}} 
+----
 
 ==Example ivysettings.xml for svn:// access==
 
@@ -136,6 +140,7 @@ This example `ivysettings.xml` file shows how to set up access to a repository u
   
 </ivysettings>
 }}}
+----
 
 ==Example ivysettings.xml for http:// (!WebDav) access==
 
