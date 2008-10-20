@@ -39,6 +39,8 @@ This example shows how to access the repository via svn+ssh, there are more exam
 </ivysettings>
 }}}
 
+==Using a Proxy server==
+If you require the use of an HTTP proxy to access your repository you can specify this using the System properties "http.proxyHost", "http.proxyPort" (defaults to 3128 if not specified), "http.proxyUser", and "http.proxyPassword".
 
 ==Retrieving artifacts==
 
