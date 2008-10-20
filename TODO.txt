@@ -1,27 +1,7 @@
 2.0
 ~~~
-2.0 beta 5/RC release
+2.0 beta 6/RC release?
 
-Go over CHANGELOG for 2.0 and see if any issues in there can be linked back to issues in google code bug tracker
-
-Mail out, also mention unit tests, useful for debugging etc. (will need documentation on how to set up and 
-get running with tests).
-TODO: did adding readRepository.setLocation to getFile() help with any webdav issues? (unlikely)
-TODO: add documentation in wiki for proxy stuff (will need to read up more on standard Java proxy properties used in the patch)
-
-
-Changes (TODO: add the changes which are valid here to the CHANGELOG.txt for 2.0):
-
-- Upgraded to SVNKit 1.2.0. (update wiki)
-- Upgraded to Trilead SSH for Java - Build 213. (update wiki)
-- Changed loading of Manifest so it should work on earlier versions of ant (Contributed by jkytomak) (http://code.google.com/p/ivysvn/issues/detail?id=11)(ALREADY ADDED TO CHANGELOG)
-- Uses proxy settings if specified via Java system properties (http://code.google.com/p/ivysvn/issues/detail?id=7, contributed by Steve Brown)
-- cleanupPublishFolder (TODO: example files, documentation on site, mail user on ivy list who wanted this) - also 
-  document clearly that binaryDiff=true always does a cleanup, cannot set the cleanup to false and binary diff to true)
-- logging modifications to show full paths being used for publish/retrieve operations, especially for error cases. (issue number?)
-- dist binaries now built with classes compiled with source/target=1.5 (Contributed by Martin Stenderup). (issue number?)
-- binaryDiffFolderName attribute can now be used as documented (was binaryDiffFoldername). (issue number?)
-- sshPassphrase and svn user password no longer trimmed or checked for starting with ${ (http://code.google.com/p/ivysvn/issues/detail?id=9)
 -----------------------------------
 
 -Final review of all code, javadoc and documentation.
@@ -76,39 +56,3 @@ Future:
 -Test and bundle with Ivy 2.0 jar when released.
 -Make commit message configurable (maybe via a file template?)
 -Use Google ant tasks for publishing new binary and source releases.
-
--Add unit tests!!!
- This could be tricky to test all possible setups but we could at least start with svn:// and file:/// url's. svn+ssh:// 
- and http:// will require more setup and infrastructure to be present to run tests.
- Can go for two approaches:
- 
- 1. Call ant programmatically from the tests on a variety of ivy.xml files and then check the side effects in svn using svnkit calls.
-    see also http://www.ibm.com/developerworks/websphere/library/techarticles/0502_gawor/0502_gawor.html
-    Might be tricky as ivy is not a core ant task, not sure how to set up optional tasks. 
- 
- 2. Call Ivy more directly using code like such (lifted from a discussion on ivy users mailing list):
- 
-        Ivy ivy = Ivy.newInstance();
-        ivy.configureDefault();
-
-        File ivyfile = File.createTempFile("ivy", ".xml");
-        ivyfile.deleteOnExit();
-        String[] dep = new String[]{"commons-lang", "commons-lang", "1.0"};
-        DefaultModuleDescriptor md = DefaultModuleDescriptor
-                .newDefaultInstance(ModuleRevisionId.newInstance(dep[0],
-                        dep[1] + "-caller", "working"));
-        DefaultDependencyDescriptor dd = new DefaultDependencyDescriptor(md,
-                ModuleRevisionId.newInstance(dep[0], dep[1], dep[2]), false, false, true);
-        md.addDependency(dd);
-        XmlModuleDescriptorWriter.write(md, ivyfile);
-
-        String[] confs = new String[]{"default"};
-        ResolveOptions resolveOptions = new ResolveOptions().setConfs(confs);
-        ResolveReport report = ivy.resolve(ivyfile.toURL(), resolveOptions);
-        
- (also have a look at the other unit tests packaged with Ivy itself)
-
-
-
-
-
