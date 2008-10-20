@@ -5,19 +5,21 @@ Release 2.0 TBA
   - Added ability to perform binary diffs (based on code and concepts contributed by Xavier Hanin).
   - Publish now results in one/two svn commits per publish call instead of per file (based on code and 
     concepts contributed by Stephane Bailliez).
-  - When overwriting existing publications, files that are no longer part of publish are removed from repository.
   - Upgraded to Ivy 2.0.0 RC1.
   - Upgraded to SVNKit 1.2.0.  
   - Upgraded to Trilead SSH for Java - Build 213.
-  - Made setting of "repositoryRoot" attribute mandatory. This should be full path to root of repository, including 
-    protocol, patterns are relative to this. 
+  - Made setting of "repositoryRoot" attribute mandatory. This should be full path to root of repository - including 
+    protocol - patterns are relative to this. 
   - Modified attributes set on "svn" element in ivysettings.xml to use CamelCase, renamed "port" to "sshPort" and 
     "passphrase" to "sshPassphrase". 
-  - Added a "retrieveRevision" attribute to the "svn" element to allow SVN revision used for retrieve operations to be 
-    specified. 
-  - Changed loading of Manifest so it should work on earlier versions of Ant (Contributed by jkytomak) (http://code.google.com/p/ivysvn/issues/detail?id=11).
+  - Added a "retrieveRevision" attribute to the "svn" element to specify SVN revision to be used for retrieve operations.
+  - When overwriting existing publications, files that are no longer part of publish are removed from repository (this 
+    can be controlled by the "cleanupPublishFolder" attribute on the "svn" element.
+  - Uses proxy settings if specified via Java system properties (contributed by Steve Brown) (http://code.google.com/p/ivysvn/issues/detail?id=7).
+  - Changed loading of Manifest so it should work on earlier versions of Ant (contributed by jkytomak) (http://code.google.com/p/ivysvn/issues/detail?id=11).
 	- Values (other than sshPassphrase and userPassword) set on SvnResolver are trimmed to avoid annoying issues with whitespace.
 	- "ivy-init" target in "common-targets.xml" sets a property to prevent itself being called more than once.
+	- Java 5 source and binary compatibility.
 
 Release 1.4 2008-03-19
 ~~~~~~~~~~~~~~~~~~~~~~
