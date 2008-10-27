@@ -54,6 +54,7 @@ public class SvnRepositoryRetrieveTest extends BaseIvyTestCase {
    * @throws SVNException If an error occurs adding the default repository data to Subversion.
    */
   private void setUpRepository() throws SVNException {
+    // TODO: when run against WebDav repository even this fails and puts folders underneath each other
     ISVNEditor commitEditor = getCommitEditor();
     svnDAO.putFile(commitEditor, "acme widgets 4.5".getBytes(), BASE_PUBLISH_PATH + "/acme/widgets/4.5", "widgets.jar",
         false);
