@@ -87,7 +87,6 @@ public class SvnDao {
         return false;
       }
     } else { // creating new file
-      createFolders(editor, destinationFolder, -1);
       Message.debug("Adding file " + filePath);
       editor.addFile(filePath, null, -1);
     }

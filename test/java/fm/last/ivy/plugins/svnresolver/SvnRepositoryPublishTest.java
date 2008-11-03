@@ -162,9 +162,9 @@ public class SvnRepositoryPublishTest extends BaseIvyTestCase {
     if (!publishFolder.endsWith("/")) {
       publishFolder = publishFolder + "/";
     }
-    assertTrue(svnDAO.fileExists(publishFolder + artifactFileName, -1));
-    assertTrue(svnDAO.fileExists(publishFolder + artifactFileName + ".sha1", -1));
-    assertTrue(svnDAO.fileExists(publishFolder + artifactFileName + ".md5", -1));
+    assertTrue(publishFolder + artifactFileName + " doesn't exist", svnDAO.fileExists(publishFolder + artifactFileName, -1));
+    assertTrue(publishFolder + artifactFileName + ".sha1 doesn't exist", svnDAO.fileExists(publishFolder + artifactFileName + ".sha1", -1));
+    assertTrue(publishFolder + artifactFileName + ".md5 doesn't exist", svnDAO.fileExists(publishFolder + artifactFileName + ".md5", -1));
   }
 
   /**
@@ -283,6 +283,7 @@ public class SvnRepositoryPublishTest extends BaseIvyTestCase {
     // first emulate a file left over from a previous publish to the same folder
     ISVNEditor commitEditor = getCommitEditor();
     String publishPath = BASE_PUBLISH_PATH + "/" + organisation + "/" + module + "/1.0/";
+    svnDAO.createFolders(commitEditor, publishPath, -1);
     svnDAO.putFile(commitEditor, "previous file".getBytes(), publishPath, "previous.jar", false);
     commitEditor.closeEdit();
 
@@ -293,7 +294,7 @@ public class SvnRepositoryPublishTest extends BaseIvyTestCase {
     assertPublish("1.0", defaultFileContents);
 
     // previously created file should have been cleaned up
-    assertFalse(svnDAO.fileExists(publishPath + "previous.jar", -1));
+    assertFalse(publishPath + "previous.jar exists", svnDAO.fileExists(publishPath + "previous.jar", -1));
   }
 
   @Test
@@ -301,6 +302,7 @@ public class SvnRepositoryPublishTest extends BaseIvyTestCase {
     // first emulate a file left over from a previous publish to the same folder
     ISVNEditor commitEditor = getCommitEditor();
     String publishPath = BASE_PUBLISH_PATH + "/" + organisation + "/" + module + "/1.0/";
+    svnDAO.createFolders(commitEditor, publishPath, -1);
     svnDAO.putFile(commitEditor, "previous file".getBytes(), publishPath, "previous.jar", false);
     commitEditor.closeEdit();
 
@@ -311,7 +313,7 @@ public class SvnRepositoryPublishTest extends BaseIvyTestCase {
     assertPublish("1.0", defaultFileContents);
 
     // previously created file should not have been cleaned up
-    assertTrue(svnDAO.fileExists(publishPath + "previous.jar", -1));
+    assertTrue(publishPath + "previous.jar doesn't exist", svnDAO.fileExists(publishPath + "previous.jar", -1));
   }
 
   @Test
@@ -319,6 +321,7 @@ public class SvnRepositoryPublishTest extends BaseIvyTestCase {
     // first emulate a file left over from a previous publish to the same folder
     ISVNEditor commitEditor = getCommitEditor();
     String publishPath = BASE_PUBLISH_PATH + "/" + organisation + "/" + module + "/1.0/";
+    svnDAO.createFolders(commitEditor, publishPath, -1);
     svnDAO.putFile(commitEditor, "previous file".getBytes(), publishPath, "previous.jar", false);
     commitEditor.closeEdit();
 
@@ -329,7 +332,7 @@ public class SvnRepositoryPublishTest extends BaseIvyTestCase {
     assertPublish("1.0", defaultFileContents);
 
     // previously created file should have been cleaned up
-    assertFalse(svnDAO.fileExists(publishPath + "previous.jar", -1));
+    assertFalse(publishPath + "previous.jar exists", svnDAO.fileExists(publishPath + "previous.jar", -1));
   }
 
   @Test
@@ -337,6 +340,7 @@ public class SvnRepositoryPublishTest extends BaseIvyTestCase {
     // first emulate a file left over from a previous publish to the same folder
     ISVNEditor commitEditor = getCommitEditor();
     String publishPath = BASE_PUBLISH_PATH + "/" + organisation + "/" + module + "/1.0/";
+    svnDAO.createFolders(commitEditor, publishPath, -1);
     svnDAO.putFile(commitEditor, "previous file".getBytes(), publishPath, "previous.jar", false);
     commitEditor.closeEdit();
 
@@ -350,7 +354,7 @@ public class SvnRepositoryPublishTest extends BaseIvyTestCase {
       // expected
     }
     // publish did not take place so file should still be there
-    assertTrue(svnDAO.fileExists(publishPath + "previous.jar", -1));
+    assertTrue(publishPath + "previous.jar doesn't exist", svnDAO.fileExists(publishPath + "previous.jar", -1));
     assertEquals(1, svnDAO.list(publishPath, -1).size()); // and that should be the only file there
   }
 
