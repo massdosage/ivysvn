@@ -56,9 +56,9 @@ public class SvnPublishTransaction {
   private SVNRepository commitRepository = null;
 
   /**
-   * List of PutOperations representing artifacts that need to be added/updated.
+   * Tree representing the directories and artifacts that need to be added/updated.
    */
-  private List<PutOperation> putOperations = new ArrayList<PutOperation>();
+  private Directory transactionContent = new Directory("", "/", null);
 
   /**
    * Svn commit message.
@@ -137,9 +137,30 @@ public class SvnPublishTransaction {
    * @param overwrite Whether an overwrite should be performed if the file already exists.
    * @throws IOException If the file data cannot be read from disk or the file paths cannot be determined.
    */
-  public void addPutOperation(File source, String destinationPath, boolean overwrite) throws IOException {
+  public void addPutOperation(File source, String destinationPath, boolean overwrite) throws SVNException, IOException {
     PutOperation operation = new PutOperation(source, destinationPath, overwrite);
-    this.putOperations.add(operation);
+
+    String destinationFolderPath = operation.getFolderPath();
+    if (binaryDiff) { // publishing to intermediate binary diff location, override values set above
+      if (!operation.isOverwrite() && svnDAO.folderExists(operation.getFolderPath(), -1, true)) {
+        Message.info("Overwrite set to false, ignoring " + operation.getFilePath());
+        return;
+      }
+      destinationFolderPath = operation.determineBinaryDiffFolderPath(revision, binaryDiffFolderName);
+      overwrite = true; // force overwrite for binary diff
+    }
+
+    if (destinationFolderPath.startsWith("/")) {
+      destinationFolderPath = destinationFolderPath.substring(1);
+    }
+    String[] pathComponents = destinationFolderPath.split("/");
+    int pathIndex = 0;
+    Directory currentPos = transactionContent;
+    while (pathIndex < pathComponents.length) {
+      currentPos = currentPos.subdir(pathComponents[pathIndex]);
+      pathIndex++;
+    }
+    currentPos.addFile(operation);
   }
 
   /**
@@ -155,7 +176,7 @@ public class SvnPublishTransaction {
     commitEditor = commitRepository.getCommitEditor(commitMessage, null);
     commitStarted = true;
     commitEditor.openRoot(-1);
-    int putFileCount = performPutOperations(); // put all the files scheduled to be put
+    int putFileCount = transactionContent.commit();
     if (putFileCount == 0) {
       commitEditor.abortEdit();
       Message.info("Nothing to commit");
@@ -175,7 +196,7 @@ public class SvnPublishTransaction {
    * @throws SVNException If an error occurs performing any of the put operations.
    * @throws IOException If an error occurs reading any file data.
    */
-  private int performPutOperations() throws SVNException, IOException {
+  private int performPutOperations(Iterable<PutOperation> putOperations) throws SVNException, IOException {
     checkCommitEditor();
     int putFileCount = 0;
     Map<String, Set<String>> putFiles = new HashMap<String, Set<String>>();
@@ -240,29 +261,7 @@ public class SvnPublishTransaction {
    * @throws SVNException If an error occurs deleting previous releases in the repository.
    */
   private Map<String, String> prepareBinaryDiff() throws SVNException {
-    Map<String, String> binaryDiffs = new HashMap<String, String>();
-    if (binaryDiff) {
-      Set<String> processedFolders = new HashSet<String>(); // most operations share a folder, so "cache" this
-      for (PutOperation operation : putOperations) {
-        String currentFolder = operation.getFolderPath();
-        if (!processedFolders.contains(currentFolder)) { // we haven't dealt with this folder yet
-          String binaryDiffFolderPath = operation.determineBinaryDiffFolderPath(revision, binaryDiffFolderName);
-          binaryDiffs.put(currentFolder, binaryDiffFolderPath); // schedule this to be processed later
-          if (svnDAO.folderExists(currentFolder, -1, true)) {
-            if (operation.isOverwrite()) {
-              // delete old release, we will copy over to release folder again in binary diff commit later
-              Message.info("Binary diff deleting " + currentFolder);
-              commitEditor.deleteEntry(currentFolder, -1);
-            } else {
-              Message.info("Overwrite set to false, ignoring copy to " + currentFolder);
-              binaryDiffs.remove(currentFolder);
-            }
-          }
-        }
-        processedFolders.add(currentFolder);
-      }
-    }
-    return binaryDiffs;
+    return transactionContent.prepareBinaryDiff();
   }
 
   /**
@@ -347,6 +346,104 @@ public class SvnPublishTransaction {
    */
   public void setCleanupPublishFolder(Boolean cleanupPublishFolder) {
     this.cleanupPublishFolder = cleanupPublishFolder;
+  }
+
+  private class Directory {
+    private final String path;
+    private final String name;
+    private final Directory parent;
+    private final Map<String,Directory> subDirs = new HashMap<String,Directory>();
+    private final List<PutOperation> files = new ArrayList<PutOperation>();
+
+    private Directory(String name, String path, Directory parent) {
+      this.name = name;
+      this.path = path;
+      this.parent = parent;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public String getPath() {
+      return path;
+    }
+
+    public Directory subdir(String name) {
+      if (subDirs.containsKey(name)) {
+        return subDirs.get(name);
+      } else {
+        StringBuilder subdirPath = new StringBuilder(this.getPath());
+        if (!this.getPath().endsWith("/")) {
+          subdirPath.append('/');
+        }
+        subdirPath.append(name);
+        Directory subdir = new Directory(name, subdirPath.toString(), this);
+        subDirs.put(name, subdir);
+        return subdir;
+      }
+    }
+
+    public Directory updir() {
+      return parent;
+    }
+
+    public void addFile(PutOperation op) {
+      files.add(op);
+    }
+
+    public int commit() throws SVNException, IOException {
+      int fileCount = 0;
+      if (parent != null) {
+        if (svnDAO.folderExists(getPath(), -1, true)) {
+          commitEditor.openDir(getPath(), -1);
+        } else {
+          Message.debug("Creating folder " + getPath());
+          commitEditor.addDir(getPath(), null, -1);
+        }
+      }
+      for (Directory subdir: subDirs.values()) {
+        fileCount += subdir.commit();
+      }
+      fileCount += performPutOperations(files);
+      if (parent != null) {
+        commitEditor.closeDir();
+      }
+      return fileCount;
+    }
+
+    public Map<String, String> prepareBinaryDiff() throws SVNException {
+      Map<String, String> binaryDiffs = new HashMap<String, String>();
+      if (binaryDiff) {
+        Set<String> processedFolders = new HashSet<String>();
+        prepareBinaryDiff(binaryDiffs, processedFolders);
+      }
+      return binaryDiffs;
+    }
+
+    private void prepareBinaryDiff(Map<String, String> binaryDiffs, Set<String> processedFolders) throws SVNException {
+      for (Directory subdir: subDirs.values()) {
+        subdir.prepareBinaryDiff(binaryDiffs, processedFolders);
+      }
+      for (PutOperation operation : files) {
+        String currentFolder = operation.getFolderPath();
+        if (!processedFolders.contains(currentFolder)) { // we haven't dealt with this folder yet
+          String binaryDiffFolderPath = operation.determineBinaryDiffFolderPath(revision, binaryDiffFolderName);
+          binaryDiffs.put(currentFolder, binaryDiffFolderPath); // schedule this to be processed later
+          if (svnDAO.folderExists(currentFolder, -1, true)) {
+            if (operation.isOverwrite()) {
+              // delete old release, we will copy over to release folder again in binary diff commit later
+              Message.info("Binary diff deleting " + currentFolder);
+              commitEditor.deleteEntry(currentFolder, -1);
+            } else {
+              Message.info("Overwrite set to false, ignoring copy to " + currentFolder);
+              binaryDiffs.remove(currentFolder);
+            }
+          }
+        }
+        processedFolders.add(currentFolder);
+      }
+    }
   }
 
 }

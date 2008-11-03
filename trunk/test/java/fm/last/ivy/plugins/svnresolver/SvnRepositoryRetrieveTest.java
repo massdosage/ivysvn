@@ -56,14 +56,33 @@ public class SvnRepositoryRetrieveTest extends BaseIvyTestCase {
   private void setUpRepository() throws SVNException {
     // TODO: when run against WebDav repository even this fails and puts folders underneath each other
     ISVNEditor commitEditor = getCommitEditor();
+    svnDAO.createFolders(commitEditor, BASE_PUBLISH_PATH, -1);
+    commitEditor.addDir(BASE_PUBLISH_PATH + "/acme", null, -1);
+    commitEditor.addDir(BASE_PUBLISH_PATH + "/acme/widgets", null, -1);
+    commitEditor.addDir(BASE_PUBLISH_PATH + "/acme/widgets/4.5", null, -1);
     svnDAO.putFile(commitEditor, "acme widgets 4.5".getBytes(), BASE_PUBLISH_PATH + "/acme/widgets/4.5", "widgets.jar",
         false);
+    commitEditor.closeDir(); // acme/widgets/4.5
+    commitEditor.addDir(BASE_PUBLISH_PATH + "/acme/widgets/4.4", null, -1);
     svnDAO.putFile(commitEditor, "acme widgets 4.4".getBytes(), BASE_PUBLISH_PATH + "/acme/widgets/4.4", "widgets.jar",
         false);
+    commitEditor.closeDir(); // acme/widgets/4.4
+    commitEditor.closeDir(); // acme/widgets
+    commitEditor.addDir(BASE_PUBLISH_PATH + "/acme/gizmos", null, -1);
+    commitEditor.addDir(BASE_PUBLISH_PATH + "/acme/gizmos/1.0", null, -1);
     svnDAO.putFile(commitEditor, "acme gizmos 1.0".getBytes(), BASE_PUBLISH_PATH + "/acme/gizmos/1.0", "gizmos.jar",
         false);
+    commitEditor.closeDir(); // acme/gizmos/1.0
+    commitEditor.closeDir(); // acme/gizmos
+    commitEditor.closeDir(); // acme
+    commitEditor.addDir(BASE_PUBLISH_PATH + "/constructus", null, -1);
+    commitEditor.addDir(BASE_PUBLISH_PATH + "/constructus/toolkit", null, -1);
+    commitEditor.addDir(BASE_PUBLISH_PATH + "/constructus/toolkit/1.1", null, -1);
     svnDAO.putFile(commitEditor, "constructus toolkit 1.1".getBytes(), BASE_PUBLISH_PATH + "/constructus/toolkit/1.1",
         "toolkit.jar", false);
+    commitEditor.closeDir(); // constructus/toolkit/1.1
+    commitEditor.closeDir(); // constructus/toolkit
+    commitEditor.closeDir(); // constructus
     commitEditor.closeEdit();
   }
 

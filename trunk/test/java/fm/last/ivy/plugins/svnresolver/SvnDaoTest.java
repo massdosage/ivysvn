@@ -41,6 +41,7 @@ public class SvnDaoTest extends BaseTestCase {
     assertFalse(svnDAO.fileExists(TEST_PATH + "/" + fileName, -1));
     String testData = new String("test data");
     ISVNEditor commitEditor = getCommitEditor();
+    svnDAO.createFolders(commitEditor, TEST_PATH, -1);
     svnDAO.putFile(commitEditor, testData.getBytes(), TEST_PATH, fileName, false);
     commitEditor.closeEdit();
     assertTrue(svnDAO.fileExists(TEST_PATH + "/" + fileName, -1));
@@ -57,6 +58,7 @@ public class SvnDaoTest extends BaseTestCase {
     ISVNEditor commitEditor = getCommitEditor();
     String fileName = "testPutFile().txt";
     String testData = new String("test data");
+    svnDAO.createFolders(commitEditor, TEST_PATH, -1);
     svnDAO.putFile(commitEditor, testData.getBytes(), TEST_PATH, fileName, false);
     commitEditor.closeEdit();
     assertTrue(svnDAO.fileExists(TEST_PATH + "/" + fileName, -1));
@@ -69,6 +71,7 @@ public class SvnDaoTest extends BaseTestCase {
     String modifiedTestData = new String("test data-modified");
     commitEditor = getCommitEditor();
     // send different data to same file with overwrite set to FALSE, put should get ignored
+    svnDAO.createFolders(commitEditor, TEST_PATH, -1);
     svnDAO.putFile(commitEditor, modifiedTestData.getBytes(), TEST_PATH, fileName, false);
     commitEditor.closeEdit();
 
@@ -80,6 +83,7 @@ public class SvnDaoTest extends BaseTestCase {
 
     commitEditor = getCommitEditor();
     // send different data to same file with overwrite set to TRUE
+    svnDAO.createFolders(commitEditor, TEST_PATH, -1);
     svnDAO.putFile(commitEditor, modifiedTestData.getBytes(), TEST_PATH, fileName, true);
     commitEditor.closeEdit();
 
@@ -103,6 +107,7 @@ public class SvnDaoTest extends BaseTestCase {
     String destinationPath = TEST_PATH + "/x/y/z";
     assertFalse(svnDAO.folderExists(destinationPath, -1, false));
     ISVNEditor commitEditor = getCommitEditor();
+    svnDAO.createFolders(commitEditor, destinationPath, -1);
     svnDAO.putFile(commitEditor, testData.getBytes(), destinationPath, fileName, false);
     commitEditor.closeEdit();
     assertTrue(svnDAO.folderExists(destinationPath, -1, false));
@@ -171,6 +176,7 @@ public class SvnDaoTest extends BaseTestCase {
     String destinationPath = TEST_PATH + "/testList";
     assertFalse(svnDAO.folderExists(destinationPath, -1, false));
     ISVNEditor commitEditor = getCommitEditor();
+    svnDAO.createFolders(commitEditor, destinationPath, -1);
     svnDAO.putFile(commitEditor, testData.getBytes(), destinationPath, "file1.txt", false);
     svnDAO.putFile(commitEditor, testData.getBytes(), destinationPath, "file2.txt", false);
     svnDAO.createFolders(commitEditor, destinationPath + "/subfolder", -1);

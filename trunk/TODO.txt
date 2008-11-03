@@ -1,6 +1,8 @@
 2.0
 ~~~
-2.0 beta 6/RC release?
+2.0 beta RC 1 release with dav fix! Add more tests for publishing 0.1 then 0.2 in one test.
+
+- Publishing over Webdav issues fixed (http://code.google.com/p/ivysvn/issues/detail?id=8) (Contributed by gereedy)
 
 Next e-mail - mention unit tests, useful for debugging etc.
 
