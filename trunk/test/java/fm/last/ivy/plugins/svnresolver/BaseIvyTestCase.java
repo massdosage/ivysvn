@@ -23,21 +23,27 @@ public abstract class BaseIvyTestCase extends BaseTestCase {
   // set cache location under "test/tmp" so it will get automatically cleaned between tests
   private File cache = new File(TEST_TMP_PATH + "/cache");
 
-  protected Project project;
-
   @Before
   public void setUp() throws SVNException {
     super.setUp();
     cache.mkdirs();
     System.setProperty("ivy.cache.dir", cache.getAbsolutePath());
+  }
 
-    project = new Project();
+  /**
+   * Creates a new Ant Project with logging set up.
+   * 
+   * @return A new Ant Project.
+   */
+  protected Project createProject() {
+    Project project = new Project();
     // redirect ant output to System streams
     DefaultLogger consoleLogger = new DefaultLogger();
     consoleLogger.setErrorPrintStream(System.err);
     consoleLogger.setOutputPrintStream(System.out);
-    consoleLogger.setMessageOutputLevel(Project.MSG_DEBUG);
+    consoleLogger.setMessageOutputLevel(Project.MSG_DEBUG); // TODO: add to test.properties
     project.addBuildListener(consoleLogger);
+    return project;
   }
 
   /**
