@@ -22,9 +22,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.ivy.ant.IvyRetrieve;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
 import org.junit.Before;
 import org.junit.Test;
 import org.tmatesoft.svn.core.SVNException;
@@ -34,9 +32,6 @@ import org.tmatesoft.svn.core.io.ISVNEditor;
  * Tests "ivy retrieve" calls on the SvnRepository.
  */
 public class SvnRepositoryRetrieveTest extends BaseIvyTestCase {
-
-  // the pattern that Ivy should use to retrieve files *to*
-  private static final String RETRIEVE_PATTERN = TEST_TMP_PATH + "/[artifact].[ext]";
 
   @Before
   public void setUp() throws SVNException {
@@ -81,34 +76,15 @@ public class SvnRepositoryRetrieveTest extends BaseIvyTestCase {
     commitEditor.closeEdit();
   }
 
-  /**
-   * Utility method that performs a retrieve operation using the default ivy settings and the passed ivy file.
-   * 
-   * @param ivyFileName The ivy file to use to determine what files to retrieve.
-   * @throws IOException If an error occurs reading the default Ivy settings file.
-   */
-  private void retrieve(String ivyFileName) throws IOException {
-    Project project = createProject();
-    IvyRetrieve retrieve = new IvyRetrieve();
-    retrieve.setProject(project);
-    retrieve.setTaskName("retrieve");
-    retrieve.setPattern(RETRIEVE_PATTERN);
-
-    File ivySettingsFile = prepareTestIvySettings(new File(TEST_CONF_PATH + "/ivysettings-default.xml"));
-    project.setProperty("ivy.settings.file", ivySettingsFile.getAbsolutePath());
-    resolve(project, new File(TEST_CONF_PATH + "/" + ivyFileName));
-    retrieve.execute();
-  }
-
   @Test
   public void testRetrieve() throws IOException {
-    retrieve("ivy-test-retrieve.xml");
+    retrieve(new File(ivysDataFolder, "ivy-test-retrieve.xml"));
     assertEquals("acme widgets 4.4", FileUtils.readFileToString(new File(testTempFolder, "widgets.jar")));
   }
 
   @Test
   public void testRetrieveLatestIntegration() throws IOException {
-    retrieve("ivy-test-retrieve-latest-integration.xml");
+    retrieve(new File(ivysDataFolder, "ivy-test-retrieve-latest-integration.xml"));
     // latest.integration should resolve to 4.5
     assertEquals("acme widgets 4.5", FileUtils.readFileToString(new File(testTempFolder, "widgets.jar")));
     // 1.1 should have been resolved directly
@@ -122,12 +98,12 @@ public class SvnRepositoryRetrieveTest extends BaseIvyTestCase {
     svnDAO.putFile(commitEditor, "constructus toolkit user 2.0".getBytes(), BASE_PUBLISH_PATH
         + "/constructus/toolkituser/2.0", "toolkituser.jar", false);
 
-    String toolkitUserIvyFile = FileUtils.readFileToString(new File(TEST_CONF_PATH, "ivy-constructus-toolkituser.xml"));
+    String toolkitUserIvyFile = FileUtils.readFileToString(new File(ivysDataFolder, "ivy-constructus-toolkituser.xml"));
     svnDAO.putFile(commitEditor, toolkitUserIvyFile.getBytes(), BASE_PUBLISH_PATH + "/constructus/toolkituser/2.0",
         "ivy.xml", false);
 
     commitEditor.closeEdit();
-    retrieve("ivy-test-retrieve-dependent.xml");
+    retrieve(new File(ivysDataFolder, "ivy-test-retrieve-dependent.xml"));
     // check the required file was downloaded
     assertEquals("constructus toolkit user 2.0", FileUtils
         .readFileToString(new File(testTempFolder, "toolkituser.jar")));
@@ -141,11 +117,11 @@ public class SvnRepositoryRetrieveTest extends BaseIvyTestCase {
     svnDAO.createFolders(commitEditor, BASE_PUBLISH_PATH + "/constructus/toolkituser/2.0", -1);
     svnDAO.putFile(commitEditor, "constructus toolkit user 2.0".getBytes(), BASE_PUBLISH_PATH
         + "/constructus/toolkituser/2.0", "toolkituser.jar", false);
-    String toolkitUserIvyFile = FileUtils.readFileToString(new File(TEST_CONF_PATH, "ivy-constructus-toolkituser.xml"));
+    String toolkitUserIvyFile = FileUtils.readFileToString(new File(ivysDataFolder, "ivy-constructus-toolkituser.xml"));
     svnDAO.putFile(commitEditor, toolkitUserIvyFile.getBytes(), BASE_PUBLISH_PATH + "/constructus/toolkituser/2.0",
         "ivy.xml", false);
     commitEditor.closeEdit();
-    retrieve("ivy-test-retrieve-dependent-transitive-false.xml");
+    retrieve(new File(ivysDataFolder, "ivy-test-retrieve-dependent-transitive-false.xml"));
     // check the required file was downloaded
     assertEquals("constructus toolkit user 2.0", FileUtils
         .readFileToString(new File(testTempFolder, "toolkituser.jar")));
@@ -156,9 +132,7 @@ public class SvnRepositoryRetrieveTest extends BaseIvyTestCase {
   @Test(expected = BuildException.class)
   public void testRetrieve_NonExistent() throws IOException {
     // this ivy xml points to a file which is not in created by setUpRepository()
-    retrieve("ivy-test-retrieve-dependent.xml");
+    retrieve(new File(ivysDataFolder, "ivy-test-retrieve-dependent.xml"));
   }
-
-  // TODO: test latest.release and latest.milestone
 
 }

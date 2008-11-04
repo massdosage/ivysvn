@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.ivy.ant.IvyResolve;
+import org.apache.ivy.ant.IvyRetrieve;
 import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.junit.Before;
@@ -20,8 +21,28 @@ public abstract class BaseIvyTestCase extends BaseTestCase {
   // the base path for published artifacts
   protected static final String BASE_PUBLISH_PATH = TEST_PATH + "/java/repository";
 
+  // the pattern that Ivy should use to retrieve files *to*
+  private static final String DEFAULT_RETRIEVE_PATTERN = TEST_TMP_PATH + "/[artifact].[ext]";
+
   // set cache location under "test/tmp" so it will get automatically cleaned between tests
   private File cache = new File(TEST_TMP_PATH + "/cache");
+
+  /**
+   * Folder holding various ivy.xml files used by the tests.
+   */
+  protected File ivysDataFolder = new File(baseTestDataFolder, "ivys");
+
+  /**
+   * Folder holding various ivysettings.xml files used by the tests.
+   */
+  protected File ivySettingsDataFolder = new File(baseTestDataFolder, "ivysettings");
+
+  /**
+   * Default ivy.xml file which can be used for retrieving artifacts.
+   */
+  protected File defaultIvyXml = new File(ivysDataFolder, "ivy-test-retrieve-default.xml");
+  
+  protected File defaultIvySettingsFile = new File(ivySettingsDataFolder, "ivysettings-default.xml");
 
   // property values for ant log level
   private static final String MSG_ERR = "MSG_ERR";
@@ -127,6 +148,22 @@ public abstract class BaseIvyTestCase extends BaseTestCase {
   }
 
   /**
+   * Creates a test ivy.xml file, replacing the revision in the passed template file with the passed revision.
+   * 
+   * @param ivyFileTemplate Path to the template file.
+   * @param revision Revision to use.
+   * @return A test ivy.xml file.
+   * @throws IOException If an error occurs reading the Ivy template file or writing a new one to disk.
+   */
+  protected File prepareTestIvyFile(File ivyFileTemplate, String revision) throws IOException {
+    String ivyXML = FileUtils.readFileToString(ivyFileTemplate);
+    ivyXML = ivyXML.replace("@rev", revision);
+    File tempIvyFile = new File(testTempFolder, "ivy-test.xml");
+    FileUtils.writeStringToFile(tempIvyFile, ivyXML);
+    return tempIvyFile;
+  }
+
+  /**
    * Performs an Ivy resolve operation for the passed Ant Project.
    * 
    * @param project Ant project.
@@ -138,6 +175,38 @@ public abstract class BaseIvyTestCase extends BaseTestCase {
     resolve.setTaskName("resolve");
     resolve.setFile(ivyFile);
     resolve.execute();
+  }
+
+  /**
+   * Utility method that performs a retrieve operation using the default ivy settings and the passed ivy file and
+   * retrieve pattern.
+   * 
+   * @param ivyFile The ivy file to use to determine what files to retrieve.
+   * @param retrievePattern Pattern to use for retrieving.
+   * @throws IOException If an error occurs reading the default Ivy settings file.
+   */
+  protected void retrieve(File ivyFile, String retrievePattern) throws IOException {
+    Project project = createProject();
+    IvyRetrieve retrieve = new IvyRetrieve();
+    retrieve.setProject(project);
+    retrieve.setTaskName("retrieve");
+    retrieve.setPattern(retrievePattern);
+
+    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile);
+    project.setProperty("ivy.settings.file", ivySettingsFile.getAbsolutePath());
+    resolve(project, ivyFile);
+    retrieve.execute();
+  }
+
+  /**
+   * Utility method that performs a retrieve operation using the default ivy settings and the passed ivy file and the
+   * default retrieve pattern.
+   * 
+   * @param ivyFile The ivy file to use to determine what files to retrieve.
+   * @throws IOException If an error occurs reading the default Ivy settings file.
+   */
+  protected void retrieve(File ivyFile) throws IOException {
+    retrieve(ivyFile, DEFAULT_RETRIEVE_PATTERN);
   }
 
 }
