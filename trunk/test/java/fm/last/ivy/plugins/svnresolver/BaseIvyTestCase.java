@@ -23,11 +23,44 @@ public abstract class BaseIvyTestCase extends BaseTestCase {
   // set cache location under "test/tmp" so it will get automatically cleaned between tests
   private File cache = new File(TEST_TMP_PATH + "/cache");
 
+  // property values for ant log level
+  private static final String MSG_ERR = "MSG_ERR";
+  private static final String MSG_WARN = "MSG_WARN";
+  private static final String MSG_INFO = "MSG_INFO";
+  private static final String MSG_VERBOSE = "MSG_VERBOSE";
+  private static final String MSG_DEBUG = "MSG_DEBUG";
+
   @Before
   public void setUp() throws SVNException {
     super.setUp();
     cache.mkdirs();
     System.setProperty("ivy.cache.dir", cache.getAbsolutePath());
+  }
+
+  /**
+   * Gets the value set in test.properties for Ant's message output level (defaults to MSG_DEBUG).
+   * 
+   * @return The value for Ant's message output level.
+   */
+  private int getAntMessageOutputLevel() {
+    String logLevelString = TestProperties.getInstance().getProperty(TestProperties.PROPERTY_ANT_MESSAGE_OUTPUT_LEVEL,
+        MSG_DEBUG).trim();
+    int logLevel = Project.MSG_DEBUG;
+    if (MSG_DEBUG.equals(logLevelString)) {
+      logLevel = Project.MSG_DEBUG;
+    } else if (MSG_VERBOSE.equals(logLevelString)) {
+      logLevel = Project.MSG_VERBOSE;
+    } else if (MSG_INFO.equals(logLevelString)) {
+      logLevel = Project.MSG_INFO;
+    } else if (MSG_WARN.equals(logLevelString)) {
+      logLevel = Project.MSG_WARN;
+    } else if (MSG_ERR.equals(logLevelString)) {
+      logLevel = Project.MSG_ERR;
+    } else {
+      System.err.println("Undefined value for " + TestProperties.PROPERTY_ANT_MESSAGE_OUTPUT_LEVEL + " '"
+          + logLevelString + "' " + MSG_DEBUG + " will be used.");
+    }
+    return logLevel;
   }
 
   /**
@@ -41,7 +74,7 @@ public abstract class BaseIvyTestCase extends BaseTestCase {
     DefaultLogger consoleLogger = new DefaultLogger();
     consoleLogger.setErrorPrintStream(System.err);
     consoleLogger.setOutputPrintStream(System.out);
-    consoleLogger.setMessageOutputLevel(Project.MSG_DEBUG); // TODO: add to test.properties
+    consoleLogger.setMessageOutputLevel(getAntMessageOutputLevel());
     project.addBuildListener(consoleLogger);
     return project;
   }

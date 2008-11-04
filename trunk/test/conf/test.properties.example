@@ -5,3 +5,6 @@ svn.repository.root=
 svn.user.name=
 #the Subversion password to use for unit tests
 svn.user.password=
+
+#the value to use for ant's logging in the tests, possible values are: MSG_DEBUG (default), MSG_VERBOSE, MSG_INFO, MSG_WARN, MSG_ERR
+#ant.message.output.level=MSG_DEBUG

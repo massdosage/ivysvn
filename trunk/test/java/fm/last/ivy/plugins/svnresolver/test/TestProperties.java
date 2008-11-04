@@ -34,6 +34,7 @@ public class TestProperties {
   public static final String PROPERTY_SVN_USER_NAME = "svn.user.name";
   public static final String PROPERTY_SVN_PASSWORD = "svn.user.password";
   public static final String PROPERTY_SVN_BINARY_DIFF = "svn.binarydiff";
+  public static final String PROPERTY_ANT_MESSAGE_OUTPUT_LEVEL = "ant.message.output.level";
 
   /**
    * Private constructor to prevent external instantiation.
@@ -80,5 +81,5 @@ public class TestProperties {
     String value = properties.getProperty(key);
     return value == null ? defaultValue : value;
   }
-
+  
 }
