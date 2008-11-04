@@ -55,15 +55,9 @@ public abstract class BaseTestCase {
   protected File testTempFolder = new File(TEST_TMP_PATH);
 
   /**
-   * The base test data folder (i.e. test/data);
+   * Folder containing test data.
    */
   protected File baseTestDataFolder = new File(TEST_DATA_PATH);
-
-  /**
-   * A test data folder for a specific test (only valid for tests which put their data in a folder under "data" which
-   * matches their fully qualified class name).
-   */
-  protected File testDataFolder = new File(baseTestDataFolder, getClass().getName().replaceAll("\\.", "/"));
 
   /**
    * Controls whether the temp folder should be deleted between tests.
