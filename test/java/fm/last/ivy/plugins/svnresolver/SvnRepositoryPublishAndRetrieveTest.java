@@ -22,7 +22,6 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.ivy.ant.IvyPublish;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.tmatesoft.svn.core.SVNException;
 
@@ -79,7 +78,6 @@ public class SvnRepositoryPublishAndRetrieveTest extends BaseSvnRepositoryPublis
   }
 
   @Test
-  @Ignore("TODO: fix this!")
   public void testIssue13() throws IOException, SVNException {
     File ivySettingsFile = prepareTestIvySettings(new File(ivySettingsDataFolder, "ivysettings-issue13.xml"));
     IvyPublish publish = createIvyPublish("1.0.1", false);
@@ -99,6 +97,6 @@ public class SvnRepositoryPublishAndRetrieveTest extends BaseSvnRepositoryPublis
 
     File ivyFile = prepareTestIvyFile(defaultIvyXml, "latest.milestone");
     retrieve(ivyFile, DEFAULT_RETRIEVE_TO_PATTERN, ivySettingsFile);
-    // assertEquals(milestone102, FileUtils.readFileToString(new File(testTempFolder, defaultArtifactName)));
+    assertEquals(milestone102, FileUtils.readFileToString(new File(testTempFolder, defaultArtifactName)));
   }
 }
