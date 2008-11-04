@@ -191,8 +191,8 @@ public class SvnDao {
   public boolean folderExists(String folderPath, long revision, boolean useCache) throws SVNException {
     if (useCache && existingFolderPaths.contains(folderPath)) { // first check our cache if this path is known to exist
       return true;
-    } else {
-      // not previously cached, so check against repository
+    } else { // not previously cached, so check against repository
+      readRepository.setLocation(readRepository.getRepositoryRoot(true), true);
       SVNNodeKind nodeKind = readRepository.checkPath(folderPath.toString(), revision);
       if (SVNNodeKind.DIR == nodeKind) {
         if (useCache) {
