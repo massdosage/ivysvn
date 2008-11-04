@@ -64,7 +64,8 @@ public class SvnDao {
   }
 
   /**
-   * Puts a file into Subversion, does update or add depending on whether file already exists or not.
+   * Puts a file into Subversion, does update or add depending on whether file already exists or not. Folder containing
+   * file *must* already exist.
    * 
    * @param editor An initialised commit editor.
    * @param data File data as a byte array.
@@ -144,7 +145,7 @@ public class SvnDao {
     }
 
     if (i < folders.length) { // 1 or more dirs need to be created
-      // editor.openRoot(-1); // only open root ONCE
+      editor.openDir(existingPath.toString(), -1);
       for (; i < folders.length; i++) { // build up path to create
         StringBuffer pathToAdd = new StringBuffer(existingPath);
         if (pathToAdd.charAt(pathToAdd.length() - 1) != '/') { // if we need a separator char
@@ -156,7 +157,6 @@ public class SvnDao {
         existingPath = pathToAdd; // added to svn so this is new existing path
         existingFolderPaths.add(pathToAdd.toString());
       }
-      // editor.closeDir(); // close dir ONCE
     }
   }
 
