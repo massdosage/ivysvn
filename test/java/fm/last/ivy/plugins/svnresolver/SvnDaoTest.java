@@ -48,9 +48,9 @@ public class SvnDaoTest extends BaseTestCase {
     commitEditor.closeEdit();
     assertTrue(svnDAO.folderExists(TEST_PATH + "/a/b/c/d", -1, false));
   }
-  
+
   @Test
-  public void testCreateFolders2() throws SVNException {
+  public void testCreateFoldersUnderExistingFolders() throws SVNException {
     ISVNEditor commitEditor = getCommitEditor();
     svnDAO.createFolders(commitEditor, TEST_PATH + "/a/b/c/d", -1);
     commitEditor.closeEdit();
@@ -62,7 +62,7 @@ public class SvnDaoTest extends BaseTestCase {
     commitEditor.closeEdit();
     assertTrue(svnDAO.folderExists(TEST_PATH + "/a/b/c/d/e/f", -1, false));
   }
-  
+
   @Test
   public void testCreateFolders_NoSubFolders() throws SVNException {
     ISVNEditor commitEditor = getCommitEditor();
@@ -72,7 +72,7 @@ public class SvnDaoTest extends BaseTestCase {
   }
 
   @Test
-  public void testPutGetAndFileExists() throws SVNException, IOException {
+  public void testPutGetAndFileAndFolderExists() throws SVNException, IOException {
     String fileName = "testPutFile().txt";
     assertFalse(svnDAO.fileExists(TEST_PATH + "/" + fileName, -1));
     String testData = new String("test data");
@@ -81,12 +81,14 @@ public class SvnDaoTest extends BaseTestCase {
     svnDAO.putFile(commitEditor, testData.getBytes(), TEST_PATH, fileName, false);
     commitEditor.closeEdit();
     assertTrue(svnDAO.fileExists(TEST_PATH + "/" + fileName, -1));
+    assertTrue(svnDAO.folderExists(TEST_PATH, -1, false));
 
     SVNURL sourceURL = SVNURL.parseURIEncoded(repositoryRoot + "/" + TEST_PATH + "/" + fileName);
     File retrieved = new File(testTempFolder, fileName);
     svnDAO.getFile(sourceURL, retrieved, -1);
     assertTrue(retrieved.exists());
     assertEquals(testData, FileUtils.readFileToString(retrieved));
+    assertTrue(svnDAO.folderExists(TEST_PATH, -1, false)); // check that getting file hasn't messed with folder exists
   }
 
   @Test

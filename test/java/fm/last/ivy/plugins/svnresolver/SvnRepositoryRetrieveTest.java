@@ -24,6 +24,7 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.apache.ivy.ant.IvyRetrieve;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.junit.Before;
 import org.junit.Test;
 import org.tmatesoft.svn.core.SVNException;
@@ -37,17 +38,9 @@ public class SvnRepositoryRetrieveTest extends BaseIvyTestCase {
   // the pattern that Ivy should use to retrieve files *to*
   private static final String RETRIEVE_PATTERN = TEST_TMP_PATH + "/[artifact].[ext]";
 
-  private IvyRetrieve retrieve;
-
   @Before
   public void setUp() throws SVNException {
     super.setUp();
-
-    retrieve = new IvyRetrieve();
-    retrieve.setProject(project);
-    retrieve.setTaskName("retrieve");
-    retrieve.setPattern(RETRIEVE_PATTERN);
-
     setUpRepository();
   }
 
@@ -95,6 +88,12 @@ public class SvnRepositoryRetrieveTest extends BaseIvyTestCase {
    * @throws IOException If an error occurs reading the default Ivy settings file.
    */
   private void retrieve(String ivyFileName) throws IOException {
+    Project project = createProject();
+    IvyRetrieve retrieve = new IvyRetrieve();
+    retrieve.setProject(project);
+    retrieve.setTaskName("retrieve");
+    retrieve.setPattern(RETRIEVE_PATTERN);
+
     File ivySettingsFile = prepareTestIvySettings(new File(TEST_CONF_PATH + "/ivysettings-default.xml"));
     project.setProperty("ivy.settings.file", ivySettingsFile.getAbsolutePath());
     resolve(project, new File(TEST_CONF_PATH + "/" + ivyFileName));
