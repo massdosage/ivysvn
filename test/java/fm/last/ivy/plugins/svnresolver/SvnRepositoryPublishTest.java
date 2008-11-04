@@ -208,7 +208,8 @@ public class SvnRepositoryPublishTest extends BaseSvnRepositoryPublishTestCase {
     publish(ivySettingsFile, fileContents2, "2.0", true);
     assertPublish("2.0", fileContents2, true); // check 2.0 with binary diff
     // check that 1.0 publish is still there
-    assertNonBinaryDiffPublish(defaultOrganisation, defaultModule, "1.0", defaultArtifactName, defaultFileContents);
+    assertNonBinaryDiffPublish(defaultOrganisation, defaultModule, "1.0", defaultArtifactName, defaultFileContents,
+        defaultIvyFileName);
   }
   
 }

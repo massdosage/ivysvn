@@ -45,6 +45,9 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
   // set in ivy-test-publish.xml
   protected String defaultArtifactName = "testartifact.jar";
 
+  //
+  protected String defaultIvyFileName = "ivy.xml";
+
   protected File defaultFileToPublish = new File(DIST_PATH + "/" + defaultArtifactName);
 
   protected String defaultFileContents = "testartifact 1.0";
@@ -53,31 +56,31 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
    * Asserts all the effects of a publish action, using default values where necessary.
    * 
    * @param pubRevision The publication revision.
-   * @param fileContents The expected file contents.
+   * @param artifactFileContents The expected artifact file contents.
    * @param binaryDiff Binary diff value for the publish action.
    * @param binaryDiffFolderName The name of the binary diff folder.
    * @throws SVNException If an error occurs checking the files in Subversion.
    * @throws IOException If an error occurs reading the file contents.
    */
-  protected void assertPublish(String pubRevision, String fileContents, boolean binaryDiff, String binaryDiffFolderName)
-    throws SVNException, IOException {
-    this.assertPublish(defaultOrganisation, defaultModule, pubRevision, defaultArtifactName, fileContents, binaryDiff,
-        binaryDiffFolderName);
+  protected void assertPublish(String pubRevision, String artifactFileContents, boolean binaryDiff,
+      String binaryDiffFolderName) throws SVNException, IOException {
+    this.assertPublish(defaultOrganisation, defaultModule, pubRevision, defaultArtifactName, artifactFileContents,
+        defaultIvyFileName, binaryDiff, binaryDiffFolderName);
   }
 
   /**
    * Asserts all the effects of a publish action, using default values where necessary.
    * 
    * @param pubRevision The publication revision.
-   * @param fileContents The expected file contents.
+   * @param artifactFileContents The expected artifact file contents.
    * @param binaryDiff Binary diff value for the publish action.
    * @throws SVNException If an error occurs checking the files in Subversion.
    * @throws IOException If an error occurs reading the file contents.
    */
-  protected void assertPublish(String pubRevision, String fileContents, boolean binaryDiff) throws SVNException,
-    IOException {
-    this.assertPublish(defaultOrganisation, defaultModule, pubRevision, defaultArtifactName, fileContents, binaryDiff,
-        SvnRepository.DEFAULT_BINARY_DIFF_FOLDER_NAME);
+  protected void assertPublish(String pubRevision, String artifactFileContents, boolean binaryDiff)
+    throws SVNException, IOException {
+    this.assertPublish(defaultOrganisation, defaultModule, pubRevision, defaultArtifactName, artifactFileContents,
+        defaultIvyFileName, binaryDiff, SvnRepository.DEFAULT_BINARY_DIFF_FOLDER_NAME);
   }
 
   /**
@@ -87,17 +90,20 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
    * @param module The module.
    * @param pubRevision The publication revision.
    * @param artifactName The name of the published artifact.
-   * @param fileContents The expected file contents.
+   * @param artifactFileContents The expected artifact file contents.
+   * @param ivyFileName Expected published ivy file name.
    * @param binaryDiff Binary diff value for the publish action.
    * @param binaryDiffFolderName The name of the binary diff folder.
    * @throws SVNException If an error occurs checking the files in Subversion.
    * @throws IOException If an error occurs reading the file contents.
    */
   protected void assertPublish(String organisation, String module, String pubRevision, String artifactName,
-      String fileContents, boolean binaryDiff, String binaryDiffFolderName) throws SVNException, IOException {
-    assertBinaryDiffPublish(organisation, module, artifactName, fileContents, binaryDiff, binaryDiffFolderName);
+      String artifactFileContents, String ivyFileName, boolean binaryDiff, String binaryDiffFolderName)
+    throws SVNException, IOException {
+    assertBinaryDiffPublish(organisation, module, artifactName, artifactFileContents, ivyFileName, binaryDiff,
+        binaryDiffFolderName);
     // now check publish to actual revision folder
-    assertNonBinaryDiffPublish(organisation, module, pubRevision, artifactName, fileContents);
+    assertNonBinaryDiffPublish(organisation, module, pubRevision, artifactName, artifactFileContents, ivyFileName);
   }
 
   /**
@@ -106,18 +112,20 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
    * @param organisation The organisation.
    * @param module The module.
    * @param artifactName The artifact name.
-   * @param fileContents The expected file contents.
+   * @param artifactFileContents The expected artifact file contents.
+   * @param ivyFileName Expected published ivy file name.
    * @param binaryDiff Binary diff value for the publish action.
    * @param binaryDiffFolderName The name of the binary diff folder.
    * @throws SVNException If an error occurs checking the files in Subversion.
    * @throws IOException If an error occurs reading the file contents.
    */
-  protected void assertBinaryDiffPublish(String organisation, String module, String artifactName, String fileContents,
-      boolean binaryDiff, String binaryDiffFolderName) throws SVNException, IOException {
+  protected void assertBinaryDiffPublish(String organisation, String module, String artifactName,
+      String artifactFileContents, String ivyFileName, boolean binaryDiff, String binaryDiffFolderName)
+    throws SVNException, IOException {
     // first setup binary diff path
     String publishFolder = BASE_PUBLISH_PATH + "/" + organisation + "/" + module + "/" + binaryDiffFolderName + "/";
     if (binaryDiff) {
-      assertPublication(publishFolder, artifactName, fileContents);
+      assertPublication(publishFolder, artifactName, artifactFileContents, ivyFileName);
     } else {
       assertFalse("Binary diff folder found at " + publishFolder, svnDAO.folderExists(publishFolder, -1, false));
     }
@@ -130,14 +138,15 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
    * @param module The module.
    * @param pubRevision The publication revision.
    * @param artifactName The artifact name.
-   * @param fileContents The expected file contents.
+   * @param artifactFileContents The expected artifact file contents.
+   * @param ivyFileName Expected published ivy file name.
    * @throws SVNException If an error occurs checking the files in Subversion.
    * @throws IOException If an error occurs reading the file contents.
    */
   protected void assertNonBinaryDiffPublish(String organisation, String module, String pubRevision,
-      String artifactName, String fileContents) throws SVNException, IOException {
+      String artifactName, String artifactFileContents, String ivyFileName) throws SVNException, IOException {
     String publishFolder = BASE_PUBLISH_PATH + "/" + organisation + "/" + module + "/" + pubRevision + "/";
-    assertPublication(publishFolder, artifactName, fileContents);
+    assertPublication(publishFolder, artifactName, artifactFileContents, ivyFileName);
   }
 
   /**
@@ -145,18 +154,19 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
    * 
    * @param publishFolder The folder in Subversion that files should have been published to.
    * @param artifactName The name of the published artifact.
-   * @param fileContents The expected file contents.
+   * @param artifactFileContents The expected artifact file contents.
+   * @param ivyFileName Expected published ivy file name.
    * @throws SVNException If an error occurs checking the files in Subversion.
    * @throws IOException If an error occurs reading the file contents.
    */
-  protected void assertPublication(String publishFolder, String artifactName, String fileContents) throws SVNException,
-    IOException {
-    assertArtifactPublished(publishFolder, "ivy.xml");
+  protected void assertPublication(String publishFolder, String artifactName, String artifactFileContents,
+      String ivyFileName) throws SVNException, IOException {
+    assertArtifactPublished(publishFolder, ivyFileName);
     assertArtifactPublished(publishFolder, artifactName);
     File tempFile = new File(testTempFolder, "retrieved-" + artifactName);
     SVNURL sourceURL = SVNURL.parseURIEncoded(repositoryRoot + "/" + publishFolder + "/" + artifactName);
     svnDAO.getFile(sourceURL, tempFile, -1);
-    assertEquals(fileContents, FileUtils.readFileToString(tempFile));
+    assertEquals(artifactFileContents, FileUtils.readFileToString(tempFile));
   }
 
   /**
@@ -204,32 +214,32 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
    * Performs a publish operation.
    * 
    * @param ivySettingsFile Ivy settings file.
-   * @param fileContents String contents to be published as a file.
+   * @param artifactFileContents String contents to be published as artifact file.
    * @param revision Revision to be published.
    * @param overwrite Overwrite value to set on publish operation (if null no value will be set and default will be
    *          used).
    * @throws IOException If an error occurs writing the file contents to a File to be published.
    */
-  protected void publish(File ivySettingsFile, String fileContents, String revision, Boolean overwrite)
+  protected void publish(File ivySettingsFile, String artifactFileContents, String revision, Boolean overwrite)
     throws IOException {
     IvyPublish publish = createIvyPublish(revision, overwrite);
-    publish(ivySettingsFile, fileContents, publish);
+    publish(ivySettingsFile, artifactFileContents, publish);
   }
 
   /**
    * Performs a publish operation.
    * 
    * @param ivySettingsFile Ivy settings file.
-   * @param fileContents String contents to be published as a file.
+   * @param artifactFileContents String contents to be published as artifact file.
    * @param ivyPublish An initialised IvyPublish object.
    * @throws IOException If an error occurs writing the file contents to a File to be published.
    */
-  protected void publish(File ivySettingsFile, String fileContents, IvyPublish ivyPublish) throws IOException {
+  protected void publish(File ivySettingsFile, String artifactFileContents, IvyPublish ivyPublish) throws IOException {
     Project project = createProject();
     project.setProperty("ivy.settings.file", ivySettingsFile.getAbsolutePath());
     ivyPublish.setProject(project);
     resolve(project, new File(ivysDataFolder, "ivy-test-publish.xml"));
-    FileUtils.writeStringToFile(defaultFileToPublish, fileContents);
+    FileUtils.writeStringToFile(defaultFileToPublish, artifactFileContents);
     ivyPublish.execute();
     FileUtils.deleteDirectory(tempDistFolder);
   }
@@ -238,24 +248,24 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
    * Performs a publish operation.
    * 
    * @param ivySettingsFile Ivy settings file.
-   * @param fileContents String contents to be published as a file.
+   * @param artifactFileContents String contents to be published as artifacts file.
    * @param overwrite Overwrite value to set on publish operation (if null no value will be set and default will be
    *          used).
    * @throws IOException If an error occurs writing the file contents to a File to be published.
    */
-  protected void publish(File ivySettingsFile, String fileContents, Boolean overwrite) throws IOException {
-    this.publish(ivySettingsFile, fileContents, "1.0", overwrite);
+  protected void publish(File ivySettingsFile, String artifactFileContents, Boolean overwrite) throws IOException {
+    this.publish(ivySettingsFile, artifactFileContents, "1.0", overwrite);
   }
 
   /**
    * Performs a default publish operation.
    * 
    * @param ivySettingsFile Ivy settings file.
-   * @param fileContents String contents to be published as a file.
+   * @param artifactFileContents String contents to be published as artifacts file.
    * @throws IOException If an error occurs writing the file contents to a File to be published.
    */
-  protected void publish(File ivySettingsFile, String fileContents) throws IOException {
-    publish(ivySettingsFile, fileContents, "1.0", null);
+  protected void publish(File ivySettingsFile, String artifactFileContents) throws IOException {
+    publish(ivySettingsFile, artifactFileContents, "1.0", null);
   }
 
 }
