@@ -22,7 +22,7 @@ public abstract class BaseIvyTestCase extends BaseTestCase {
   protected static final String BASE_PUBLISH_PATH = TEST_PATH + "/java/repository";
 
   // the pattern that Ivy should use to retrieve files *to*
-  private static final String DEFAULT_RETRIEVE_PATTERN = TEST_TMP_PATH + "/[artifact].[ext]";
+  protected static final String DEFAULT_RETRIEVE_TO_PATTERN = TEST_TMP_PATH + "/[artifact].[ext]";
 
   // set cache location under "test/tmp" so it will get automatically cleaned between tests
   private File cache = new File(TEST_TMP_PATH + "/cache");
@@ -178,35 +178,46 @@ public abstract class BaseIvyTestCase extends BaseTestCase {
   }
 
   /**
-   * Utility method that performs a retrieve operation using the default ivy settings and the passed ivy file and
-   * retrieve pattern.
-   * 
-   * @param ivyFile The ivy file to use to determine what files to retrieve.
-   * @param retrievePattern Pattern to use for retrieving.
-   * @throws IOException If an error occurs reading the default Ivy settings file.
-   */
-  protected void retrieve(File ivyFile, String retrievePattern) throws IOException {
-    Project project = createProject();
-    IvyRetrieve retrieve = new IvyRetrieve();
-    retrieve.setProject(project);
-    retrieve.setTaskName("retrieve");
-    retrieve.setPattern(retrievePattern);
-
-    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile);
-    project.setProperty("ivy.settings.file", ivySettingsFile.getAbsolutePath());
-    resolve(project, ivyFile);
-    retrieve.execute();
-  }
-
-  /**
-   * Utility method that performs a retrieve operation using the default ivy settings and the passed ivy file and the
-   * default retrieve pattern.
+   * Performs a retrieve operation using the default ivy settings and the passed ivy file and the default retrieve
+   * pattern.
    * 
    * @param ivyFile The ivy file to use to determine what files to retrieve.
    * @throws IOException If an error occurs reading the default Ivy settings file.
    */
   protected void retrieve(File ivyFile) throws IOException {
-    retrieve(ivyFile, DEFAULT_RETRIEVE_PATTERN);
+    retrieve(ivyFile, DEFAULT_RETRIEVE_TO_PATTERN);
+  }
+
+  /**
+   * Performs a retrieve operation using the default ivy settings and the passed ivy file and retrieve pattern.
+   * 
+   * @param ivyFile The ivy file to use to determine what files to retrieve.
+   * @param retrieveToPattern Pattern to retrieve files to.
+   * @throws IOException If an error occurs reading the default Ivy settings file.
+   */
+  protected void retrieve(File ivyFile, String retrieveToPattern) throws IOException {
+    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile);
+    retrieve(ivyFile, retrieveToPattern, ivySettingsFile);
+  }
+
+  /**
+   * Performs a retrieve operation using the passed ivy file, retrieve pattern and ivy settings file.
+   * 
+   * @param ivyFile The ivy file to use to determine what files to retrieve.
+   * @param retrieveToPattern Pattern to retrieve files to.
+   * @param ivySettingsFile The ivy settings file.
+   * @throws IOException If an error occurs reading the default Ivy settings file.
+   */
+  protected void retrieve(File ivyFile, String retrieveToPattern, File ivySettingsFile) throws IOException {
+    Project project = createProject();
+    IvyRetrieve retrieve = new IvyRetrieve();
+    retrieve.setProject(project);
+    retrieve.setTaskName("retrieve");
+    retrieve.setPattern(retrieveToPattern);
+    
+    project.setProperty("ivy.settings.file", ivySettingsFile.getAbsolutePath());
+    resolve(project, ivyFile);
+    retrieve.execute();
   }
 
 }
