@@ -4,7 +4,7 @@ Release 2.0 TBA
 ~~~~~~~~~~~~~~~
   - Added ability to perform binary diffs (based on code and concepts contributed by Xavier Hanin).
   - Publish now results in one/two svn commits per publish call instead of per file (based on code and 
-    concepts contributed by Stephane Bailliez).
+    concepts contributed by Stephane Bailliez and subsequent fixes by gereedy).
   - Upgraded to Ivy 2.0.0 RC2.
   - Upgraded to SVNKit 1.2.0.  
   - Upgraded to Trilead SSH for Java - Build 213.
