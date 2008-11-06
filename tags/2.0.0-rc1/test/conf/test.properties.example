@@ -1,0 +1,10 @@
+#Copy this file to "test.properties" in the same folder and fill in values according to your test setup
+#the Subversion repository root to use for unit tests
+svn.repository.root=
+#the Subversion user name to use for unit tests 
+svn.user.name=
+#the Subversion password to use for unit tests
+svn.user.password=
+
+#the value to use for ant's logging in the tests, possible values are: MSG_DEBUG (default), MSG_VERBOSE, MSG_INFO, MSG_WARN, MSG_ERR
+#ant.message.output.level=MSG_DEBUG

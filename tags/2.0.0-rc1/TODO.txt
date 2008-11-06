@@ -1,0 +1,63 @@
+2.0
+~~~
+2.0 beta RC 1 release with dav fix! 
+
+- Publishing over Webdav issues fixed (http://code.google.com/p/ivysvn/issues/detail?id=8) (Contributed by gereedy)
+- Upgraded to Ivy 2.0.0 RC2
+
+Next e-mail - mention unit tests, useful for debugging etc.
+
+-----------------------------------
+
+-Final review of all code, javadoc and documentation.
+
+-Ask ivy and ivymeetssvn projects to update link to google code site.
+
+-When 2.0 - announce on ivy list, javalobby, last.fm blog, IvySvn mailing list etc.
+
+  http://java.dzone.com/node/add/announcement
+  http://www.theserverside.com/news/post.tss
+  
+  IvySvn 2.0 released - A Subversion Resolver for Ivy.
+  
+  Summary:
+  The 2.0 version of IvySvn, a Subversion Resolver for Ivy (Ant's "agile dependency manager"), has been released with 
+  new features which take advantage of Subversion's diff and transactional commits.  
+  
+  Content:
+  The 2.0 version of IvySvn is now available for download from http://code.google.com/p/ivysvn/
+  
+  IvySvn is a resolver for Ivy 2.0 (http://ant.apache.org/ivy) which uses Subversion for storing artifacts for 
+  use in Ivy's publish and retrieve operations. IvySvn is free, open source software released under the <link>
+  Apache license.
+  
+  New features in IvySvn 2.0 include:
+  
+    - Publish operations can now be configured to publish to an intermediate location, taking 
+    advantage of Subversion's diff functionality to reduce storage requirements in Subversion when 
+    publishing multiple revisions of the same project.
+    
+    - Publish operations now result in one Subversion commit per publish (or two commits if using the binary 
+    diff feature) instead of one commit per file. This allows Subversion to control Ivy commits better and 
+    also allows for better diffs between Subversion revisions. 
+    
+   - When overwriting existing published artifacts, files that are no longer part of publish are now 
+     deleted. 
+    
+  For more information on the new features please refer to the CHANGELOG.txt file which is part of the release.
+
+  The 2.0 release of IvySvn not only contains many new features but also marks 
+  the move of the IvySvn project from <a href="audioscrobbler.net">Audioscrobbler.net</a> 
+  to a new home at http://code.google.com/p/ivysvn/. Benefits of this move include improved access to the source 
+  code, improved documentation in Wiki format and issue tracking. 
+    
+  Thank you to everyone from the open source community (especially the peeps at Apache and Last.fm) who helped 
+  contribute to this release by giving feedback, feature ideas, code patches and helping with testing.
+
+
+Future:
+~~~~~~~
+
+-Test and bundle with Ivy 2.0 jar when released.
+-Make commit message configurable (maybe via a file template?)
+-Use Google ant tasks for publishing new binary and source releases.
