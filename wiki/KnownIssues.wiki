@@ -1,13 +1,5 @@
 #summary Known issues for the latest release.
 
-= Known Issues for !IvySvn 2.0.0-beta5 =
+= Known Issues for !IvySvn 2.0.0-rc1 =
 
-== Publishing over !WebDav ==
-
-Publishing to a Subversion repository over !WebDav using http(s):// where the repository root is more than one folder deep can lead to issues where !IvySvn publishes artifacts to unexpected folder locations. There are a few possible workarounds for this issue:
-
-  * Make a build using the latest trunk code (now contains a preliminary fix).
-  * If you are not using the binaryDiff feature, try enabling this.
-  * If you are using the binaryDiff feature, try disabling it.
-  * Use a repository root that is only one folder deep.
-  * Switch to an alternative method off repository access (e.g svn:// or svn+ssh://)
+There are currently no serious known issues for this release
