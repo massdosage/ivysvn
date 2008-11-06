@@ -18,7 +18,7 @@ import fm.last.ivy.plugins.svnresolver.test.TestProperties;
  */
 public abstract class BaseIvyTestCase extends BaseTestCase {
 
-  // the base path for published artifacts
+  // the base path for published artifacts (paths in patterns used in ivy settings files should match this)
   protected static final String BASE_PUBLISH_PATH = TEST_PATH + "/java/repository";
 
   // the pattern that Ivy should use to retrieve files *to*

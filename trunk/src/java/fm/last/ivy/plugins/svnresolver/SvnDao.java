@@ -235,7 +235,6 @@ public class SvnDao {
     SVNNodeKind nodeKind = readRepository.checkPath("", revision);
     SVNErrorMessage error = SvnUtils.checkNodeIsFile(nodeKind, sourceURL);
     if (error != null) {
-      // TODO: could we just put below message into IOException's message?
       Message.error("Error retrieving" + sourceURL + " [revision=" + revision + "]");
       throw new IOException(error.getMessage());
     }
