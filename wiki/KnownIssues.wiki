@@ -2,4 +2,4 @@
 
 = Known Issues for !IvySvn 2.0.0-rc1 =
 
-There are currently no serious known issues for this release
+There are currently no serious known issues for this release.
