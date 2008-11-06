@@ -18,7 +18,6 @@ package fm.last.ivy.plugins.svnresolver;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -58,7 +57,7 @@ public class SvnPublishTransaction {
   /**
    * Tree representing the directories and artifacts that need to be added/updated.
    */
-  private Directory transactionContent = new Directory("", "/", null);
+  private DirectoryTree publishTree = new DirectoryTree("/", null);
 
   /**
    * Svn commit message.
@@ -116,20 +115,6 @@ public class SvnPublishTransaction {
   }
 
   /**
-   * Set the repository to use for performing commit operations. This will have its location set to the repository root
-   * and should not be used outside of this class.
-   * 
-   * @param repository The repository to use for commits.
-   * @throws SVNException If an error occurs setting the repository to its root.
-   */
-  public void setCommitRepository(SVNRepository repository) throws SVNException {
-    commitRepository = repository;
-    // TODO: do we need to do this here as we also seem to do it in commit()?
-    SVNURL commitRoot = commitRepository.getRepositoryRoot(false);
-    commitRepository.setLocation(commitRoot, false);
-  }
-
-  /**
    * Adds an operation representing a file "put" to the transaction.
    * 
    * @param source The file to put.
@@ -155,12 +140,12 @@ public class SvnPublishTransaction {
     }
     String[] pathComponents = destinationFolderPath.split("/");
     int pathIndex = 0;
-    Directory currentPos = transactionContent;
+    DirectoryTree currentTree = publishTree; // start with the root tree
     while (pathIndex < pathComponents.length) {
-      currentPos = currentPos.subdir(pathComponents[pathIndex]);
+      currentTree = currentTree.subDir(pathComponents[pathIndex]); // build up a tree for each subdir
       pathIndex++;
     }
-    currentPos.addFile(operation);
+    currentTree.addPutOperation(operation); // add the put operation to the deepest level of the tree
   }
 
   /**
@@ -176,17 +161,46 @@ public class SvnPublishTransaction {
     commitEditor = commitRepository.getCommitEditor(commitMessage, null);
     commitStarted = true;
     commitEditor.openRoot(-1);
-    int putFileCount = transactionContent.commit();
+    int putFileCount = commitTree(publishTree);
     if (putFileCount == 0) {
       commitEditor.abortEdit();
       Message.info("Nothing to commit");
     } else {
-      Map<String, String> foldersToCopy = prepareBinaryDiff(); // prepare binary diff in existing transaction
+      Map<String, String> foldersToCopy = prepareBinaryDiff(publishTree); // prepare binary diff in existing
+      // transaction
       commitEditor.closeDir(); // close root
       SVNCommitInfo info = commitEditor.closeEdit();
       Message.info("Commit finished " + info);
       copyDiff(foldersToCopy);
     }
+  }
+
+  /**
+   * Commits the contents of the passed DirectoryTree.
+   * 
+   * @param tree Tree containing PutOperations to commit.
+   * @return The number of files committed. put operations.
+   * @throws SVNException If an error occurs performing any of the put operations.
+   * @throws IOException If an error occurs reading any file data.
+   */
+  private int commitTree(DirectoryTree tree) throws SVNException, IOException {
+    int fileCount = 0;
+    if (tree.getParent() != null) {
+      if (svnDAO.folderExists(tree.getPath(), -1, true)) { // open dir to correct path in tree
+        commitEditor.openDir(tree.getPath(), -1);
+      } else {
+        Message.debug("Creating folder " + tree.getPath());
+        commitEditor.addDir(tree.getPath(), null, -1);
+      }
+    }
+    for (DirectoryTree subDir : tree.getSubDirectoryTrees()) {
+      fileCount += commitTree(subDir);
+    }
+    fileCount += performPutOperations(tree.getPutOperations()); // perform put operations at current open dir
+    if (tree.getParent() != null) {
+      commitEditor.closeDir(); // finished with this path, close dir
+    }
+    return fileCount;
   }
 
   /**
@@ -260,8 +274,47 @@ public class SvnPublishTransaction {
    *         destination folder and the value is the intermediate binary diff folder.
    * @throws SVNException If an error occurs deleting previous releases in the repository.
    */
-  private Map<String, String> prepareBinaryDiff() throws SVNException {
-    return transactionContent.prepareBinaryDiff();
+  private Map<String, String> prepareBinaryDiff(DirectoryTree tree) throws SVNException {
+    Map<String, String> binaryDiffs = new HashMap<String, String>();
+    if (binaryDiff) {
+      Set<String> processedFolders = new HashSet<String>();
+      prepareBinaryDiff(tree, binaryDiffs, processedFolders);
+    }
+    return binaryDiffs;
+  }
+
+  /**
+   * Prepares the repository for the binary diffs needed for the passed tree.
+   * 
+   * @param tree DirectoryTree to use to determine what binary diff actions are necessary.
+   * @param binaryDiffs A Map of folders which need to be copied in the binary diff transaction, values in the map will
+   *          be added to or deleted by this method as necessary.
+   * @param processedFolders A set of folders which have already been processed.
+   * @throws SVNException If an error occurs checking existing folders or deleting removed folders.
+   */
+  private void prepareBinaryDiff(DirectoryTree tree, Map<String, String> binaryDiffs, Set<String> processedFolders)
+    throws SVNException {
+    for (DirectoryTree subDir : tree.getSubDirectoryTrees()) { // depth-first calls to prepare binary diff
+      prepareBinaryDiff(subDir, binaryDiffs, processedFolders);
+    }
+    for (PutOperation operation : tree.getPutOperations()) {
+      String currentFolder = operation.getFolderPath();
+      if (!processedFolders.contains(currentFolder)) { // we haven't dealt with this folder yet
+        String binaryDiffFolderPath = operation.determineBinaryDiffFolderPath(revision, binaryDiffFolderName);
+        binaryDiffs.put(currentFolder, binaryDiffFolderPath); // schedule this to be processed later
+        if (svnDAO.folderExists(currentFolder, -1, true)) {
+          if (operation.isOverwrite()) {
+            // delete old release, we will copy over to release folder again in binary diff commit later
+            Message.info("Binary diff deleting " + currentFolder);
+            commitEditor.deleteEntry(currentFolder, -1);
+          } else {
+            Message.info("Overwrite set to false, ignoring copy to " + currentFolder);
+            binaryDiffs.remove(currentFolder);
+          }
+        }
+      }
+      processedFolders.add(currentFolder);
+    }
   }
 
   /**
@@ -347,103 +400,14 @@ public class SvnPublishTransaction {
   public void setCleanupPublishFolder(Boolean cleanupPublishFolder) {
     this.cleanupPublishFolder = cleanupPublishFolder;
   }
-
-  private class Directory {
-    private final String path;
-    private final String name;
-    private final Directory parent;
-    private final Map<String,Directory> subDirs = new HashMap<String,Directory>();
-    private final List<PutOperation> files = new ArrayList<PutOperation>();
-
-    private Directory(String name, String path, Directory parent) {
-      this.name = name;
-      this.path = path;
-      this.parent = parent;
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public String getPath() {
-      return path;
-    }
-
-    public Directory subdir(String name) {
-      if (subDirs.containsKey(name)) {
-        return subDirs.get(name);
-      } else {
-        StringBuilder subdirPath = new StringBuilder(this.getPath());
-        if (!this.getPath().endsWith("/")) {
-          subdirPath.append('/');
-        }
-        subdirPath.append(name);
-        Directory subdir = new Directory(name, subdirPath.toString(), this);
-        subDirs.put(name, subdir);
-        return subdir;
-      }
-    }
-
-    public Directory updir() {
-      return parent;
-    }
-
-    public void addFile(PutOperation op) {
-      files.add(op);
-    }
-
-    public int commit() throws SVNException, IOException {
-      int fileCount = 0;
-      if (parent != null) {
-        if (svnDAO.folderExists(getPath(), -1, true)) {
-          commitEditor.openDir(getPath(), -1);
-        } else {
-          Message.debug("Creating folder " + getPath());
-          commitEditor.addDir(getPath(), null, -1);
-        }
-      }
-      for (Directory subdir: subDirs.values()) {
-        fileCount += subdir.commit();
-      }
-      fileCount += performPutOperations(files);
-      if (parent != null) {
-        commitEditor.closeDir();
-      }
-      return fileCount;
-    }
-
-    public Map<String, String> prepareBinaryDiff() throws SVNException {
-      Map<String, String> binaryDiffs = new HashMap<String, String>();
-      if (binaryDiff) {
-        Set<String> processedFolders = new HashSet<String>();
-        prepareBinaryDiff(binaryDiffs, processedFolders);
-      }
-      return binaryDiffs;
-    }
-
-    private void prepareBinaryDiff(Map<String, String> binaryDiffs, Set<String> processedFolders) throws SVNException {
-      for (Directory subdir: subDirs.values()) {
-        subdir.prepareBinaryDiff(binaryDiffs, processedFolders);
-      }
-      for (PutOperation operation : files) {
-        String currentFolder = operation.getFolderPath();
-        if (!processedFolders.contains(currentFolder)) { // we haven't dealt with this folder yet
-          String binaryDiffFolderPath = operation.determineBinaryDiffFolderPath(revision, binaryDiffFolderName);
-          binaryDiffs.put(currentFolder, binaryDiffFolderPath); // schedule this to be processed later
-          if (svnDAO.folderExists(currentFolder, -1, true)) {
-            if (operation.isOverwrite()) {
-              // delete old release, we will copy over to release folder again in binary diff commit later
-              Message.info("Binary diff deleting " + currentFolder);
-              commitEditor.deleteEntry(currentFolder, -1);
-            } else {
-              Message.info("Overwrite set to false, ignoring copy to " + currentFolder);
-              binaryDiffs.remove(currentFolder);
-            }
-          }
-        }
-        processedFolders.add(currentFolder);
-      }
-    }
+  
+  /**
+   * Set the repository to use for performing commit operations.
+   * 
+   * @param repository The repository to use for commits.
+   */
+  private void setCommitRepository(SVNRepository repository) {
+    commitRepository = repository;
   }
 
 }

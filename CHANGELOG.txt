@@ -5,7 +5,7 @@ Release 2.0 TBA
   - Added ability to perform binary diffs (based on code and concepts contributed by Xavier Hanin).
   - Publish now results in one/two svn commits per publish call instead of per file (based on code and 
     concepts contributed by Stephane Bailliez).
-  - Upgraded to Ivy 2.0.0 RC1.
+  - Upgraded to Ivy 2.0.0 RC2.
   - Upgraded to SVNKit 1.2.0.  
   - Upgraded to Trilead SSH for Java - Build 213.
   - Made setting of "repositoryRoot" attribute mandatory. This should be full path to root of repository - including 
