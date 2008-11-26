@@ -133,9 +133,9 @@ public class SvnResolver extends RepositoryResolver {
    * 
    * @param passPhrase
    */
-  public void setSslPassphrase(String passPhrase) {
+  public void setSslPassphrase(String sslPassphrase) {
     // valid for passphrase to start with ${ and have spaces at start and end, so do no validation or trimming
-    getSvnRepository().setSslPassPhrase(passPhrase);
+    getSvnRepository().setSslPassphrase(sslPassphrase);
   }
 
   /**
