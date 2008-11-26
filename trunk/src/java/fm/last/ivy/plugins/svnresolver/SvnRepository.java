@@ -432,7 +432,7 @@ public class SvnRepository extends AbstractRepository {
    * 
    * @param sslPassphrase
    */
-  public void setSslPassPhrase(String sslPassphrase) {
+  public void setSslPassphrase(String sslPassphrase) {
     this.sslPassphrase = sslPassphrase;
   }
 

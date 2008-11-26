@@ -95,10 +95,10 @@ public class SvnUtils {
    * @param userName The user name (required for 1,2,3,4).
    * @param userPassword The password (required for 2,3,5).
    * @param keyFile SSH key file (required for 1).
-   * @param sshPassPhrase (required for 1).
+   * @param sshPassphrase (required for 1).
    * @param portNumber (required for 1, 2).
    * @param certFile (required for 5).
-   * @param sslPassPhrase (required for 5).
+   * @param sslPassphrase (required for 5).
    * @param storageAllowed Whether to store authentication credentials in the global auth cache or
    *          not.
    * @return An initialised SVNRepository object.
@@ -106,13 +106,13 @@ public class SvnUtils {
    *           authentication credentials)
    */
   public static SVNRepository createRepository(SVNURL url, String userName, String userPassword, File keyFile,
-      String sshPassPhrase, int portNumber, File certFile, String sslPassPhrase, boolean storageAllowed) throws SVNException {
+      String sshPassphrase, int portNumber, File certFile, String sslPassphrase, boolean storageAllowed) throws SVNException {
     SVNRepository repository = SVNRepositoryFactory.create(url);
     List<SVNAuthentication> authentications = new ArrayList<SVNAuthentication>();
 
     if (keyFile != null && userName != null) { // 1. ssh key file authentication
       Message.debug("Adding SSH key file authentication");
-      SVNSSHAuthentication svnSSHAuthentication = new SVNSSHAuthentication(userName, keyFile, sshPassPhrase, portNumber,
+      SVNSSHAuthentication svnSSHAuthentication = new SVNSSHAuthentication(userName, keyFile, sshPassphrase, portNumber,
           storageAllowed);
       authentications.add(svnSSHAuthentication);
     }
@@ -137,9 +137,9 @@ public class SvnUtils {
       authentications.add(userNameAuthentication);
     }
 
-    if (certFile != null && sslPassPhrase != null) { // 5.ssl authentication
+    if (certFile != null && sslPassphrase != null) { // 5. ssl authentication
       Message.debug("Adding SSL certificate authentication");
-      SVNSSLAuthentication svnSSLAuthentication = new SVNSSLAuthentication(certFile, sslPassPhrase, storageAllowed);
+      SVNSSLAuthentication svnSSLAuthentication = new SVNSSLAuthentication(certFile, sslPassphrase, storageAllowed);
       authentications.add(svnSSLAuthentication);
     }
 
