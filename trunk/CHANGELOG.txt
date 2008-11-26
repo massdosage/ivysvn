@@ -16,6 +16,7 @@ Release 2.0 TBA
   - When overwriting existing publications, files that are no longer part of publish are removed from repository (this 
     can be controlled by the "cleanupPublishFolder" attribute on the "svn" element.
   - Uses proxy settings if specified via Java system properties (contributed by Steve Brown) (http://code.google.com/p/ivysvn/issues/detail?id=7).
+  - Fixed SSL authentication by adding a "sslPassphrase" attribute to the "svn" element (contributed by Adam Stroud) (http://code.google.com/p/ivysvn/issues/detail?id=15)
   - Changed loading of Manifest so it should work on earlier versions of Ant (contributed by jkytomak) (http://code.google.com/p/ivysvn/issues/detail?id=11).
 	- Values (other than sshPassphrase and userPassword) set on SvnResolver are trimmed to avoid annoying issues with whitespace.
 	- "ivy-init" target in "common-targets.xml" sets a property to prevent itself being called more than once.

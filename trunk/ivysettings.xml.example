@@ -21,7 +21,8 @@
     <svn name="ivysvn" repositoryRoot="PROTOCOL://HOSTNAME/PATH_TO_SVN_REPOSITORY_ROOT"
       userName="${svn.user.name}" userPassword="${svn.user.password}"
       keyFile="${ssh.keyfile}" sshPort="${ssh.port}" sshPassphrase="${ssh.keyfile.passphrase}"
-      certFile="${ssl.certfile}" storageAllowed="${svn.storage.allowed}"
+      certFile="${ssl.certfile}" sslPassphrase="${ssl.passphrase}" 
+      storageAllowed="${svn.storage.allowed}"
       binaryDiff="${svn.binarydiff}" binaryDiffFolderName="${svn.binarydiff.folder}"
       retrieveRevision="${svn.retrieve.revision}"
       cleanupPublishFolder="${svn.cleanup.publish.folder}">
