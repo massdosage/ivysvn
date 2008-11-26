@@ -178,5 +178,21 @@ limitations under the License.
         prefix="${ant.project.name}-${version}"/>
     </tar>
 	</target>
+  
+  <!-- doesn't appear to work, google moved the file upload location?? -->
+  <target name="upload" depends="build-dist">
+    <taskdef classname="net.bluecow.googlecode.ant.GoogleCodeUploadTask"
+      classpath="${lib.dir}/ant-googlecode.jar" name="gcupload"/>
+    <!-- first upload the src version -->
+    <gcupload username="${google.username}" password="${google.password}" projectname="ivysvn"
+      filename="${dist.dir}/${ant.project.name}-${version}-src.tgz" targetfilename="${ant.project.name}-${version}-src.tgz" 
+      summary="${version} Source Release"
+      labels="Featured, Type-Source, OpSys-All"/>
+    <!-- now upload the bin version -->
+    <gcupload username="${google.username}" password="${google.password}" projectname="ivysvn"
+      filename="${dist.dir}/${ant.project.name}-${version}-bin.tgz" targetfilename="${ant.project.name}-${version}-bin.tgz" 
+      summary="${version} Binary Release"
+      labels="Featured, Type-Archive, OpSys-All"/>
+  </target>
 
 </project>
