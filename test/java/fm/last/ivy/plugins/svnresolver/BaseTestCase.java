@@ -83,7 +83,7 @@ public abstract class BaseTestCase {
 
     repositoryRootURL = SVNURL.parseURIEncoded(repositoryRoot);
     readRepository = SvnUtils
-        .createRepository(repositoryRootURL, svnUserName, svnPassword, null, null, -1, null, false);
+        .createRepository(repositoryRootURL, svnUserName, svnPassword, null, null, -1, null, null, false);
     svnDAO = new SvnDao(readRepository);
   }
 
@@ -119,7 +119,7 @@ public abstract class BaseTestCase {
    */
   protected ISVNEditor getCommitEditor() throws SVNException {
     SVNRepository commitRepository = SvnUtils.createRepository(repositoryRootURL, svnUserName, svnPassword, null, null,
-        -1, null, false);
+        -1, null, null, false);
     SVNURL root = commitRepository.getRepositoryRoot(true);
     commitRepository.setLocation(root, false);
     ISVNEditor commitEditor = commitRepository.getCommitEditor("unit testing " + this.getClass().getName(), null);
