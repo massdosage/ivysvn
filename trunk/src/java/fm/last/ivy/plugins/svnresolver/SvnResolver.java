@@ -93,11 +93,11 @@ public class SvnResolver extends RepositoryResolver {
   /**
    * Set the passphrase for the SSH private key file.
    * 
-   * @param passPhrase
+   * @param sshPassPhrase
    */
-  public void setSshPassphrase(String passPhrase) {
+  public void setSshPassphrase(String sshPassPhrase) {
     // valid for passphrase to start with ${ and have spaces at start and end, so do no validation or trimming
-    getSvnRepository().setPassPhrase(passPhrase);
+    getSvnRepository().setSshPassphrase(sshPassPhrase);
   }
 
   /**
@@ -126,6 +126,16 @@ public class SvnResolver extends RepositoryResolver {
         System.err.println("No cert file found at '" + certFilePath + "'");
       }
     }
+  }
+  
+  /**
+   * Set the passphrase for the SSL certificate.
+   * 
+   * @param passPhrase
+   */
+  public void setSslPassphrase(String passPhrase) {
+    // valid for passphrase to start with ${ and have spaces at start and end, so do no validation or trimming
+    getSvnRepository().setSslPassPhrase(passPhrase);
   }
 
   /**

@@ -66,19 +66,20 @@ public class SVNRepositoryCache {
    * @param userName Subversion user name.
    * @param userPassword Subversion password.
    * @param keyFile SSH Key file.
-   * @param passPhrase SSH key file passphrase.
+   * @param sshPassPhrase SSH key file passphrase.
    * @param portNumber SSH port number.
    * @param certFile SSL certificate file.
+   * @param sslPassPhrase SSL certificate passphrase.
    * @param storageAllowed Whether to allow credential storage or not.
    * @return A repository for the passed url.
    * @throws SVNException If an error occurs creating the repository.
    */
   public synchronized SVNRepository getRepository(SVNURL url, String userName, String userPassword, File keyFile,
-      String passPhrase, int portNumber, File certFile, boolean storageAllowed) throws SVNException {
+      String sshPassPhrase, int portNumber, File certFile, String sslPassPhrase, boolean storageAllowed) throws SVNException {
     String key = url.getProtocol() + ":" + url.getHost();
     SVNRepository repository = repositoryCache.get(key);
     if (repository == null) {
-      repository = SvnUtils.createRepository(url, userName, userPassword, keyFile, passPhrase, portNumber, certFile,
+      repository = SvnUtils.createRepository(url, userName, userPassword, keyFile, sshPassPhrase, portNumber, certFile, sslPassPhrase,
           storageAllowed);
       repositoryCache.put(key, repository);
     }

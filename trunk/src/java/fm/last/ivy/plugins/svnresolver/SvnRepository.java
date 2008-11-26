@@ -67,7 +67,12 @@ public class SvnRepository extends AbstractRepository {
   /**
    * Passphrase for SSH private key file.
    */
-  private String passPhrase = "";
+  private String sshPassphrase = "";
+  
+  /**
+   * Passphrase for SSL certificates.
+   */
+  private String sslPassphrase = "";
 
   /**
    * Port number that SSH server is listening on.
@@ -174,10 +179,10 @@ public class SvnRepository extends AbstractRepository {
   private SVNRepository getRepository(SVNURL url, boolean cache) throws SVNException {
     SVNRepository repository = null;
     if (cache) {
-      repository = SVNRepositoryCache.getInstance().getRepository(url, userName, userPassword, keyFile, passPhrase,
-          portNumber, certFile, storageAllowed);
+      repository = SVNRepositoryCache.getInstance().getRepository(url, userName, userPassword, keyFile, sshPassphrase,
+          portNumber, certFile, sslPassphrase, storageAllowed);
     } else {
-      repository = SvnUtils.createRepository(url, userName, userPassword, keyFile, passPhrase, portNumber, certFile,
+      repository = SvnUtils.createRepository(url, userName, userPassword, keyFile, sshPassphrase, portNumber, certFile, sslPassphrase,
           storageAllowed);
       repository.setLocation(url, false);
     }
@@ -418,8 +423,17 @@ public class SvnRepository extends AbstractRepository {
    * 
    * @param passPhrase
    */
-  public void setPassPhrase(String passPhrase) {
-    this.passPhrase = passPhrase;
+  public void setSshPassphrase(String sshPassphrase) {
+    this.sshPassphrase = sshPassphrase;
+  }
+  
+  /**
+   * Set the passphrase for the SSL certificate.
+   * 
+   * @param sslPassphrase
+   */
+  public void setSslPassPhrase(String sslPassphrase) {
+    this.sslPassphrase = sslPassphrase;
   }
 
   /**

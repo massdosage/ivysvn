@@ -56,6 +56,7 @@ ssh.keyfile=
  
 SSL certificate file (required for 5)
 #ssl.certfile=
+#ssl.passphrase=
 
 #Whether to allow authentication credentials to be stored in auth cache 
 #(optional for 1,2,3,4,5 if not set defaults to false)
