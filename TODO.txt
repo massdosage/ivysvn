@@ -2,6 +2,10 @@
 ~~~
 2.0.0 beta RC 2 
  - when Ivy 2.0.0 final comes out (or another RC release).
+ - http://code.google.com/p/ivysvn/issues/detail?id=15 (SSL now might actually work)
+   Modify http://code.google.com/p/ivysvn/wiki/Usage so it contains sslPassphrase 
+   Modify http://code.google.com/p/ivysvn/wiki/Usage so there is an example ivysettings.xml for https
+   
 Next e-mail - mention unit tests, useful for debugging etc.
 
 -----------------------------------
