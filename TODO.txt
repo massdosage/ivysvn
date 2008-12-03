@@ -2,9 +2,12 @@
 ~~~
 2.0.0 beta RC 2 
  - when Ivy 2.0.0 final comes out (or another RC release).
+ - Upgraded to SVNKit 1.2.1.  
+ - Upgraded to Trilead SSH for Java - Build 213 (SVNKit-1.2-patch).
+   TODO: Modify google wiki to include new 3rd party lib versions. 
  - http://code.google.com/p/ivysvn/issues/detail?id=15 (SSL now might actually work)
-   Modify http://code.google.com/p/ivysvn/wiki/Usage so it contains sslPassphrase 
-   Modify http://code.google.com/p/ivysvn/wiki/Usage so there is an example ivysettings.xml for https
+   TODO: Modify http://code.google.com/p/ivysvn/wiki/Usage so it contains sslPassphrase 
+   TODO: Modify http://code.google.com/p/ivysvn/wiki/Usage so there is an example ivysettings.xml for https
    
 Next e-mail - mention unit tests, useful for debugging etc.
 
