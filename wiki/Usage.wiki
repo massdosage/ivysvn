@@ -150,7 +150,6 @@ This example `ivysettings.xml` file shows how to set up access to a repository u
 
 This example `ivysettings.xml` file shows how to set up access to a repository over http and assumes you have setup http authentication.
 
-*Note:* There are some KnownIssues related to publishing over !WebDav. 
 {{{
 <ivysettings>
   
