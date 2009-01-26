@@ -341,7 +341,7 @@ public class SvnRepository extends AbstractRepository {
    * @param repositorySource Full path to resource in subversion (including host, protocol etc.)
    * @return SvnResource filled with the needed informations
    */
-  public SvnResource resolveResource(String repositorySource) {
+  protected SvnResource resolveResource(String repositorySource) {
     Message.debug("Resolving resource for " + repositorySource + " [revision=" + svnRetrieveRevision + "]");
     SvnResource result = null;
     try {
