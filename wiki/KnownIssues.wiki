@@ -1,5 +1,5 @@
 #summary Known issues for the latest release.
 
-= Known Issues for !IvySvn 2.0.0-rc1 =
+= Known Issues for !IvySvn 2.0.0-rc2 =
 
 There are currently no serious known issues for this release.
