@@ -20,7 +20,8 @@ Configuring !IvySvn is explained below
          keyFile="${ssh.keyfile}" 
          sshPort="${ssh.port}" 
          sshPassphrase="${ssh.keyfile.passphrase}" 
-         certFile="${ssl.certfile}" 
+         certFile="${ssl.certfile}"
+         sslPassphrase="${ssl.passphrase}" 
          storageAllowed="${svn.storage.allowed}"
          binaryDiff="${svn.binarydiff}"
          binaryDiffFolderName="${svn.binarydiff.folder}"
@@ -53,7 +54,8 @@ For more information on the values in `ivysettings.xml` refer to the [http://ant
 || keyFile || Path to SSH key file. || Only for svn+ssh:// connections that require username and keyfile authentication. ||
 || sshPassphrase || The SSH key file passphrase (if any). || Only for svn+ssh:// connections that require username and keyfile authentication with a keyfile requiring a passphrase, defaults to "". ||
 || sshPort || The SSH port. || Only for svn+ssh:// connections where the SSH port is not the default of 22. ||
-|| certFile || Path to client side certificate file. || Only for https:// connections that require client side certificates for authentication. ||
+|| sslPassphrase || The SSL/Client certificate passphrase. || Only for https:// connections that require client side certificates with their own passphrase. ||
+|| sshPort || The SSH port. || Only for svn+ssh:// connections where the SSH port is not the default of 22. ||
 || storageAllowed || Whether to store credentials in the global authentication cache or not. || No, defaults to "false". ||
 || binaryDiff || Whether to publish to an intermediate folder to take advantage of Subversion's binary diff mechanism. || No, defaults to "true". ||
 || binaryDiffFolderName || Name of the intermediate folder to publish to if binaryDiff is set to "true". || No, defaults to "LATEST". ||
