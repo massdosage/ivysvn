@@ -1,7 +1,7 @@
 #summary Configuring IvySvn.
 #labels Phase-Deploy
 
-Configuring !IvySvn is explained below
+Configuring !IvySvn is explained below.
 
 = Configuration =
 
