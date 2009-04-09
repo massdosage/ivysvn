@@ -134,5 +134,17 @@ public class SvnRepositoryRetrieveTest extends BaseIvyTestCase {
     // this ivy xml points to a file which is not in created by setUpRepository()
     retrieve(new File(ivysDataFolder, "ivy-test-retrieve-dependent.xml"));
   }
+  
+  @Test
+  public void testRetrieve_Issue16() throws IOException {
+    File ivySettingsFile = prepareTestIvySettings(new File(ivySettingsDataFolder, "ivysettings-issue16.xml"));
+    // easier to just do a publish rather than create files, folders by hand
+    publish(ivySettingsFile, defaultFileContents, "1.0", false);
+    String fileContents2 = "testartifact 2.0";
+    publish(ivySettingsFile, fileContents2, "2.0", false);
+    
+    retrieve(new File(ivysDataFolder, "ivy-test-retrieve-issue16.xml"), DEFAULT_RETRIEVE_TO_PATTERN, ivySettingsFile);
+    assertEquals(fileContents2, FileUtils.readFileToString(new File(testTempFolder, "testartifact.jar")));
+  }
 
 }

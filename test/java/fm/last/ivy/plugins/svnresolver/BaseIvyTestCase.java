@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.ivy.ant.IvyPublish;
 import org.apache.ivy.ant.IvyResolve;
 import org.apache.ivy.ant.IvyRetrieve;
 import org.apache.tools.ant.DefaultLogger;
@@ -43,7 +44,25 @@ public abstract class BaseIvyTestCase extends BaseTestCase {
   protected File defaultIvyXml = new File(ivysDataFolder, "ivy-test-retrieve-default.xml");
   
   protected File defaultIvySettingsFile = new File(ivySettingsDataFolder, "ivysettings-default.xml");
+  
+  protected static final String DIST_PATH = TEST_TMP_PATH + "/build/dist";
 
+  protected String defaultOrganisation = "testorg";
+
+  protected String defaultModule = "testmodule";
+
+  // set in ivy-test-publish.xml
+  protected String defaultArtifactName = "testartifact.jar";
+
+  protected String defaultIvyFileName = "ivy.xml";
+  
+  // ivy uses this folder for creating ivy.xml files for publish
+  protected File tempDistFolder = new File(DIST_PATH);
+
+  protected File defaultFileToPublish = new File(DIST_PATH + "/" + defaultArtifactName);
+  
+  protected String defaultFileContents = "testartifact 1.0";
+  
   // property values for ant log level
   private static final String MSG_ERR = "MSG_ERR";
   private static final String MSG_WARN = "MSG_WARN";
@@ -173,6 +192,7 @@ public abstract class BaseIvyTestCase extends BaseTestCase {
     IvyResolve resolve = new IvyResolve();
     resolve.setProject(project);
     resolve.setTaskName("resolve");
+    // resolve.setOrganisation(defaultOrganisation);
     resolve.setFile(ivyFile);
     resolve.execute();
   }
@@ -218,6 +238,86 @@ public abstract class BaseIvyTestCase extends BaseTestCase {
     project.setProperty("ivy.settings.file", ivySettingsFile.getAbsolutePath());
     resolve(project, ivyFile);
     retrieve.execute();
+  }
+  
+  /**
+   * Creates an IvyPublish object filled in with default values.
+   * 
+   * @param revision Revision to be published.
+   * @param overwrite Overwrite value to set on publish operation (if null no value will be set and default will be
+   *          used).
+   * @return An IvyPublish object.
+   */
+  protected IvyPublish createIvyPublish(String revision, Boolean overwrite) {
+    IvyPublish ivyPublish = new IvyPublish();
+    ivyPublish.setTaskName("publish");
+    ivyPublish.setArtifactspattern(DIST_PATH + "/[artifact].[ext]");
+    ivyPublish.setOrganisation(defaultOrganisation);
+    ivyPublish.setModule(defaultModule);
+    ivyPublish.setResolver("ivysvn");
+    ivyPublish.setPubrevision(revision);
+    if (overwrite != null) {
+      ivyPublish.setOverwrite(overwrite);
+    }
+    return ivyPublish;
+  }
+
+  /**
+   * Performs a publish operation.
+   * 
+   * @param ivySettingsFile Ivy settings file.
+   * @param artifactFileContents String contents to be published as artifact file.
+   * @param revision Revision to be published.
+   * @param overwrite Overwrite value to set on publish operation (if null no value will be set and default will be
+   *          used).
+   * @throws IOException If an error occurs writing the file contents to a File to be published.
+   */
+  protected void publish(File ivySettingsFile, String artifactFileContents, String revision, Boolean overwrite)
+    throws IOException {
+    IvyPublish publish = createIvyPublish(revision, overwrite);
+    publish(ivySettingsFile, artifactFileContents, publish);
+  }
+
+  /**
+   * Performs a publish operation.
+   * 
+   * @param ivySettingsFile Ivy settings file.
+   * @param artifactFileContents String contents to be published as artifact file.
+   * @param ivyPublish An initialised IvyPublish object.
+   * @throws IOException If an error occurs writing the file contents to a File to be published.
+   */
+  protected void publish(File ivySettingsFile, String artifactFileContents, IvyPublish ivyPublish) throws IOException {
+    Project project = createProject();
+    project.setProperty("ivy.settings.file", ivySettingsFile.getAbsolutePath());
+    ivyPublish.setProject(project);
+    resolve(project, new File(ivysDataFolder, "ivy-test-publish.xml"));
+    FileUtils.writeStringToFile(defaultFileToPublish, artifactFileContents);
+    ivyPublish.execute();
+    FileUtils.deleteDirectory(tempDistFolder);
+  }
+
+  /**
+   * Performs a publish operation.
+   * 
+   * @param ivySettingsFile Ivy settings file.
+   * @param artifactFileContents String contents to be published as artifacts file.
+   * @param overwrite Overwrite value to set on publish operation (if null no value will be set and default will be
+   *          used).
+   * @throws IOException If an error occurs writing the file contents to a File to be published.
+   */
+  protected void publish(File ivySettingsFile, String artifactFileContents, Boolean overwrite) throws IOException {
+    this.publish(ivySettingsFile, artifactFileContents, "1.0", overwrite);
+  }
+
+  /**
+   * Performs a default publish operation.
+   * 
+   * @param ivySettingsFile Ivy settings file.
+   * @param artifactFileContents String contents to be published as artifacts file.
+   * @throws IOException If an error occurs writing the file contents to a File to be published.
+   */
+  protected void publish(File ivySettingsFile, String artifactFileContents) throws IOException {
+    publish(ivySettingsFile, artifactFileContents, "1.0", null);
   }
 
 }

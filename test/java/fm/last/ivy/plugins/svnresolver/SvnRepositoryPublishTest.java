@@ -66,16 +66,14 @@ public class SvnRepositoryPublishTest extends BaseSvnRepositoryPublishTestCase {
 
   @Test
   public void testBinaryDiff() throws IOException, SVNException {
-    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile,
-        "binaryDiff=\"true\"");
+    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile, "binaryDiff=\"true\"");
     publish(ivySettingsFile, defaultFileContents);
     assertPublish("1.0", defaultFileContents, true);
   }
 
   @Test
   public void testBinaryDiff_OverwriteFalse() throws IOException, SVNException {
-    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile,
-        "binaryDiff=\"true\"");
+    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile, "binaryDiff=\"true\"");
     publish(ivySettingsFile, defaultFileContents, false);
     assertPublish("1.0", defaultFileContents, true);
     // now publish again
@@ -87,8 +85,7 @@ public class SvnRepositoryPublishTest extends BaseSvnRepositoryPublishTestCase {
 
   @Test
   public void testBinaryDiff_OverwriteTrue() throws IOException, SVNException {
-    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile,
-        "binaryDiff=\"true\"");
+    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile, "binaryDiff=\"true\"");
     publish(ivySettingsFile, defaultFileContents, true);
     assertPublish("1.0", defaultFileContents, true);
     // now publish again
@@ -101,8 +98,8 @@ public class SvnRepositoryPublishTest extends BaseSvnRepositoryPublishTestCase {
   @Test
   public void testBinaryDiff_BinaryDiffFolderName() throws IOException, SVNException {
     String binaryDiffFolderName = "BINARYDIFF"; // use a folder name other than default of "LATEST"
-    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile,
-        "binaryDiff=\"true\" binaryDiffFolderName=\"" + binaryDiffFolderName + "\"");
+    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile, "binaryDiff=\"true\" binaryDiffFolderName=\""
+        + binaryDiffFolderName + "\"");
     publish(ivySettingsFile, defaultFileContents);
     assertPublish("1.0", defaultFileContents, true, binaryDiffFolderName);
   }
@@ -189,8 +186,7 @@ public class SvnRepositoryPublishTest extends BaseSvnRepositoryPublishTestCase {
 
   @Test
   public void testPublishMultiple_BinaryDiffFalse() throws IOException, SVNException {
-    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile,
-        "binaryDiff=\"false\"");
+    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile, "binaryDiff=\"false\"");
     publish(ivySettingsFile, defaultFileContents, true);
     String fileContents2 = "2.0 contents";
     publish(ivySettingsFile, fileContents2, "2.0", true);
@@ -200,8 +196,7 @@ public class SvnRepositoryPublishTest extends BaseSvnRepositoryPublishTestCase {
 
   @Test
   public void testPublishMultiple_BinaryDiffTrue() throws IOException, SVNException {
-    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile,
-        "binaryDiff=\"true\"");
+    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile, "binaryDiff=\"true\"");
     publish(ivySettingsFile, defaultFileContents, true);
     assertPublish("1.0", defaultFileContents, true); // check 1.0 with binary diff
     String fileContents2 = "2.0 contents";
@@ -211,5 +206,16 @@ public class SvnRepositoryPublishTest extends BaseSvnRepositoryPublishTestCase {
     assertNonBinaryDiffPublish(defaultOrganisation, defaultModule, "1.0", defaultArtifactName, defaultFileContents,
         defaultIvyFileName);
   }
-  
+
+  @Test
+  public void testPublish_Issue16() throws IOException, SVNException {
+    File ivySettingsFile = prepareTestIvySettings(new File(ivySettingsDataFolder, "ivysettings-issue16.xml"));
+    publish(ivySettingsFile, defaultFileContents);
+    
+    String artifactPublishFolder = BASE_PUBLISH_PATH + "/" + defaultOrganisation + "/" + defaultModule + "/jars/";
+    String ivyPublishFolder = BASE_PUBLISH_PATH + "/" + defaultOrganisation + "/" + defaultModule + "/ivys/";
+    assertPublication(artifactPublishFolder, "testartifact-1.0.jar", defaultFileContents, ivyPublishFolder,
+        "testmodule-1.0.xml");
+  }
+
 }
