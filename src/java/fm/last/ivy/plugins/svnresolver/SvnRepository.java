@@ -349,12 +349,8 @@ public class SvnRepository extends AbstractRepository {
       SVNRepository repository = getRepository(url, true);
       SVNNodeKind nodeKind = repository.checkPath("", svnRetrieveRevision);
       if (nodeKind == SVNNodeKind.NONE) {
-        if (repositorySource.endsWith("ivy.xml") || repositorySource.endsWith(".sha1")
-            || repositorySource.endsWith(".md5")) { // log at debug level for files which often aren't there
-          Message.debug("No resource found at " + repositorySource + ", returning default resource");
-        } else { // probably an artifact file, so if this couldn't be found, log an error
-          Message.error("No resource found at " + repositorySource + ", returning default resource");
-        }
+        // log this on debug, NOT error, see http://code.google.com/p/ivysvn/issues/detail?id=21
+        Message.debug("No resource found at " + repositorySource + ", returning default resource");
         result = new SvnResource();
       } else {
         Message.debug("Resource found at " + repositorySource + ", returning resolved resource");
