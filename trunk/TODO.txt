@@ -2,6 +2,9 @@
 ~~~
 Final 2.0.0 release if no problems reported on 2.0.0-rc2.
 
+Fixed:
+http://code.google.com/p/ivysvn/issues/detail?id=21
+
 -----------------------------------
 
 -Ask ivy and ivymeetssvn projects to update link to google code site.
