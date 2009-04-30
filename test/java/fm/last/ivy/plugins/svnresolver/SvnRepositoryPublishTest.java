@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import org.apache.tools.ant.BuildException;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.io.ISVNEditor;
@@ -216,6 +217,34 @@ public class SvnRepositoryPublishTest extends BaseSvnRepositoryPublishTestCase {
     String ivyPublishFolder = BASE_PUBLISH_PATH + "/" + defaultOrganisation + "/" + defaultModule + "/ivys/";
     assertPublication(artifactPublishFolder, "testartifact-1.0.jar", defaultFileContents, ivyPublishFolder,
         "testmodule-1.0.xml");
+  }
+  
+  @Test
+  @Ignore("TODO: Fix issue 20 so this test passes!")
+  public void testPublish_Issue20() throws IOException, SVNException {
+    File ivySettingsFile = prepareTestIvySettings(new File(ivySettingsDataFolder, "ivysettings-issue20.xml"));
+    publish(ivySettingsFile, defaultFileContents);
+
+    String artifactPublishFolder = BASE_PUBLISH_PATH + "/" + defaultOrganisation + "/" + defaultModule + "/1.0/jars/";
+    String ivyPublishFolder = BASE_PUBLISH_PATH + "/" + defaultOrganisation + "/" + defaultModule + "/1.0/ivys/";
+    assertPublication(artifactPublishFolder, "testartifact.jar", defaultFileContents, ivyPublishFolder,
+        "ivy.xml");
+
+    String artifactBinaryDiffPublishFolder = BASE_PUBLISH_PATH + "/" + defaultOrganisation + "/" + defaultModule
+        + "/1.0/jars/";
+    String ivyBinaryDiffPublishFolder = BASE_PUBLISH_PATH + "/" + defaultOrganisation + "/" + defaultModule
+        + "/1.0/ivys/";
+    assertPublication(artifactBinaryDiffPublishFolder, "testartifact.jar", defaultFileContents,
+        ivyBinaryDiffPublishFolder, "ivy.xml");
+  }
+  
+  @Test
+  public void testNonIncrementalVersions_BinaryDiff() throws IOException, SVNException {
+    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile, "binaryDiff=\"true\"");
+    publish(ivySettingsFile, defaultFileContents, "2.5.5", false);
+    assertPublish("2.5.5", defaultFileContents, true);
+    publish(ivySettingsFile, defaultFileContents, "2.0.8", false);
+    assertPublish("2.0.8", defaultFileContents, true);
   }
 
 }
