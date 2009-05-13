@@ -1,0 +1,198 @@
+<!-- 
+Copyright 2008 Last.fm
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<project name="ivysvnresolver" default="build">
+
+	<property name="lib.dir" value="${basedir}/lib" />
+	
+	<property name="src.dir" value="${basedir}/src" />
+	<property name="java.src.dir" value="${src.dir}/java" />
+  
+  <property name="test.dir" location="test"/>
+  <property name="test.conf.dir" location="${test.dir}/conf"/>
+  <property name="test.data.dir" location="${test.dir}/data"/>
+  <property name="test.java.dir" location="${test.dir}/java"/>
+  
+  <property name="build.dir" value="${basedir}/build" />
+  <property name="dist.dir" value="${build.dir}/dist" />
+  <property name="classes.dir" value="${build.dir}/classes" />
+  <property name="junit.report.dir" location="${build.dir}/junit"/>
+
+	<property name="ivysettings.dir" value="${basedir}" />
+	<property file="build.properties" />
+
+	<fileset dir="${lib.dir}" id="dependencies">
+		<include name="ivy*.jar" />
+		<include name="svnkit.jar" />
+		<include name="trilead.jar" />
+	</fileset>
+
+	<!-- paths used for compilation  -->
+	<path id="lib.path.id">
+		<fileset refid="dependencies" />
+	</path>
+  
+    <!-- classpath used when compiling and running tests -->
+  <path id="test-classpath">
+    <pathelement location="${test.conf.dir}"/>
+    <pathelement location="${classes.dir}"/>
+    <fileset dir="${lib.dir}">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+	<import file="ivy-common-targets.xml" />
+
+	<target name="install" depends="clean, build-jar" description="installs files required for ivysvnresolver to work into ant lib">
+		<property name="ivy.skip.retrieve" value="true" />
+		<copy todir="${ant.home}/lib" overwrite="true" verbose="true">
+			<fileset refid="dependencies" />
+		</copy>
+		<!-- copy XML files to ANT_HOME/lib -->
+    <copy todir="${ant.home}/lib" overwrite="true" verbose="true">
+      <fileset dir="${ivysettings.dir}">
+        <include name="ivysettings.xml" />
+      	<include name="ivy-common-targets.xml" />
+      </fileset>
+    </copy>
+		<antcall target="jar" />
+		<copy todir="${ant.home}/lib" overwrite="true" verbose="true">
+			<fileset dir="${dist.dir}">
+				<include name="${ant.project.name}.jar" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="clean" description="">
+		<delete dir="${build.dir}" />
+	</target>
+
+  <target name="compile" depends="compile-source, compile-test"/>
+  
+  <target name="compile-source">
+    <mkdir dir="${classes.dir}"/>
+    <javac srcdir="${java.src.dir}" destdir="${classes.dir}" classpathref="lib.path.id" debug="true"
+      source="1.5" target="1.5"/>
+  </target>
+
+  <target name="compile-test" depends="compile-source">
+    <mkdir dir="${classes.dir}"/>
+    <javac srcdir="${test.java.dir}" destdir="${classes.dir}" debug="true">
+      <classpath>
+        <path refid="test-classpath"/>
+      </classpath>
+    </javac>
+  </target>
+  
+<target name="test" depends="compile" description="Run the unit tests">
+    <delete dir="${junit.report.dir}"/>
+    <mkdir dir="${junit.report.dir}"/>
+    
+    <property name="junit.includes" value="**/*Test.java"/>
+    <property name="junit.excludes" value="nothing.by.default"/>
+    
+    <junit printsummary="yes" failureproperty="testfailed" showoutput="true" fork="true">
+      <classpath refid="test-classpath"/>
+      <formatter type="xml" usefile="true"/>
+      <batchtest todir="${junit.report.dir}">
+        <fileset dir="${test.java.dir}" includes="${junit.includes}" excludes="${junit.excludes}"/>
+      </batchtest>
+    </junit>
+    
+    <junitreport todir="${junit.report.dir}">
+      <fileset dir="${junit.report.dir}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="noframes" todir="${junit.report.dir}"/>
+    </junitreport>
+    
+    <fail if="testfailed" message="Some test(s) failed. See '${junit.report.dir}' for details."/>
+  </target>  
+    
+	<target name="check-for-ivysvn">
+		<available property="ivysvn.present" classname="fm.last.ivy.plugins.svnresolver.SvnResolver" />
+		<echo>Ivy Subversion already on classpath: ${ivysvn.present}</echo>
+	</target>
+
+	<!-- we can only try figure out build number if ivysvnresolver has already been installed -->
+	<target name="check-buildnumber-generation" depends="check-for-ivysvn,generate-buildnumber" if="ivysvn.present">
+		<antcall target="buildnumber" />
+	</target>
+
+	<!-- no ivy-svn resolver installed, no version number, force it to 0 -->
+	<target name="generate-buildnumber" unless="version">
+		<property name="version" value="0" />
+	</target>
+
+	<target name="jar" depends="compile, check-buildnumber-generation" description="make a jar file for this project">
+		<tstamp>
+			<format property="BUILD-DATETIME" pattern="yyyy-MM-dd HH:mm:ss" />
+		</tstamp>
+		<mkdir dir="${dist.dir}" />
+		<echo message="Generating ${dist.dir}/${ant.project.name}.jar with version ${version}" />
+		<jar destfile="${dist.dir}/${ant.project.name}.jar" update="true">
+			<fileset dir="${classes.dir}">
+        <exclude name="**/*Test*"/>
+        <exclude name="**/test*"/>
+      </fileset>
+			<manifest>
+				<attribute name="Build-Version" value="${version}" />
+				<attribute name="Build-DateTime" value="${BUILD-DATETIME}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="build-jar" depends="jar" />
+
+	<target name="build" depends="build-jar" />
+
+	<target name="build-dist" depends="build-bin, build-src" />
+
+	<!-- builds the binary zip file -->
+	<target name="build-bin" depends="build-jar">
+		<tar destfile="${dist.dir}/${ant.project.name}-${version}-bin.tgz" compression="gzip">
+			<zipfileset dir="${dist.dir}" includes="${ant.project.name}.jar" prefix="${ant.project.name}-${version}" />
+			<zipfileset dir="${basedir}" includes="*.txt" excludes="TODO.txt" prefix="${ant.project.name}-${version}" />
+			<tarfileset refid="dependencies" prefix="${ant.project.name}-${version}/lib" />
+		</tar>
+	</target>
+
+	<!-- builds the source zip file -->
+	<target name="build-src" depends="build-jar">
+    <tar destfile="${dist.dir}/${ant.project.name}-${version}-src.tgz" compression="gzip">
+      <zipfileset dir="${basedir}"
+        excludes="build/**/*, build, .*, build.properties, lib/commons*, lib/junit*, 
+        ivysettings.xml, .settings/**/*, deb.xml, test/conf/test.properties"
+        prefix="${ant.project.name}-${version}"/>
+    </tar>
+	</target>
+  
+  <!-- doesn't appear to work, google moved the file upload location?? -->
+  <target name="upload" depends="build-dist">
+    <taskdef classname="net.bluecow.googlecode.ant.GoogleCodeUploadTask"
+      classpath="${lib.dir}/ant-googlecode.jar" name="gcupload"/>
+    <!-- first upload the src version -->
+    <gcupload username="${google.username}" password="${google.password}" projectname="ivysvn"
+      filename="${dist.dir}/${ant.project.name}-${version}-src.tgz" targetfilename="${ant.project.name}-${version}-src.tgz" 
+      summary="${version} Source Release"
+      labels="Featured, Type-Source, OpSys-All"/>
+    <!-- now upload the bin version -->
+    <gcupload username="${google.username}" password="${google.password}" projectname="ivysvn"
+      filename="${dist.dir}/${ant.project.name}-${version}-bin.tgz" targetfilename="${ant.project.name}-${version}-bin.tgz" 
+      summary="${version} Binary Release"
+      labels="Featured, Type-Archive, OpSys-All"/>
+  </target>
+
+</project>

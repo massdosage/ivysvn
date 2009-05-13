@@ -1,0 +1,63 @@
+#
+# Copyright 2008 Last.fm
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+
+#The following properties are for this project, and can also be used in any projects which
+#include ivy-common-targets.xml
+
+#Version of software (for publish), if you do not set this property then the publish target in
+#ivy-common-targets.xml will try figure this out automatically
+#version=1.3
+
+#set this to have ivy skip retrieving dependencies
+#ivy.skip.retrieve
+
+#set this to have ivy clean its cache (useful if dependencies update behind your back)
+#ivy.clean.cache
+
+#Whether to perform binary diffs (optional, defaults to true)
+#svn.binarydiff=
+
+#Authentication values to use to connect to Subversion repository.
+#Based on the passed parameters a set of one or more valid authentication mechanisms will be decided on. 
+#Available authentication mechanisms are:
+#	1. SSH KeyFile authentication. 
+#	2. SSH User name and Password authentication. 
+#	3. Subversion User name and Password authentication. 
+#	4. Subversion User name authentication. 
+#	5. SSL certificate authentication.
+ 
+#User name to connect to subversion (required for 1,2,3,4).
+svn.user.name=
+
+#SSH key file (required for 1).
+ssh.keyfile=
+
+#Password to connect to subversion (required for 2,3).
+#svn.user.password=
+
+#SSH port (optional for 1,2 if not set defaults to 22)
+#ssh.port=
+ 
+#Passphrase for keyfile (optional for 1, if not set defaults to an empty string)
+#ssh.keyfile.passphrase=
+ 
+SSL certificate file (required for 5)
+#ssl.certfile=
+#ssl.passphrase=
+
+#Whether to allow authentication credentials to be stored in auth cache 
+#(optional for 1,2,3,4,5 if not set defaults to false)
+#svn.storageallowed=
