@@ -109,7 +109,7 @@ public class SvnRepositoryPublishTest extends BaseSvnRepositoryPublishTestCase {
   public void testCleanupPublishFolderTrue_BinaryDiffFalse() throws IOException, SVNException {
     // first emulate a file left over from a previous publish to the same folder
     ISVNEditor commitEditor = getCommitEditor();
-    String publishPath = BASE_PUBLISH_PATH + "/" + defaultOrganisation + "/" + defaultModule + "/1.0/";
+    String publishPath = defaultOrganisation + "/" + defaultModule + "/1.0/";
     svnDAO.createFolders(commitEditor, publishPath, -1);
     svnDAO.putFile(commitEditor, "previous file".getBytes(), publishPath, "previous.jar", false);
     commitEditor.closeEdit();
@@ -128,7 +128,7 @@ public class SvnRepositoryPublishTest extends BaseSvnRepositoryPublishTestCase {
   public void testCleanupPublishFolderFalse_BinaryDiffFalse() throws IOException, SVNException {
     // first emulate a file left over from a previous publish to the same folder
     ISVNEditor commitEditor = getCommitEditor();
-    String publishPath = BASE_PUBLISH_PATH + "/" + defaultOrganisation + "/" + defaultModule + "/1.0/";
+    String publishPath = defaultOrganisation + "/" + defaultModule + "/1.0/";
     svnDAO.createFolders(commitEditor, publishPath, -1);
     svnDAO.putFile(commitEditor, "previous file".getBytes(), publishPath, "previous.jar", false);
     commitEditor.closeEdit();
@@ -147,7 +147,7 @@ public class SvnRepositoryPublishTest extends BaseSvnRepositoryPublishTestCase {
   public void testCleanupPublishFolderTrue_BinaryDiffTrue() throws IOException, SVNException {
     // first emulate a file left over from a previous publish to the same folder
     ISVNEditor commitEditor = getCommitEditor();
-    String publishPath = BASE_PUBLISH_PATH + "/" + defaultOrganisation + "/" + defaultModule + "/1.0/";
+    String publishPath = defaultOrganisation + "/" + defaultModule + "/1.0/";
     svnDAO.createFolders(commitEditor, publishPath, -1);
     svnDAO.putFile(commitEditor, "previous file".getBytes(), publishPath, "previous.jar", false);
     commitEditor.closeEdit();
@@ -166,7 +166,7 @@ public class SvnRepositoryPublishTest extends BaseSvnRepositoryPublishTestCase {
   public void testCleanupPublishFolderFalse_BinaryDiffTrue() throws IOException, SVNException {
     // first emulate a file left over from a previous publish to the same folder
     ISVNEditor commitEditor = getCommitEditor();
-    String publishPath = BASE_PUBLISH_PATH + "/" + defaultOrganisation + "/" + defaultModule + "/1.0/";
+    String publishPath = defaultOrganisation + "/" + defaultModule + "/1.0/";
     svnDAO.createFolders(commitEditor, publishPath, -1);
     svnDAO.putFile(commitEditor, "previous file".getBytes(), publishPath, "previous.jar", false);
     commitEditor.closeEdit();
@@ -213,8 +213,8 @@ public class SvnRepositoryPublishTest extends BaseSvnRepositoryPublishTestCase {
     File ivySettingsFile = prepareTestIvySettings(new File(ivySettingsDataFolder, "ivysettings-issue16.xml"));
     publish(ivySettingsFile, defaultFileContents);
     
-    String artifactPublishFolder = BASE_PUBLISH_PATH + "/" + defaultOrganisation + "/" + defaultModule + "/jars/";
-    String ivyPublishFolder = BASE_PUBLISH_PATH + "/" + defaultOrganisation + "/" + defaultModule + "/ivys/";
+    String artifactPublishFolder = defaultOrganisation + "/" + defaultModule + "/jars/";
+    String ivyPublishFolder = defaultOrganisation + "/" + defaultModule + "/ivys/";
     assertPublication(artifactPublishFolder, "testartifact-1.0.jar", defaultFileContents, ivyPublishFolder,
         "testmodule-1.0.xml");
   }
@@ -225,14 +225,14 @@ public class SvnRepositoryPublishTest extends BaseSvnRepositoryPublishTestCase {
     File ivySettingsFile = prepareTestIvySettings(new File(ivySettingsDataFolder, "ivysettings-issue20.xml"));
     publish(ivySettingsFile, defaultFileContents);
 
-    String artifactPublishFolder = BASE_PUBLISH_PATH + "/" + defaultOrganisation + "/" + defaultModule + "/1.0/jars/";
-    String ivyPublishFolder = BASE_PUBLISH_PATH + "/" + defaultOrganisation + "/" + defaultModule + "/1.0/ivys/";
+    String artifactPublishFolder = defaultOrganisation + "/" + defaultModule + "/1.0/jars/";
+    String ivyPublishFolder = defaultOrganisation + "/" + defaultModule + "/1.0/ivys/";
     assertPublication(artifactPublishFolder, "testartifact.jar", defaultFileContents, ivyPublishFolder,
         "ivy.xml");
 
-    String artifactBinaryDiffPublishFolder = BASE_PUBLISH_PATH + "/" + defaultOrganisation + "/" + defaultModule
+    String artifactBinaryDiffPublishFolder = defaultOrganisation + "/" + defaultModule
         + "/1.0/jars/";
-    String ivyBinaryDiffPublishFolder = BASE_PUBLISH_PATH + "/" + defaultOrganisation + "/" + defaultModule
+    String ivyBinaryDiffPublishFolder = defaultOrganisation + "/" + defaultModule
         + "/1.0/ivys/";
     assertPublication(artifactBinaryDiffPublishFolder, "testartifact.jar", defaultFileContents,
         ivyBinaryDiffPublishFolder, "ivy.xml");

@@ -83,7 +83,7 @@ public class SvnDaoTest extends BaseTestCase {
     assertTrue(svnDAO.fileExists(TEST_PATH + "/" + fileName, -1));
     assertTrue(svnDAO.folderExists(TEST_PATH, -1, false));
 
-    SVNURL sourceURL = SVNURL.parseURIEncoded(repositoryRoot + "/" + TEST_PATH + "/" + fileName);
+    SVNURL sourceURL = SVNURL.parseURIEncoded(ivyRepositoryRoot + "/" + TEST_PATH + "/" + fileName);
     File retrieved = new File(testTempFolder, fileName);
     svnDAO.getFile(sourceURL, retrieved, -1);
     assertTrue(retrieved.exists());
@@ -101,7 +101,7 @@ public class SvnDaoTest extends BaseTestCase {
     commitEditor.closeEdit();
     assertTrue(svnDAO.fileExists(TEST_PATH + "/" + fileName, -1));
 
-    SVNURL sourceURL = SVNURL.parseURIEncoded(repositoryRoot + "/" + TEST_PATH + "/" + fileName);
+    SVNURL sourceURL = SVNURL.parseURIEncoded(ivyRepositoryRoot + "/" + TEST_PATH + "/" + fileName);
     File retrieved = new File(testTempFolder, fileName);
     svnDAO.getFile(sourceURL, retrieved, -1);
     assertEquals(testData, FileUtils.readFileToString(retrieved));
@@ -111,7 +111,8 @@ public class SvnDaoTest extends BaseTestCase {
     // send different data to same file with overwrite set to FALSE, put should get ignored
     svnDAO.putFile(commitEditor, modifiedTestData.getBytes(), TEST_PATH, fileName, false);
     commitEditor.closeEdit();
-
+    assertFalse(svnDAO.fileExists(fileName, -1)); // at some point this happened, so check for it
+    // now retrieve file again and check that contents weren't changed
     String fileName2 = "testPutFile2().txt"; // retrieve to a different file name to be safe
     retrieved = new File(testTempFolder, fileName2);
     svnDAO.getFile(sourceURL, retrieved, -1);
@@ -153,7 +154,7 @@ public class SvnDaoTest extends BaseTestCase {
     // similarly, a folder should not return true for a file check
     assertFalse(svnDAO.fileExists(destinationPath, -1));
 
-    SVNURL sourceURL = SVNURL.parseURIEncoded(repositoryRoot + "/" + destinationPath + "/" + fileName);
+    SVNURL sourceURL = SVNURL.parseURIEncoded(ivyRepositoryRoot + "/" + destinationPath + "/" + fileName);
     File retrieved = new File(testTempFolder, fileName);
     svnDAO.getFile(sourceURL, retrieved, -1);
     assertTrue(retrieved.exists());

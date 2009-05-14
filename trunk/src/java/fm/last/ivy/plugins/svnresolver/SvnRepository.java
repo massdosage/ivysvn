@@ -92,7 +92,7 @@ public class SvnRepository extends AbstractRepository {
   private Map<String, Resource> resourcesCache = new HashMap<String, Resource>();
 
   /**
-   * The path to the root of the repository.
+   * The path to the root of the Ivy repository within subversion.
    */
   private String repositoryRoot;
 
@@ -264,15 +264,14 @@ public class SvnRepository extends AbstractRepository {
       if (publishTransaction == null) { // haven't initialised transaction on a previous put
 
         // first create a repository which transaction can use for various file checks
-        SVNRepository ancillaryRepository = getRepository(destinationURL, false);
-        SVNURL root = ancillaryRepository.getRepositoryRoot(false);
-        ancillaryRepository.setLocation(root, false);
+        SVNURL repositoryRootURL = SVNURL.parseURIEncoded(getRepositoryRoot());
+        SVNRepository ancillaryRepository = getRepository(repositoryRootURL, false);
         SvnDao svnDAO = new SvnDao(ancillaryRepository);
 
         // now create another repository which transaction will use to do actual commits
         SVNRepository commitRepository = getRepository(destinationURL, false);
 
-        publishTransaction = new SvnPublishTransaction(svnDAO, moduleRevisionId, commitRepository);
+        publishTransaction = new SvnPublishTransaction(svnDAO, moduleRevisionId, commitRepository, repositoryRootURL);
         publishTransaction.setBinaryDiff(binaryDiff);
         publishTransaction.setBinaryDiffFolderName(binaryDiffFolderName);
         publishTransaction.setCleanupPublishFolder(cleanupPublishFolder);

@@ -102,7 +102,7 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
       String artifactFileContents, String ivyFileName, boolean binaryDiff, String binaryDiffFolderName)
     throws SVNException, IOException {
     // first setup binary diff path
-    String publishFolder = BASE_PUBLISH_PATH + "/" + organisation + "/" + module + "/" + binaryDiffFolderName + "/";
+    String publishFolder = organisation + "/" + module + "/" + binaryDiffFolderName + "/";
     if (binaryDiff) {
       assertPublication(publishFolder, artifactName, artifactFileContents, publishFolder, ivyFileName);
     } else {
@@ -124,7 +124,7 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
    */
   protected void assertNonBinaryDiffPublish(String organisation, String module, String pubRevision,
       String artifactName, String artifactFileContents, String ivyFileName) throws SVNException, IOException {
-    String publishFolder = BASE_PUBLISH_PATH + "/" + organisation + "/" + module + "/" + pubRevision + "/";
+    String publishFolder = organisation + "/" + module + "/" + pubRevision + "/";
     assertPublication(publishFolder, artifactName, artifactFileContents, publishFolder, ivyFileName);
   }
 
@@ -144,7 +144,7 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
     assertArtifactPublished(ivyPublishFolder, ivyFileName);
     assertArtifactPublished(artifactPublishFolder, artifactName);
     File tempFile = new File(testTempFolder, "retrieved-" + artifactName);
-    SVNURL sourceURL = SVNURL.parseURIEncoded(repositoryRoot + "/" + artifactPublishFolder + "/" + artifactName);
+    SVNURL sourceURL = SVNURL.parseURIEncoded(ivyRepositoryRoot + "/" + artifactPublishFolder + "/" + artifactName);
     svnDAO.getFile(sourceURL, tempFile, -1);
     assertEquals(artifactFileContents, FileUtils.readFileToString(tempFile));
   }

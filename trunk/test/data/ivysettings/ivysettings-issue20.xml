@@ -20,8 +20,8 @@
   <resolvers>
     <svn name="ivysvn" repositoryRoot="${svn.repository.root}" userName="${svn.user.name}"
       userPassword="${svn.user.password}" binaryDiff="true"><!--@-->
-      <ivy pattern="test/java/repository/[organisation]/[module]/[revision]/[type]s/ivy.xml"/>
-      <artifact pattern="test/java/repository/[organisation]/[module]/[revision]/[type]s/[artifact].[ext]"/>
+      <ivy pattern="[organisation]/[module]/[revision]/[type]s/ivy.xml"/>
+      <artifact pattern="[organisation]/[module]/[revision]/[type]s/[artifact].[ext]"/>
     </svn>
   </resolvers>
   
