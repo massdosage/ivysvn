@@ -1,33 +1,34 @@
-2.0.0
-~~~
-Final 2.0.0 release if no problems reported on 2.0.0-rc2.
+2.1.0
+~~~~~
+Main focus of 2.1.0 is to sort out the way IvySvn uses SVNKit and the problems it currently has where, for 
+certain patterns, files and folders end up in unexpected places. Once these have been resolved, we can 
+advertise IvySvn more publically to the rest of the world by doing some advertising on Java websites and 
+mailing lists. This release should also update to the latest version of Ivy (if Ivy 2.1.0 comes out in the same time frame 
+which I expect it will) and latest version of SVNKit. 
 
-Fixed:
-http://code.google.com/p/ivysvn/issues/detail?id=21
-
------------------------------------
+-----------------------------------------------------------------------
 
 -Ask ivy and ivymeetssvn projects to update link to google code site.
 
--When 2.0.0 - announce on ivy list, javalobby, last.fm blog, IvySvn mailing list etc.
+-When 2.1.0 - announce on ivy list, javalobby, last.fm blog, IvySvn mailing list etc.
 
   http://java.dzone.com/node/add/announcement
   http://www.theserverside.com/news/post.tss
   
-  IvySvn 2.0.0 released - A Subversion Resolver for Ivy.
+  IvySvn 2.1.0 released - A Subversion Resolver for Ivy.
   
   Summary:
   The 2.0.0 version of IvySvn, a Subversion Resolver for Ivy (Ant's "agile dependency manager"), has been released with 
   new features which take advantage of Subversion's diff and transactional commits.  
   
   Content:
-  The 2.0.0 version of IvySvn is now available for download from http://code.google.com/p/ivysvn/
+  The 2.1.0 version of IvySvn is now available for download from http://code.google.com/p/ivysvn/
   
   IvySvn is a resolver for Ivy 2.0.0 (http://ant.apache.org/ivy) which uses Subversion for storing artifacts for 
   use in Ivy's publish and retrieve operations. IvySvn is free, open source software released under the <link>
   Apache license.
   
-  New features in IvySvn 2.0.0 include:
+  Features in IvySvn 2.1.0 include:
   
     - Publish operations can now be configured to publish to an intermediate location, taking 
     advantage of Subversion's diff functionality to reduce storage requirements in Subversion when 
@@ -42,11 +43,7 @@ http://code.google.com/p/ivysvn/issues/detail?id=21
     
   For more information on the new features please refer to the CHANGELOG.txt file which is part of the release.
 
-  The 2.0.0 release of IvySvn not only contains many new features but also marks 
-  the move of the IvySvn project from <a href="audioscrobbler.net">Audioscrobbler.net</a> 
-  to a new home at http://code.google.com/p/ivysvn/. Benefits of this move include improved access to the source 
-  code, improved documentation in Wiki format and issue tracking. 
-    
+   
   Thank you to everyone from the open source community (especially the peeps at Apache and Last.fm) who helped 
   contribute to this release by giving feedback, feature ideas, code patches and helping with testing.
 
