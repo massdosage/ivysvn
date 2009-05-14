@@ -8,6 +8,38 @@ which I expect it will) and latest version of SVNKit.
 
 -----------------------------------------------------------------------
 
+
+2.0 to 2.1 upgrade procedure.
+
+http://code.google.com/p/ivysvn/issues/detail?id=18
+
+What you will need to change in your ivysettings config file...
+
+- repositoryRoot should now point to the root location of your *Ivy* repository in subversion (not the subversion root).
+- your ivy and artifact patterns should now be relative to this Ivy root repository location.
+
+In practise this usually means moving the leading folder structure from the patterns and appending them to the existing repositoryRoot.
+
+e.g. before:
+
+    <svn name="ivysvn" repositoryRoot="svn://localhost/opt/svntest/" userName="${svn.user.name}"
+      userPassword="${svn.user.password}">
+      <ivy pattern="test/java/repository/[organisation]/[module]/[revision]/ivy-[revision].xml"/>
+      <artifact pattern="test/java/repository/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
+    </svn>
+    
+after:
+
+    <svn name="ivysvn" repositoryRoot="svn://localhost/opt/svntest/repo/root/test/java/repository/" userName="${svn.user.name}"
+      userPassword="${svn.user.password}"><!--@-->
+      <ivy pattern="[organisation]/[module]/[revision]/ivy-[revision].xml"/>
+      <artifact pattern="[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
+    </svn>    
+
+-----------------------------------------------------------------------
+
+
+
 -Ask ivy and ivymeetssvn projects to update link to google code site.
 
 -When 2.1.0 - announce on ivy list, javalobby, last.fm blog, IvySvn mailing list etc.
