@@ -1,12 +1,12 @@
 IvySvn Change Log
 
-Release 2.0 TBA
-~~~~~~~~~~~~~~~
+Release 2.0 2008-05-14
+~~~~~~~~~~~~~~~~~~~~~~
   - Added ability to perform binary diffs (based on code and concepts contributed by Xavier Hanin).
   - Publish now results in one/two svn commits per publish call instead of per file (based on code and 
     concepts contributed by Stephane Bailliez and subsequent fixes by gereedy).
-  - Upgraded to Ivy 2.0.0 RC2.
-  - Upgraded to SVNKit 1.2.1.  
+  - Upgraded to Ivy 2.0.0.
+  - Upgraded to SVNKit 1.2.2. 
   - Upgraded to Trilead SSH for Java - Build 213 (SVNKit-1.2-patch).
   - Made setting of "repositoryRoot" attribute mandatory. This should be full path to root of repository - including 
     protocol - patterns are relative to this. 
