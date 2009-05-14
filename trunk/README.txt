@@ -61,7 +61,7 @@ Third party libraries
 The Ivy Subversion resolver requires the following third-party libraries, the version numbers indicate the versions 
 that the Ivy Subversion resolver was built and tested against, your mileage with other versions may vary.
 
-Ivy 2.0.0 (http://ant.apache.org/ivy/)
+Ivy 2.1.0-rc1 (http://ant.apache.org/ivy/)
 Trilead SSH-2 For Java build 213 (http://www.trilead.com/Products/Trilead-SSH-2-Java/)
 SVNKIt 1.3.0 (http://svnkit.com/)
 
