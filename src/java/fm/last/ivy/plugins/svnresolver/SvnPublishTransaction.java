@@ -57,7 +57,7 @@ public class SvnPublishTransaction {
   /**
    * Tree representing the directories and artifacts that need to be added/updated.
    */
-  private DirectoryTree publishTree = new DirectoryTree("/", null);
+  private DirectoryTree publishTree = new DirectoryTree("", null);
 
   /**
    * Svn commit message.
@@ -93,21 +93,28 @@ public class SvnPublishTransaction {
    * Whether to cleanup the contents of the publish folder during publish.
    */
   private Boolean cleanupPublishFolder = null;
+  
+  /**
+   * The root of the Ivy repository in Subversion.
+   */
+  private SVNURL ivyRepositoryRootURL = null;
 
   /**
    * Constructs a new instance of this class.
    * 
    * @param svnDAO The subversion DAO to use.
    * @param mrid The ivy Module Revision ID.
-   * @param commitRepository The repository to use for commits. This will have its location set to the repository root
-   *          and should not be used outside of this class.
+   * @param commitRepository The repository to use for commits.
+   * @param ivyRepositoryRootURL The root of the Ivy repository in Subversion.
    * @throws SVNException If an error occurs setting the commit repository to its root.
    */
-  public SvnPublishTransaction(SvnDao svnDAO, ModuleRevisionId mrid, SVNRepository commitRepository)
+  public SvnPublishTransaction(SvnDao svnDAO, ModuleRevisionId mrid, SVNRepository commitRepository,
+      SVNURL ivyRepositoryRootURL)
       throws SVNException {
     this.svnDAO = svnDAO;
     this.revision = mrid.getRevision();
     setCommitRepository(commitRepository);
+    this.ivyRepositoryRootURL = ivyRepositoryRootURL;
     StringBuilder comment = new StringBuilder();
     comment.append("Ivy publishing ").append(mrid.getOrganisation()).append("#");
     comment.append(mrid.getName()).append(";").append(mrid.getRevision());
@@ -155,9 +162,8 @@ public class SvnPublishTransaction {
    * @throws IOException If an error occurs reading any file data.
    */
   public void commit() throws SVNException, IOException {
-    // reset the repository to its root and tell it to connect if necessary
-    SVNURL root = commitRepository.getRepositoryRoot(true);
-    commitRepository.setLocation(root, false);
+    // reset the repository to the ivy repository root and tell it to connect if necessary
+    commitRepository.setLocation(ivyRepositoryRootURL, true);
     commitEditor = commitRepository.getCommitEditor(commitMessage, null);
     commitStarted = true;
     commitEditor.openRoot(-1);

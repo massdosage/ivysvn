@@ -1,6 +1,7 @@
 #Copy this file to "test.properties" in the same folder and fill in values according to your test setup
-#the Subversion repository root to use for unit tests
+#the root of the subversion repository
 svn.repository.root=
+
 #the Subversion user name to use for unit tests 
 svn.user.name=
 #the Subversion password to use for unit tests

@@ -46,6 +46,8 @@ public class SvnDao {
    */
   private SVNRepository readRepository;
 
+  private SVNURL initialLocation;
+  
   /**
    * A "cache" of folders known to exist in svn, so we don't have to hit repository to check every time.
    */
@@ -61,6 +63,7 @@ public class SvnDao {
    */
   public SvnDao(SVNRepository repository) {
     this.readRepository = repository;
+    this.initialLocation = repository.getLocation();
   }
 
   /**
@@ -127,14 +130,11 @@ public class SvnDao {
    * @throws SVNException If an invalid path is passed or the path could not be created.
    */
   public void createFolders(ISVNEditor editor, String folderPath, long revision) throws SVNException {
-    if (!folderPath.startsWith("/")) { // force all paths to be relative to root of repository
-      folderPath = "/" + folderPath;
-    }
     // run through all directories in path and create whatever is necessary
-    String[] folders = folderPath.substring(1).split("/");
+    String[] folders = folderPath.split("/");
     int i = 0;
-    StringBuffer existingPath = new StringBuffer("/");
-    StringBuffer pathToCheck = new StringBuffer("/" + folders[0]);
+    StringBuffer existingPath = new StringBuffer("");
+    StringBuffer pathToCheck = new StringBuffer(folders[0]);
     while (folderExists(pathToCheck.toString(), revision, true)) {
       existingPath.append(folders[i] + "/");
       if (++i == folders.length) {
@@ -148,7 +148,7 @@ public class SvnDao {
       editor.openDir(existingPath.toString(), -1);
       for (; i < folders.length; i++) { // build up path to create
         StringBuffer pathToAdd = new StringBuffer(existingPath);
-        if (pathToAdd.charAt(pathToAdd.length() - 1) != '/') { // if we need a separator char
+        if (pathToAdd.length() > 0 && pathToAdd.charAt(pathToAdd.length() - 1) != '/') { // if we need a separator char
           pathToAdd.append("/");
         }
         pathToAdd.append(folders[i]);
@@ -181,9 +181,10 @@ public class SvnDao {
   }
 
   /**
-   * Determines whether the passed folder exists.
+   * Determines whether the passed folder exists. All folders paths are relative to the initial location of the
+   * repository when used to construct this DAO object.
    * 
-   * @param folderPath Folder path.
+   * @param folderPath Folder path relative to the initial location of the repository.
    * @param revision Revision to use.
    * @return true if the folder exists, false otherwise.
    * @throws SVNException If an error occurs determining whether the folder exists.
@@ -192,7 +193,7 @@ public class SvnDao {
     if (useCache && existingFolderPaths.contains(folderPath)) { // first check our cache if this path is known to exist
       return true;
     } else { // not previously cached, so check against repository
-      readRepository.setLocation(readRepository.getRepositoryRoot(true), true);
+      readRepository.setLocation(initialLocation, true);
       SVNNodeKind nodeKind = readRepository.checkPath(folderPath.toString(), revision);
       if (SVNNodeKind.DIR == nodeKind) {
         if (useCache) {
@@ -213,7 +214,7 @@ public class SvnDao {
    * @throws SVNException If an error occurs determining whether the file exists.
    */
   public boolean fileExists(String path, long revision) throws SVNException {
-    readRepository.setLocation(readRepository.getRepositoryRoot(true), true);
+    readRepository.setLocation(initialLocation, true);
     SVNNodeKind kind = readRepository.checkPath(path, revision);
     if (kind == SVNNodeKind.FILE) {
       return true;

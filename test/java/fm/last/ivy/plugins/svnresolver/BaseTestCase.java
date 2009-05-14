@@ -15,6 +15,8 @@
  */
 package fm.last.ivy.plugins.svnresolver;
 
+import static org.junit.Assert.assertNull;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -24,6 +26,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.tmatesoft.svn.core.SVNCommitInfo;
+import org.tmatesoft.svn.core.SVNErrorMessage;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
@@ -44,8 +48,14 @@ public abstract class BaseTestCase {
   protected static final String TEST_DATA_PATH = TEST_PATH + "/data";
   protected static final String TEST_CONF_PATH = TEST_PATH + "/conf";
 
-  protected String repositoryRoot = TestProperties.getInstance().getProperty(
+  protected String svnRepositoryRoot = TestProperties.getInstance().getProperty(
       TestProperties.PROPERTY_SVN_REPOSITORY_ROOT);
+
+  protected String ivyRepositoryPath = "test/ivy/repository";
+  /**
+   * The full svn path to where the Ivy repository is located. This will be created by the tests.
+   */
+  protected String ivyRepositoryRoot = svnRepositoryRoot + "/" + ivyRepositoryPath;
   protected String svnUserName = TestProperties.getInstance().getProperty(TestProperties.PROPERTY_SVN_USER_NAME);
   protected String svnPassword = TestProperties.getInstance().getProperty(TestProperties.PROPERTY_SVN_PASSWORD);
 
@@ -69,7 +79,7 @@ public abstract class BaseTestCase {
    */
   protected boolean cleanupSvn = true;
 
-  protected SVNURL repositoryRootURL = null;
+  protected SVNURL ivyRepositoryRootURL = null;
   protected SVNRepository readRepository;
 
   protected SvnDao svnDAO = null;
@@ -80,19 +90,40 @@ public abstract class BaseTestCase {
     DAVRepositoryFactory.setup();
     SVNRepositoryFactoryImpl.setup();
     testTempFolder.mkdirs();
-
-    repositoryRootURL = SVNURL.parseURIEncoded(repositoryRoot);
-    readRepository = SvnUtils
-        .createRepository(repositoryRootURL, svnUserName, svnPassword, null, null, -1, null, null, false);
+    creatIvyRepositoryRoot();
+    ivyRepositoryRootURL = SVNURL.parseURIEncoded(ivyRepositoryRoot);
+    readRepository = SvnUtils.createRepository(ivyRepositoryRootURL, svnUserName, svnPassword, null, null, -1, null,
+        null, false);
     svnDAO = new SvnDao(readRepository);
+  }
+
+  private void creatIvyRepositoryRoot() throws SVNException {
+    SVNURL SVNRepositoryRootURL = SVNURL.parseURIEncoded(svnRepositoryRoot);
+    SVNRepository rootReadRepository = SvnUtils.createRepository(SVNRepositoryRootURL, svnUserName, svnPassword, null,
+        null, -1, null, null, false);
+    SVNRepository rootWriteRepository = SvnUtils.createRepository(SVNRepositoryRootURL, svnUserName, svnPassword, null,
+        null, -1, null, null, false);
+    SvnDao setupDAO = new SvnDao(rootReadRepository);
+    ISVNEditor editor = getCommitEditor(rootWriteRepository);
+    setupDAO.createFolders(editor, ivyRepositoryPath, -1);
+    SVNCommitInfo info = editor.closeEdit();
+    SVNErrorMessage message = info.getErrorMessage();
+    assertNull("Expected message to be null but was " + message, message);
   }
 
   @After
   public void cleanupRepository() throws SVNException {
     if (cleanupSvn) {
-      ISVNEditor commitEditor = getCommitEditor();
-      commitEditor.deleteEntry(TEST_PATH, -1);
-      commitEditor.closeEdit();
+      try {
+        SVNURL SVNRepositoryRootURL = SVNURL.parseURIEncoded(svnRepositoryRoot);
+        SVNRepository rootRepository = SvnUtils.createRepository(SVNRepositoryRootURL, svnUserName, svnPassword, null,
+            null, -1, null, null, false);
+        ISVNEditor commitEditor = getCommitEditor(rootRepository);
+        commitEditor.deleteEntry(TEST_PATH, -1);
+        commitEditor.closeEdit();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -112,16 +143,28 @@ public abstract class BaseTestCase {
   }
 
   /**
-   * Utility function to get an editor that can be used for commit operations.
+   * Utility function to get an editor that can be used for commit operations. This will be initialised to the root of
+   * they test Ivy repository.
    * 
    * @return A commit editor.
    * @throws SVNException If an error occurs getting the commit editor.
    */
   protected ISVNEditor getCommitEditor() throws SVNException {
-    SVNRepository commitRepository = SvnUtils.createRepository(repositoryRootURL, svnUserName, svnPassword, null, null,
-        -1, null, null, false);
-    SVNURL root = commitRepository.getRepositoryRoot(true);
-    commitRepository.setLocation(root, false);
+    SVNRepository commitRepository = SvnUtils.createRepository(ivyRepositoryRootURL, svnUserName, svnPassword, null,
+        null, -1, null, null, false);
+    return getCommitEditor(commitRepository);
+  }
+
+  /**
+   * Utility function to get an editor that can be used for commit operations. This will be initialised using the passed
+   * SVNRepository.
+   * 
+   * @param An initialised SVN repository against which the commit operations will be performed, relative to its current
+   *          path.
+   * @return A commit editor.
+   * @throws SVNException If an error occurs getting the commit editor.
+   */
+  protected ISVNEditor getCommitEditor(SVNRepository commitRepository) throws SVNException {
     ISVNEditor commitEditor = commitRepository.getCommitEditor("unit testing " + this.getClass().getName(), null);
     commitEditor.openRoot(-1);
     return commitEditor;

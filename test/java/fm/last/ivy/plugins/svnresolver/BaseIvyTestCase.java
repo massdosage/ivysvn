@@ -19,9 +19,6 @@ import fm.last.ivy.plugins.svnresolver.test.TestProperties;
  */
 public abstract class BaseIvyTestCase extends BaseTestCase {
 
-  // the base path for published artifacts (paths in patterns used in ivy settings files should match this)
-  protected static final String BASE_PUBLISH_PATH = TEST_PATH + "/java/repository";
-
   // the pattern that Ivy should use to retrieve files *to*
   protected static final String DEFAULT_RETRIEVE_TO_PATTERN = TEST_TMP_PATH + "/[artifact].[ext]";
 
@@ -154,7 +151,7 @@ public abstract class BaseIvyTestCase extends BaseTestCase {
    */
   protected File prepareTestIvySettings(File ivySettingsTemplate, String extraSvnAttributes) throws IOException {
     String ivySettings = FileUtils.readFileToString(ivySettingsTemplate);
-    ivySettings = replaceAntProperty(ivySettings, TestProperties.PROPERTY_SVN_REPOSITORY_ROOT, repositoryRoot);
+    ivySettings = replaceAntProperty(ivySettings, TestProperties.PROPERTY_SVN_REPOSITORY_ROOT, ivyRepositoryRoot);
     ivySettings = replaceAntProperty(ivySettings, TestProperties.PROPERTY_SVN_USER_NAME, svnUserName);
     ivySettings = replaceAntProperty(ivySettings, TestProperties.PROPERTY_SVN_PASSWORD, svnPassword);
     ivySettings = replaceAntProperty(ivySettings, TestProperties.PROPERTY_SVN_BINARY_DIFF, "false");

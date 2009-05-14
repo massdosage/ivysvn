@@ -44,7 +44,7 @@ public class DirectoryTree {
       return subDirs.get(subDirName);
     } else {
       StringBuilder subDirPath = new StringBuilder(this.getPath());
-      if (!this.getPath().endsWith("/")) {
+      if (!this.getPath().equals("") && !this.getPath().endsWith("/")) {
         subDirPath.append('/');
       }
       subDirPath.append(subDirName); // path now contains full sub dir path

@@ -46,30 +46,25 @@ public class SvnRepositoryRetrieveTest extends BaseIvyTestCase {
    */
   private void setUpRepository() throws SVNException {
     ISVNEditor commitEditor = getCommitEditor();
-    svnDAO.createFolders(commitEditor, BASE_PUBLISH_PATH, -1);
-    commitEditor.addDir(BASE_PUBLISH_PATH + "/acme", null, -1);
-    commitEditor.addDir(BASE_PUBLISH_PATH + "/acme/widgets", null, -1);
-    commitEditor.addDir(BASE_PUBLISH_PATH + "/acme/widgets/4.5", null, -1);
-    svnDAO.putFile(commitEditor, "acme widgets 4.5".getBytes(), BASE_PUBLISH_PATH + "/acme/widgets/4.5", "widgets.jar",
-        false);
+    commitEditor.addDir("acme", null, -1);
+    commitEditor.addDir("acme/widgets", null, -1);
+    commitEditor.addDir("acme/widgets/4.5", null, -1);
+    svnDAO.putFile(commitEditor, "acme widgets 4.5".getBytes(), "acme/widgets/4.5", "widgets.jar", false);
     commitEditor.closeDir(); // acme/widgets/4.5
-    commitEditor.addDir(BASE_PUBLISH_PATH + "/acme/widgets/4.4", null, -1);
-    svnDAO.putFile(commitEditor, "acme widgets 4.4".getBytes(), BASE_PUBLISH_PATH + "/acme/widgets/4.4", "widgets.jar",
-        false);
+    commitEditor.addDir("acme/widgets/4.4", null, -1);
+    svnDAO.putFile(commitEditor, "acme widgets 4.4".getBytes(), "acme/widgets/4.4", "widgets.jar", false);
     commitEditor.closeDir(); // acme/widgets/4.4
     commitEditor.closeDir(); // acme/widgets
-    commitEditor.addDir(BASE_PUBLISH_PATH + "/acme/gizmos", null, -1);
-    commitEditor.addDir(BASE_PUBLISH_PATH + "/acme/gizmos/1.0", null, -1);
-    svnDAO.putFile(commitEditor, "acme gizmos 1.0".getBytes(), BASE_PUBLISH_PATH + "/acme/gizmos/1.0", "gizmos.jar",
-        false);
+    commitEditor.addDir("acme/gizmos", null, -1);
+    commitEditor.addDir("acme/gizmos/1.0", null, -1);
+    svnDAO.putFile(commitEditor, "acme gizmos 1.0".getBytes(), "acme/gizmos/1.0", "gizmos.jar", false);
     commitEditor.closeDir(); // acme/gizmos/1.0
     commitEditor.closeDir(); // acme/gizmos
     commitEditor.closeDir(); // acme
-    commitEditor.addDir(BASE_PUBLISH_PATH + "/constructus", null, -1);
-    commitEditor.addDir(BASE_PUBLISH_PATH + "/constructus/toolkit", null, -1);
-    commitEditor.addDir(BASE_PUBLISH_PATH + "/constructus/toolkit/1.1", null, -1);
-    svnDAO.putFile(commitEditor, "constructus toolkit 1.1".getBytes(), BASE_PUBLISH_PATH + "/constructus/toolkit/1.1",
-        "toolkit.jar", false);
+    commitEditor.addDir("constructus", null, -1);
+    commitEditor.addDir("constructus/toolkit", null, -1);
+    commitEditor.addDir("constructus/toolkit/1.1", null, -1);
+    svnDAO.putFile(commitEditor, "constructus toolkit 1.1".getBytes(), "constructus/toolkit/1.1", "toolkit.jar", false);
     commitEditor.closeDir(); // constructus/toolkit/1.1
     commitEditor.closeDir(); // constructus/toolkit
     commitEditor.closeDir(); // constructus
@@ -94,13 +89,12 @@ public class SvnRepositoryRetrieveTest extends BaseIvyTestCase {
   @Test
   public void testRetrieve_Dependent() throws SVNException, IOException {
     ISVNEditor commitEditor = getCommitEditor();
-    svnDAO.createFolders(commitEditor, BASE_PUBLISH_PATH + "/constructus/toolkituser/2.0", -1);
-    svnDAO.putFile(commitEditor, "constructus toolkit user 2.0".getBytes(), BASE_PUBLISH_PATH
-        + "/constructus/toolkituser/2.0", "toolkituser.jar", false);
+    svnDAO.createFolders(commitEditor, "constructus/toolkituser/2.0", -1);
+    svnDAO.putFile(commitEditor, "constructus toolkit user 2.0".getBytes(), "constructus/toolkituser/2.0",
+        "toolkituser.jar", false);
 
     String toolkitUserIvyFile = FileUtils.readFileToString(new File(ivysDataFolder, "ivy-constructus-toolkituser.xml"));
-    svnDAO.putFile(commitEditor, toolkitUserIvyFile.getBytes(), BASE_PUBLISH_PATH + "/constructus/toolkituser/2.0",
-        "ivy.xml", false);
+    svnDAO.putFile(commitEditor, toolkitUserIvyFile.getBytes(), "constructus/toolkituser/2.0", "ivy.xml", false);
 
     commitEditor.closeEdit();
     retrieve(new File(ivysDataFolder, "ivy-test-retrieve-dependent.xml"));
@@ -114,12 +108,11 @@ public class SvnRepositoryRetrieveTest extends BaseIvyTestCase {
   @Test
   public void testRetrieve_Dependent_TransitiveFalse() throws SVNException, IOException {
     ISVNEditor commitEditor = getCommitEditor();
-    svnDAO.createFolders(commitEditor, BASE_PUBLISH_PATH + "/constructus/toolkituser/2.0", -1);
-    svnDAO.putFile(commitEditor, "constructus toolkit user 2.0".getBytes(), BASE_PUBLISH_PATH
-        + "/constructus/toolkituser/2.0", "toolkituser.jar", false);
+    svnDAO.createFolders(commitEditor, "constructus/toolkituser/2.0", -1);
+    svnDAO.putFile(commitEditor, "constructus toolkit user 2.0".getBytes(), "constructus/toolkituser/2.0",
+        "toolkituser.jar", false);
     String toolkitUserIvyFile = FileUtils.readFileToString(new File(ivysDataFolder, "ivy-constructus-toolkituser.xml"));
-    svnDAO.putFile(commitEditor, toolkitUserIvyFile.getBytes(), BASE_PUBLISH_PATH + "/constructus/toolkituser/2.0",
-        "ivy.xml", false);
+    svnDAO.putFile(commitEditor, toolkitUserIvyFile.getBytes(), "constructus/toolkituser/2.0", "ivy.xml", false);
     commitEditor.closeEdit();
     retrieve(new File(ivysDataFolder, "ivy-test-retrieve-dependent-transitive-false.xml"));
     // check the required file was downloaded
@@ -134,15 +127,15 @@ public class SvnRepositoryRetrieveTest extends BaseIvyTestCase {
     // this ivy xml points to a file which is not in created by setUpRepository()
     retrieve(new File(ivysDataFolder, "ivy-test-retrieve-dependent.xml"));
   }
-  
+
   @Test
-  public void testRetrieve_Issue16() throws IOException {
+  public void testRetrieve_Issue16() throws IOException, SVNException {
     File ivySettingsFile = prepareTestIvySettings(new File(ivySettingsDataFolder, "ivysettings-issue16.xml"));
     // easier to just do a publish rather than create files, folders by hand
     publish(ivySettingsFile, defaultFileContents, "1.0", false);
     String fileContents2 = "testartifact 2.0";
     publish(ivySettingsFile, fileContents2, "2.0", false);
-    
+
     retrieve(new File(ivysDataFolder, "ivy-test-retrieve-issue16.xml"), DEFAULT_RETRIEVE_TO_PATTERN, ivySettingsFile);
     assertEquals(fileContents2, FileUtils.readFileToString(new File(testTempFolder, "testartifact.jar")));
   }

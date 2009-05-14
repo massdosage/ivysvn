@@ -1,7 +1,15 @@
 IvySvn Change Log
 
-Release 2.0 2008-05-14
-~~~~~~~~~~~~~~~~~~~~~~
+Changes in progress:
+
+  - http://code.google.com/p/ivysvn/issues/detail?id=18 - made all repository operations relative to Ivy repository root, 
+    NOT the SVN root. 
+
+Release 2.1.0 TBA
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Release 2.0.0 2008-05-14
+~~~~~~~~~~~~~~~~~~~~~~~~
   - Added ability to perform binary diffs (based on code and concepts contributed by Xavier Hanin).
   - Publish now results in one/two svn commits per publish call instead of per file (based on code and 
     concepts contributed by Stephane Bailliez and subsequent fixes by gereedy).
