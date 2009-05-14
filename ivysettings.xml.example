@@ -18,7 +18,7 @@
   <typedef name="svn" classname="fm.last.ivy.plugins.svnresolver.SvnResolver"/>
   
   <resolvers>
-    <svn name="ivysvn" repositoryRoot="PROTOCOL://HOSTNAME/PATH_TO_SVN_REPOSITORY_ROOT"
+    <svn name="ivysvn" repositoryRoot="PROTOCOL://HOSTNAME/PATH_TO_SVN_REPOSITORY_ROOT/PATH_TO_IVY_REPOSITORY_ROOT"
       userName="${svn.user.name}" userPassword="${svn.user.password}"
       keyFile="${ssh.keyfile}" sshPort="${ssh.port}" sshPassphrase="${ssh.keyfile.passphrase}"
       certFile="${ssl.certfile}" sslPassphrase="${ssl.passphrase}" 
@@ -27,9 +27,9 @@
       retrieveRevision="${svn.retrieve.revision}"
       cleanupPublishFolder="${svn.cleanup.publish.folder}">
       <ivy
-        pattern="PATH_TO_ARTIFACT_FOLDER/[organisation]/[module]/[revision]/ivy.xml"/>
+        pattern="OPTIONAL_PATH_TO_IVYS_FOLDER/[organisation]/[module]/[revision]/ivy.xml"/>
       <artifact
-        pattern="PATH_TO_ARTIFACT_FOLDER/[organisation]/[module]/[revision]/[artifact].[ext]"/>
+        pattern="OPTIONAL_PATH_TO_ARTIFACTS_FOLDER/[organisation]/[module]/[revision]/[artifact].[ext]"/>
     </svn>
   </resolvers>
   

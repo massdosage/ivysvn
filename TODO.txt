@@ -8,6 +8,7 @@ which I expect it will) and latest version of SVNKit.
 
 -----------------------------------------------------------------------
 
+TODO: update example ivy settings on website to use new ivy repository root layout stuff
 
 2.0 to 2.1 upgrade procedure.
 
