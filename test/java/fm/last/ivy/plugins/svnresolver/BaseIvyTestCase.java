@@ -151,7 +151,7 @@ public abstract class BaseIvyTestCase extends BaseTestCase {
    */
   protected File prepareTestIvySettings(File ivySettingsTemplate, String extraSvnAttributes) throws IOException {
     String ivySettings = FileUtils.readFileToString(ivySettingsTemplate);
-    ivySettings = replaceAntProperty(ivySettings, TestProperties.PROPERTY_SVN_REPOSITORY_ROOT, ivyRepositoryRoot);
+    ivySettings = replaceAntProperty(ivySettings, "ivy.repository.root", ivyRepositoryRoot);
     ivySettings = replaceAntProperty(ivySettings, TestProperties.PROPERTY_SVN_USER_NAME, svnUserName);
     ivySettings = replaceAntProperty(ivySettings, TestProperties.PROPERTY_SVN_PASSWORD, svnPassword);
     ivySettings = replaceAntProperty(ivySettings, TestProperties.PROPERTY_SVN_BINARY_DIFF, "false");

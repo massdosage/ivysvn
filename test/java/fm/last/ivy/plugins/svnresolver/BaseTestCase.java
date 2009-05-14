@@ -52,6 +52,7 @@ public abstract class BaseTestCase {
       TestProperties.PROPERTY_SVN_REPOSITORY_ROOT);
 
   protected String ivyRepositoryPath = "test/ivy/repository";
+  
   /**
    * The full svn path to where the Ivy repository is located. This will be created by the tests.
    */

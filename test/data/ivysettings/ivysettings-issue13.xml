@@ -18,7 +18,7 @@
   <typedef name="svn" classname="fm.last.ivy.plugins.svnresolver.SvnResolver"/>
   
   <resolvers>
-    <svn name="ivysvn" repositoryRoot="${svn.repository.root}" userName="${svn.user.name}"
+    <svn name="ivysvn" repositoryRoot="${ivy.repository.root}" userName="${svn.user.name}"
       userPassword="${svn.user.password}"><!--@-->
       <ivy pattern="[organisation]/[module]/[revision]/ivy-[revision].xml"/>
       <artifact pattern="[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
