@@ -17,7 +17,6 @@ package fm.last.ivy.plugins.svnresolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -159,29 +158,6 @@ public class SvnDaoTest extends BaseTestCase {
     svnDAO.getFile(sourceURL, retrieved, -1);
     assertTrue(retrieved.exists());
     assertEquals(testData, FileUtils.readFileToString(retrieved));
-  }
-
-  @Test
-  public void testCreateSubfolders() throws SVNException {
-    ISVNEditor commitEditor = getCommitEditor();
-    String subFolders = svnDAO.createSubFolders(commitEditor, TEST_PATH + "/a/b/c/d", -1);
-    commitEditor.closeEdit();
-    assertEquals(TEST_PATH + "/a/b/c", subFolders);
-    assertTrue(svnDAO.folderExists(TEST_PATH + "/a/b/c", -1, false));
-
-    // now create the same folders again
-    commitEditor = getCommitEditor();
-    subFolders = svnDAO.createSubFolders(commitEditor, TEST_PATH + "/a/b/c/d", -1);
-    commitEditor.closeEdit();
-    assertEquals(TEST_PATH + "/a/b/c", subFolders);
-  }
-
-  @Test
-  public void testCreateSubfolders_NoSubFolders() throws SVNException {
-    ISVNEditor commitEditor = getCommitEditor();
-    String subFolders = svnDAO.createSubFolders(commitEditor, TEST_PATH, -1);
-    commitEditor.closeEdit();
-    assertNull(subFolders);
   }
 
   @Test

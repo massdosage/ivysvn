@@ -102,34 +102,17 @@ public class SvnDao {
   }
 
   /**
-   * Creates any sub folders of the passed folder path and returns the sub folder path.
-   * 
-   * @param editor An editor opened for performing commits.
-   * @param folderPath Path to create sub folders of.
-   * @param revision Revision to use.
-   * @return The sub folder path or null if there are no subfolders.
-   * @throws SVNException If an error occurs creating the sub folders.
-   */
-  public String createSubFolders(ISVNEditor editor, String folderPath, long revision) throws SVNException {
-    int index = folderPath.lastIndexOf("/");
-    if (index > 0) {
-      String subFolderPath = folderPath.substring(0, index);
-      createFolders(editor, subFolderPath, revision);
-      return subFolderPath;
-    }
-    return null;
-  }
-
-  /**
    * Creates the passed folder in the repository, existing folders are left alone and only the parts of the path which
    * don't exist are created.
    * 
    * @param editor An editor opened for performing commits.
    * @param folderPath The path of the folder to create, must be relative to the root of the repository.
    * @param revision Revision to use.
+   * @return boolean indicating whether at least one folder was created or not.
    * @throws SVNException If an invalid path is passed or the path could not be created.
    */
-  public void createFolders(ISVNEditor editor, String folderPath, long revision) throws SVNException {
+  public boolean createFolders(ISVNEditor editor, String folderPath, long revision) throws SVNException {
+    boolean folderCreated = false;
     // run through all directories in path and create whatever is necessary
     String[] folders = folderPath.split("/");
     int i = 0;
@@ -154,10 +137,12 @@ public class SvnDao {
         pathToAdd.append(folders[i]);
         Message.debug("Creating folder " + pathToAdd);
         editor.addDir(pathToAdd.toString(), null, -1);
+        folderCreated = true;
         existingPath = pathToAdd; // added to svn so this is new existing path
         existingFolderPaths.add(pathToAdd.toString());
       }
     }
+    return folderCreated;
   }
 
   /**

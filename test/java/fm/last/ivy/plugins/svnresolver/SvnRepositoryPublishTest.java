@@ -24,7 +24,6 @@ import java.io.IOException;
 
 import org.apache.tools.ant.BuildException;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.io.ISVNEditor;
@@ -219,8 +218,14 @@ public class SvnRepositoryPublishTest extends BaseSvnRepositoryPublishTestCase {
         "testmodule-1.0.xml");
   }
   
+  /**
+   * Tests publishing where there is a [type] folder under the revision folder.
+   * 
+   * @see http://code.google.com/p/ivysvn/issues/detail?id=20
+   * @throws IOException
+   * @throws SVNException
+   */
   @Test
-  @Ignore("TODO: Fix issue 20 so this test passes!")
   public void testPublish_Issue20() throws IOException, SVNException {
     File ivySettingsFile = prepareTestIvySettings(new File(ivySettingsDataFolder, "ivysettings-issue20.xml"));
     publish(ivySettingsFile, defaultFileContents);
