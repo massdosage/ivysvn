@@ -93,7 +93,7 @@ public class SvnPublishTransaction {
    * Whether to cleanup the contents of the publish folder during publish.
    */
   private Boolean cleanupPublishFolder = null;
-  
+
   /**
    * The root of the Ivy repository in Subversion.
    */
@@ -109,8 +109,7 @@ public class SvnPublishTransaction {
    * @throws SVNException If an error occurs setting the commit repository to its root.
    */
   public SvnPublishTransaction(SvnDao svnDAO, ModuleRevisionId mrid, SVNRepository commitRepository,
-      SVNURL ivyRepositoryRootURL)
-      throws SVNException {
+      SVNURL ivyRepositoryRootURL) throws SVNException {
     this.svnDAO = svnDAO;
     this.revision = mrid.getRevision();
     setCommitRepository(commitRepository);
@@ -334,17 +333,27 @@ public class SvnPublishTransaction {
       long rev = commitRepository.getLatestRevision(); // copying dirs requires valid revision
       commitEditor = commitRepository.getCommitEditor(commitMessage, null);
       commitEditor.openRoot(-1);
+      String currentFolder = null;
       for (Entry<String, String> entry : foldersToCopy.entrySet()) {
-        Message.info("Copying from " + entry.getValue() + " to " + entry.getKey());
-        // addDir can't handle creating sub folders so we have to do it
-        String subFolder = svnDAO.createSubFolders(commitEditor, entry.getKey(), rev);
-        if (subFolder != null) { // add dir is relative to last path, so change to subfolder first
-          commitEditor.openDir(subFolder, rev);
+        String source = entry.getValue();
+        String destination = entry.getKey();
+        Message.info("Copying from " + source + " to " + destination);
+        int index = destination.lastIndexOf("/");
+        if (index > 0) { // addDir can't handle creating sub folders so we have to do it
+          String subFolderPath = destination.substring(0, index);
+          // SVNKit side effect of creating a folder is to change to this folder
+          boolean subFolderCreated = svnDAO.createFolders(commitEditor, subFolderPath, rev);
+          if (!subFolderCreated) { // if we didn't create a folder, we manually need to change to it
+            if (!subFolderPath.equals(currentFolder)) { // but only change to it if we haven't already
+              commitEditor.openDir(subFolderPath, rev);
+            }
+          }
+          currentFolder = subFolderPath;
         }
         commitEditor.addDir(entry.getKey(), entry.getValue(), rev);
         commitEditor.closeDir();
       }
-      commitEditor.closeDir();
+      commitEditor.closeDir(); // close root
       Message.info("Binary diff finished : " + commitEditor.closeEdit());
     }
   }
@@ -406,7 +415,7 @@ public class SvnPublishTransaction {
   public void setCleanupPublishFolder(Boolean cleanupPublishFolder) {
     this.cleanupPublishFolder = cleanupPublishFolder;
   }
-  
+
   /**
    * Set the repository to use for performing commit operations.
    * 
