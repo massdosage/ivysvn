@@ -18,6 +18,8 @@ package fm.last.ivy.plugins.svnresolver;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -68,7 +70,7 @@ public class SvnRepository extends AbstractRepository {
    * Passphrase for SSH private key file.
    */
   private String sshPassphrase = "";
-  
+
   /**
    * Passphrase for SSL certificates.
    */
@@ -182,8 +184,8 @@ public class SvnRepository extends AbstractRepository {
       repository = SVNRepositoryCache.getInstance().getRepository(url, userName, userPassword, keyFile, sshPassphrase,
           portNumber, certFile, sslPassphrase, storageAllowed);
     } else {
-      repository = SvnUtils.createRepository(url, userName, userPassword, keyFile, sshPassphrase, portNumber, certFile, sslPassphrase,
-          storageAllowed);
+      repository = SvnUtils.createRepository(url, userName, userPassword, keyFile, sshPassphrase, portNumber, certFile,
+          sslPassphrase, storageAllowed);
       repository.setLocation(url, false);
     }
     return repository;
@@ -358,9 +360,19 @@ public class SvnRepository extends AbstractRepository {
       }
     } catch (SVNException e) {
       Message.error("Error resolving resource " + repositorySource + ", " + e.getMessage());
+      Message.debug("Exception is: " + getStackTrace(e)); // useful for debugging network issues
       result = new SvnResource();
     }
     return result;
+  }
+
+  private String getStackTrace(Throwable t) {
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter printWriter = new PrintWriter(stringWriter, true);
+    t.printStackTrace(printWriter);
+    printWriter.flush();
+    stringWriter.flush();
+    return stringWriter.toString();
   }
 
   /**
@@ -421,7 +433,7 @@ public class SvnRepository extends AbstractRepository {
   public void setSshPassphrase(String sshPassphrase) {
     this.sshPassphrase = sshPassphrase;
   }
-  
+
   /**
    * Set the passphrase for the SSL certificate.
    * 
