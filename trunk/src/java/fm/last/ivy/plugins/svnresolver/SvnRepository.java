@@ -367,12 +367,9 @@ public class SvnRepository extends AbstractRepository {
   }
 
   private String getStackTrace(Throwable t) {
-    StringWriter stringWriter = new StringWriter();
-    PrintWriter printWriter = new PrintWriter(stringWriter, true);
-    t.printStackTrace(printWriter);
-    printWriter.flush();
-    stringWriter.flush();
-    return stringWriter.toString();
+    StringWriter sw = new StringWriter();
+    t.printStackTrace(new PrintWriter(sw));
+    return sw.toString();
   }
 
   /**
