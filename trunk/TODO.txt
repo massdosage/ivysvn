@@ -8,6 +8,8 @@ which I expect it will) and latest version of SVNKit.
 
 -----------------------------------------------------------------------
 
+upgrade to svn kit 1.3.1
+
 TODO: update example ivy settings on website to use new ivy repository root layout stuff
 
 TODO: update README.txt to contain below (will also need to go in mail out, possibly also make a page on website)
