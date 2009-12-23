@@ -3,8 +3,7 @@
 Main focus of 2.1.0 is to sort out the way IvySvn uses SVNKit and the problems it currently has where, for 
 certain patterns, files and folders end up in unexpected places. Once these have been resolved, we can 
 advertise IvySvn more publically to the rest of the world by doing some advertising on Java websites and 
-mailing lists. This release should also update to the latest version of Ivy (if Ivy 2.1.0 comes out in the same time frame 
-which I expect it will) and latest version of SVNKit. 
+mailing lists. This release should also update to the latest version of Ivy and latest version of SVNKit. 
 
 -----------------------------------------------------------------------
 
