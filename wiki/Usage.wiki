@@ -15,7 +15,7 @@ svn+ssh://svn.acme.com/svn/java/repository/acme/widgets/0.13/widgetlib.jar
 }}}
 The examples also assume that the repository is accessed using Subversion username and password authentication with the user name "testuser" and password "testpassword".
 
-==Example ivysettings.xml for svn+ssh:// acess==
+==Example ivysettings.xml for svn+ssh:// access==
 This example shows how to access the repository via svn+ssh, there are more examples below which show other forms of access like svn:// and http(s)://.
 
 {{{
