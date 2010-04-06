@@ -46,8 +46,24 @@ version number (or set the property "publish.overwrite" to true).
 
 ==Unit testing==
 *(TODO: flesh out the descriptions below to explain how to set up a webdav and svn repository and also how to use test.properties to control which one to use)*
-# Setup a test Subversion repository which the unit tests will use to publish, retrieve and delete artifacts. 
-# Copy the file `test.properties.example` (located in `src/test/conf`) to `test.properties` and fill in the properties required to connect to the test Subversion repository. 
+
+===Set up a test Subversion repository===
+The unit tests publish and retrieve data from Subversion and thus require a test Subversion repository. The user that runs the test must have read and write access to this repository. This repository should be used for testing only and not contain any production data as an errant unit test might delete everything in the repository (being svn of course you will have a backup but still!) 
+
+You can either set up a repository to be tested over the svn:// protocol or over http:// (via !WebDav). Getting both types of repository to work is actually quite tricky as there are some differences in how !SvnKit deals with the different repository types so ideally unit tests should be run successfully against both types before submitting a patch. 
+
+There are many different ways to set up Subversion. The steps below are the bare minimum needed to get the repository working for unit tests on Linux. Feel free to modify them to suit your environment, as long as you get all the tests passing at the end of it it's fine.
+
+====Set up a svn:// repository====
+TODO:
+
+====Set up a !WebDav repository====
+TODO:
+
+===Configure the unit tests===
+# Copy the file `test.properties.example` (located in `src/test/conf`) to `test.properties` and fill in the properties required to connect to the test Subversion repository created above.
+
+===Run the unit tests===
 # Run 
 {{{
 ant test
