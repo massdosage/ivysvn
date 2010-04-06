@@ -24,12 +24,12 @@ Once you have got the source you need to do the following:
 {{{
 ant -Dskip.retrieve=true -Dversion=0 install
 }}} 
-[TODO - does above still work? and why do we need version? and skipping retrieve? and maybe build would be better to describe, install can be described separately]
+*(TODO - does above still work? and why do we need version? and skipping retrieve? and maybe build would be better to describe, install can be described separately)*
 which will compile the Java source code, build `ivysvnresolver.jar` into `build/dist` and then copy this, `ivysettings.xml`, `ivy-common-targets.xml` and the required 3rd party libraries to your `ANT_HOME/lib` folder.
 
 Testing that it works:
 
-[TODO: review this and see if still relevant]
+*(TODO: review this and see if still relevant)*
 
   # Edit `ivy.xml` so that it contains dependencies to artifacts in your repository.
   # Run the following command and the dependent files should be downloaded to the `lib` folder.
@@ -45,7 +45,7 @@ should be published to your repository. NOTE: Every time you do a publish you wi
 version number (or set the property "publish.overwrite" to true).
 
 ==Unit testing==
-[TODO: flesh out the descriptions below to explain how to set up a webdav and svn repository and also how to use test.properties to control which one to use]
+*(TODO: flesh out the descriptions below to explain how to set up a webdav and svn repository and also how to use test.properties to control which one to use)*
 # Setup a test Subversion repository which the unit tests will use to publish, retrieve and delete artifacts. 
 # Copy the file `test.properties.example` (located in `src/test/conf`) to `test.properties` and fill in the properties required to connect to the test Subversion repository. 
 # Run 
