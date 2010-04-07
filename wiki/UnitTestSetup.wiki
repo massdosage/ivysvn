@@ -3,8 +3,6 @@
 =Unit testing=
 This page assumes you have already followed the steps described in BuildingFromSource and can successfully build the ivysvnresolver.jar file.
 
-*(TODO: flesh out the descriptions below to explain how to set up a webdav and svn repository and also how to use test.properties to control which one to use)*
-
 ==Set up a test Subversion repository==
 The unit tests publish and retrieve data from Subversion and thus require a test Subversion repository. The user that runs the test must have read and write access to this repository. This repository should be used for testing only and not contain any production data as an errant unit test might delete everything in the repository (being svn of course you will have a backup but still!) 
 
@@ -45,11 +43,8 @@ testuser=testpassword
 svnserve -d
 }}}
 
-
-
-
 ===Set up a !WebDav repository===
-TODO:
+*TODO:*
 
 ==Configure the unit tests==
 *To run the unit tests you need to specify the location of the Subversion repository and the protocol to use to access it as well as authentication information. To do this copy the file 
