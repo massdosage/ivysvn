@@ -15,8 +15,6 @@ TODO: update README.txt to contain below (will also need to go in mail out, poss
 
 2.0 to 2.1 upgrade procedure.
 
-http://code.google.com/p/ivysvn/issues/detail?id=18
-
 What you will need to change in your ivysettings config file...
 
 - repositoryRoot should now point to the root location of your *Ivy* repository in subversion (not the subversion root).
@@ -41,8 +39,6 @@ after:
     </svn>    
 
 -----------------------------------------------------------------------
-
-
 
 -Ask ivy and ivymeetssvn projects to update link to google code site.
 

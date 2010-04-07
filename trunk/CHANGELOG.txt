@@ -1,17 +1,13 @@
 IvySvn Change Log
 
-Changes in progress:
-
-  - http://code.google.com/p/ivysvn/issues/detail?id=18 - made all repository operations relative to Ivy repository root, 
-    NOT the SVN root. 
-
 Release 2.1.0 TBA
 ~~~~~~~~~~~~~~~~~~~~~~~~
-- http://code.google.com/p/ivysvn/issues/detail?id=20
-- Extra debug logging of SVNExceptions in SvnRepository.resolveResource().
-- Upgraded to Ivy 2.1.0.
-- Upgraded to SVNKit 1.3.2.
-- Upgraded to Trilead SSH for Java build213-svnkit-1.3-patch.
+ - http://code.google.com/p/ivysvn/issues/detail?id=18 - made all repository operations relative to Ivy repository root, NOT the SVN root. 
+ - http://code.google.com/p/ivysvn/issues/detail?id=20
+ - Extra debug logging of SVNExceptions in SvnRepository.resolveResource().
+ - Upgraded to Ivy 2.1.0.
+ - Upgraded to SVNKit 1.3.2.
+ - Upgraded to Trilead SSH for Java build213-svnkit-1.3-patch.
 
 Release 2.0.0 2008-05-14
 ~~~~~~~~~~~~~~~~~~~~~~~~
