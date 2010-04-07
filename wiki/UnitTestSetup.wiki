@@ -10,7 +10,7 @@ You can either set up a repository to be tested using svnserver (i.e. using the 
 
 There are many different ways to set up Subversion. The steps below are the bare minimum needed to get the repository working for unit tests on Linux. Feel free to modify them to suit your environment or read through the relevant sections in [http://svnbook.red-bean.com/ Version Control With Subversion].
 
-===Creating a repository===
+===Create a repository===
 The steps below create a repository with it's root located at 
 {{{
 /opt/ivysvntest/repo/root/
@@ -22,6 +22,8 @@ sudo mkdir -p ivysvntest/repo/root/
 sudo chmod a+rwx ivysvntest/repo/root/
 svnadmin create /opt/ivysvntest/repo/root/
 }}}
+
+====Configure repository for svn access====
 Edit the file
 {{{
 /opt/ivysvntest/repo/root/conf/svnserv.conf
@@ -43,8 +45,32 @@ Start the Subversion server as a daemon process:
 svnserve -d
 }}}
 
-===Set up a !WebDav repository===
-*TODO:*
+====Configure repository for http access====
+Install apache2, mod_dav and mod_dav_svn. On Ubuntu:
+{{{
+apt-get install apache2
+apt-get install libapache2-svn
+}}}
+Generate a test user and password for http access:
+{{{
+htpasswd -c /opt/ivysvntest/http-svn-auth-file testuser
+}}}
+and enter "testpassword" when prompted.
+Edit Apache's httpd.conf file (located under /etc/apache2 on Ubuntu) and add the following:
+{{{
+<Location /svn/repos>
+  DAV svn
+  SVNPath /opt/ivysvntest/repo/root
+  AuthType Basic
+  AuthName "Subversion repository"
+  AuthUserFile /opt/ivysvntest/http-svn-auth-file
+  Require valid-user
+</Location>
+}}}
+The Location is the path you will need to put in your test.properties file. If you get permission denied errors when running the unit tests you can  either delve into sorting these out with proper auth or, seeing as this is just for unit tests, you can take a shortcut:
+{{{
+chmod -R a+rw /opt/ivysvntest/
+}}}
 
 ==Configure the unit tests==
 To run the unit tests you need to specify the location of the Subversion repository and the protocol to use to access it as well as authentication information. To do this copy the file 
@@ -66,7 +92,7 @@ svn.repository.root=svn://localhost/opt/ivysvntest/repo/root/
 }}}
 *or* via httpd:
 {{{
-svn.repository.root=http://localhost/svn/example
+svn.repository.root=http://localhost/svn/repos
 }}}
 
 ==Run the unit tests==
