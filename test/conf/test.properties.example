@@ -4,7 +4,7 @@
 ##The root of the subversion repository
 #svn.repository.root=svn://localhost/opt/ivysvntest/repo/root/
 ## OR
-#svn.repository.root=http://localhost/svn/example
+#svn.repository.root=http://localhost/svn/repos
 
 ##The Subversion user name to use for unit tests 
 #svn.user.name=testuser
