@@ -1,11 +1,16 @@
-#Copy this file to "test.properties" in the same folder and fill in values according to your test setup
-#the root of the subversion repository
-svn.repository.root=
+##Copy this file to "test.properties" in the same folder and uncomment and modify values according to your test setup
+##See http://code.google.com/p/ivysvn/wiki/UnitTestSetup for more info.
 
-#the Subversion user name to use for unit tests 
-svn.user.name=
-#the Subversion password to use for unit tests
-svn.user.password=
+##The root of the subversion repository
+#svn.repository.root=svn://localhost/opt/ivysvntest/repo/root/
+## OR
+#svn.repository.root=http://localhost/svn/example
 
-#the value to use for ant's logging in the tests, possible values are: MSG_DEBUG (default), MSG_VERBOSE, MSG_INFO, MSG_WARN, MSG_ERR
+##The Subversion user name to use for unit tests 
+#svn.user.name=testuser
+
+##The Subversion password to use for unit tests
+#svn.user.password=testpassword
+
+##The value to use for ant's logging in the tests, possible values are: MSG_DEBUG (default), MSG_VERBOSE, MSG_INFO, MSG_WARN, MSG_ERR
 #ant.message.output.level=MSG_DEBUG
