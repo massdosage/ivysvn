@@ -21,6 +21,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.tools.ant.BuildException;
 import org.junit.Assert;
@@ -203,21 +205,23 @@ public class SvnRepositoryPublishTest extends BaseSvnRepositoryPublishTestCase {
     publish(ivySettingsFile, fileContents2, "2.0", true);
     assertPublish("2.0", fileContents2, true); // check 2.0 with binary diff
     // check that 1.0 publish is still there
-    assertNonBinaryDiffPublish(defaultOrganisation, defaultModule, "1.0", defaultArtifactName, defaultFileContents,
-        defaultIvyFileName);
+    Map<String, String> artifacts = new HashMap<String, String>();
+    artifacts.put(defaultArtifactName, defaultFileContents);
+    assertNonBinaryDiffPublish(defaultOrganisation, defaultModule, "1.0", artifacts, defaultIvyFileName);
   }
 
   @Test
   public void testPublish_Issue16() throws IOException, SVNException {
     File ivySettingsFile = prepareTestIvySettings(new File(ivySettingsDataFolder, "ivysettings-issue16.xml"));
     publish(ivySettingsFile, defaultFileContents);
-    
+
     String artifactPublishFolder = defaultOrganisation + "/" + defaultModule + "/jars/";
     String ivyPublishFolder = defaultOrganisation + "/" + defaultModule + "/ivys/";
-    assertPublication(artifactPublishFolder, "testartifact-1.0.jar", defaultFileContents, ivyPublishFolder,
-        "testmodule-1.0.xml");
+    Map<String, String> artifacts = new HashMap<String, String>();
+    artifacts.put("testartifact-1.0.jar", defaultFileContents);
+    assertPublication(artifactPublishFolder, artifacts, ivyPublishFolder, "testmodule-1.0.xml");
   }
-  
+
   /**
    * Tests publishing where there is a [type] folder under the revision folder.
    * 
@@ -232,17 +236,17 @@ public class SvnRepositoryPublishTest extends BaseSvnRepositoryPublishTestCase {
 
     String artifactPublishFolder = defaultOrganisation + "/" + defaultModule + "/1.0/jars/";
     String ivyPublishFolder = defaultOrganisation + "/" + defaultModule + "/1.0/ivys/";
-    assertPublication(artifactPublishFolder, "testartifact.jar", defaultFileContents, ivyPublishFolder,
-        "ivy.xml");
+    Map<String, String> artifacts = new HashMap<String, String>();
+    artifacts.put("testartifact.jar", defaultFileContents);
+    assertPublication(artifactPublishFolder, artifacts, ivyPublishFolder, "ivy.xml");
 
-    String artifactBinaryDiffPublishFolder = defaultOrganisation + "/" + defaultModule
-        + "/1.0/jars/";
-    String ivyBinaryDiffPublishFolder = defaultOrganisation + "/" + defaultModule
-        + "/1.0/ivys/";
-    assertPublication(artifactBinaryDiffPublishFolder, "testartifact.jar", defaultFileContents,
-        ivyBinaryDiffPublishFolder, "ivy.xml");
+    String artifactBinaryDiffPublishFolder = defaultOrganisation + "/" + defaultModule + "/1.0/jars/";
+    String ivyBinaryDiffPublishFolder = defaultOrganisation + "/" + defaultModule + "/1.0/ivys/";
+    artifacts = new HashMap<String, String>();
+    artifacts.put("testartifact.jar", defaultFileContents);
+    assertPublication(artifactBinaryDiffPublishFolder, artifacts, ivyBinaryDiffPublishFolder, "ivy.xml");
   }
-  
+
   @Test
   public void testNonIncrementalVersions_BinaryDiff() throws IOException, SVNException {
     File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile, "binaryDiff=\"true\"");

@@ -39,9 +39,9 @@ public abstract class BaseIvyTestCase extends BaseTestCase {
    * Default ivy.xml file which can be used for retrieving artifacts.
    */
   protected File defaultIvyXml = new File(ivysDataFolder, "ivy-test-retrieve-default.xml");
-  
+
   protected File defaultIvySettingsFile = new File(ivySettingsDataFolder, "ivysettings-default.xml");
-  
+
   protected static final String DIST_PATH = TEST_TMP_PATH + "/build/dist";
 
   protected String defaultOrganisation = "testorg";
@@ -52,14 +52,14 @@ public abstract class BaseIvyTestCase extends BaseTestCase {
   protected String defaultArtifactName = "testartifact.jar";
 
   protected String defaultIvyFileName = "ivy.xml";
-  
+
   // ivy uses this folder for creating ivy.xml files for publish
   protected File tempDistFolder = new File(DIST_PATH);
 
   protected File defaultFileToPublish = new File(DIST_PATH + "/" + defaultArtifactName);
-  
+
   protected String defaultFileContents = "testartifact 1.0";
-  
+
   // property values for ant log level
   private static final String MSG_ERR = "MSG_ERR";
   private static final String MSG_WARN = "MSG_WARN";
@@ -231,12 +231,12 @@ public abstract class BaseIvyTestCase extends BaseTestCase {
     retrieve.setProject(project);
     retrieve.setTaskName("retrieve");
     retrieve.setPattern(retrieveToPattern);
-    
+
     project.setProperty("ivy.settings.file", ivySettingsFile.getAbsolutePath());
     resolve(project, ivyFile);
     retrieve.execute();
   }
-  
+
   /**
    * Creates an IvyPublish object filled in with default values.
    * 
@@ -260,6 +260,37 @@ public abstract class BaseIvyTestCase extends BaseTestCase {
   }
 
   /**
+   * Performs a publish operation. File(s) to be published must exist before this is called.
+   * 
+   * @param ivyFile Ivy file containing artifact(s) to publish.
+   * @param ivySettingsFile Ivy settings file.
+   * @param ivyPublish An initialised IvyPublish object.
+   * @throws IOException If an error occurs writing the file contents to a File to be published.
+   */
+  protected void publish(File ivyFile, File ivySettingsFile, IvyPublish ivyPublish) throws IOException {
+    Project project = createProject();
+    project.setProperty("ivy.settings.file", ivySettingsFile.getAbsolutePath());
+    ivyPublish.setProject(project);
+    resolve(project, ivyFile);
+    ivyPublish.execute();
+    FileUtils.deleteDirectory(tempDistFolder);
+  }
+
+  /**
+   * Performs a publish operation.
+   * 
+   * @param ivySettingsFile Ivy settings file.
+   * @param artifactFileContents String contents to be published as artifact file.
+   * @param ivyPublish An initialised IvyPublish object.
+   * @throws IOException If an error occurs writing the file contents to a File to be published.
+   */
+  protected void publish(File ivySettingsFile, String artifactFileContents, IvyPublish ivyPublish) throws IOException {
+    File defaultIvyPublishFile = new File(ivysDataFolder, "ivy-test-publish.xml");
+    FileUtils.writeStringToFile(defaultFileToPublish, artifactFileContents);
+    publish(defaultIvyPublishFile, ivySettingsFile, ivyPublish);
+  }
+
+  /**
    * Performs a publish operation.
    * 
    * @param ivySettingsFile Ivy settings file.
@@ -273,24 +304,6 @@ public abstract class BaseIvyTestCase extends BaseTestCase {
     throws IOException {
     IvyPublish publish = createIvyPublish(revision, overwrite);
     publish(ivySettingsFile, artifactFileContents, publish);
-  }
-
-  /**
-   * Performs a publish operation.
-   * 
-   * @param ivySettingsFile Ivy settings file.
-   * @param artifactFileContents String contents to be published as artifact file.
-   * @param ivyPublish An initialised IvyPublish object.
-   * @throws IOException If an error occurs writing the file contents to a File to be published.
-   */
-  protected void publish(File ivySettingsFile, String artifactFileContents, IvyPublish ivyPublish) throws IOException {
-    Project project = createProject();
-    project.setProperty("ivy.settings.file", ivySettingsFile.getAbsolutePath());
-    ivyPublish.setProject(project);
-    resolve(project, new File(ivysDataFolder, "ivy-test-publish.xml"));
-    FileUtils.writeStringToFile(defaultFileToPublish, artifactFileContents);
-    ivyPublish.execute();
-    FileUtils.deleteDirectory(tempDistFolder);
   }
 
   /**

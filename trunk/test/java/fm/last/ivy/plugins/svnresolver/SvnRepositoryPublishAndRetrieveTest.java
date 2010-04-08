@@ -19,9 +19,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.ivy.ant.IvyPublish;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.tmatesoft.svn.core.SVNException;
 
@@ -85,18 +88,66 @@ public class SvnRepositoryPublishAndRetrieveTest extends BaseSvnRepositoryPublis
     String milestone101 = "milestone 1.0.1";
     publish(ivySettingsFile, milestone101, publish);
 
-    assertPublish(defaultOrganisation, defaultModule, "1.0.1", "testartifact-1.0.1.jar", milestone101, "ivy-1.0.1.xml",
-        true, SvnRepository.DEFAULT_BINARY_DIFF_FOLDER_NAME);
+    Map<String, String> artifacts = new HashMap<String, String>();
+    artifacts.put("testartifact-1.0.1.jar", milestone101);
+    assertPublish(defaultOrganisation, defaultModule, "1.0.1", artifacts, "ivy-1.0.1.xml", true,
+        SvnRepository.DEFAULT_BINARY_DIFF_FOLDER_NAME);
 
     publish = createIvyPublish("1.0.2", false);
     publish.setStatus("milestone");
     String milestone102 = "milestone 1.0.2";
     publish(ivySettingsFile, milestone102, publish);
-    assertPublish(defaultOrganisation, defaultModule, "1.0.2", "testartifact-1.0.2.jar", milestone102, "ivy-1.0.2.xml",
+    artifacts = new HashMap<String, String>();
+    artifacts.put("testartifact-1.0.2.jar", milestone102);
+    assertPublish(defaultOrganisation, defaultModule, "1.0.2", artifacts, "ivy-1.0.2.xml",
         true, SvnRepository.DEFAULT_BINARY_DIFF_FOLDER_NAME);
 
     File ivyFile = prepareTestIvyFile(defaultIvyXml, "latest.milestone");
     retrieve(ivyFile, DEFAULT_RETRIEVE_TO_PATTERN, ivySettingsFile);
     assertEquals(milestone102, FileUtils.readFileToString(new File(testTempFolder, defaultArtifactName)));
   }
+
+  // TODO: maybe move these into the other test?
+  // TODO: need to re-organise publish tests so that they are more modular, one way would be whether they are with
+  // binary diff on or off, and we should have two versions of this test - one for binary diff and one for non
+  // TODO: need to figure out if above does not reproduce issue with publishing jms support - maybe it only happens with
+  // svn://? otherwise need to investigate further
+  // to reproduce
+  // also maybe separate tests which are based on issue numbers
+  @Test
+  @Ignore()
+  public void testPublishMultipleArtifacts() throws IOException, SVNException, InterruptedException {
+    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile, "binaryDiff=\"true\"");
+    IvyPublish ivyPublish = createIvyPublish("1.0", false);
+    ivyPublish.setStatus("milestone");
+
+    File fileToPublish1 = new File(DIST_PATH + "/" + "testartifact1.jar");
+    String fileContents1 = "testArtifact1 - contents";
+    FileUtils.writeStringToFile(fileToPublish1, fileContents1);
+
+    File fileToPublish2 = new File(DIST_PATH + "/" + "testartifact2.jar");
+    String fileContents2 = "testArtifact2 - contents";
+    FileUtils.writeStringToFile(fileToPublish2, fileContents2);
+
+    File ivyPublishFile = new File(ivysDataFolder, "ivy-test-publish-multiple-artifacts.xml");
+    publish(ivyPublishFile, ivySettingsFile, ivyPublish);
+
+    System.out.println("DONE");
+
+    // assertPublish("1.0", milestone1, true);
+    // File ivyFile = prepareTestIvyFile(defaultIvyXml, "latest.milestone");
+    // retrieve(ivyFile);
+    // assertEquals(milestone104, FileUtils.readFileToString(new File(testTempFolder, defaultArtifactName)));
+    // cleanupTempFolder();
+    //
+    // ivyFile = prepareTestIvyFile(defaultIvyXml, "latest.integration");
+    // retrieve(ivyFile);
+    // assertEquals(nonMilestone, FileUtils.readFileToString(new File(testTempFolder, defaultArtifactName)));
+    // cleanupTempFolder();
+    //
+    // ivyFile = prepareTestIvyFile(defaultIvyXml, "latest.release");
+    // retrieve(ivyFile);
+    // assertEquals(release103, FileUtils.readFileToString(new File(testTempFolder, defaultArtifactName)));
+  }
+
 }
