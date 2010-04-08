@@ -2,7 +2,8 @@
   <info organisation="testorg" module="testmodule" />
 
   <publications>
-    <artifact name="testartifact" ext="jar" />
+    <artifact name="testartifact1" ext="jar" />
+    <artifact name="testartifact2" ext="jar" />
   </publications>
 
 </ivy-module>

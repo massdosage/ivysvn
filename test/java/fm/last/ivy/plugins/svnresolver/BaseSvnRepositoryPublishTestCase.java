@@ -21,6 +21,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
 import org.tmatesoft.svn.core.SVNException;
@@ -43,7 +46,9 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
    */
   protected void assertPublish(String pubRevision, String artifactFileContents, boolean binaryDiff,
       String binaryDiffFolderName) throws SVNException, IOException {
-    this.assertPublish(defaultOrganisation, defaultModule, pubRevision, defaultArtifactName, artifactFileContents,
+    Map<String, String> defaultArtifacts = new HashMap<String, String>();
+    defaultArtifacts.put(defaultArtifactName, artifactFileContents);
+    this.assertPublish(defaultOrganisation, defaultModule, pubRevision, defaultArtifacts,
         defaultIvyFileName, binaryDiff, binaryDiffFolderName);
   }
 
@@ -58,8 +63,7 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
    */
   protected void assertPublish(String pubRevision, String artifactFileContents, boolean binaryDiff)
     throws SVNException, IOException {
-    this.assertPublish(defaultOrganisation, defaultModule, pubRevision, defaultArtifactName, artifactFileContents,
-        defaultIvyFileName, binaryDiff, SvnRepository.DEFAULT_BINARY_DIFF_FOLDER_NAME);
+    this.assertPublish(pubRevision, artifactFileContents, binaryDiff, SvnRepository.DEFAULT_BINARY_DIFF_FOLDER_NAME);
   }
 
   /**
@@ -68,21 +72,20 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
    * @param organisation The organisation.
    * @param module The module.
    * @param pubRevision The publication revision.
-   * @param artifactName The name of the published artifact.
-   * @param artifactFileContents The expected artifact file contents.
-   * @param ivyFileName Expected published ivy file name.
+   * @param artifacts A map where the keys are the artifact names and the values are the expected contents of the
+   *          artifact files. * @param ivyFileName Expected published ivy file name.
    * @param binaryDiff Binary diff value for the publish action.
    * @param binaryDiffFolderName The name of the binary diff folder.
    * @throws SVNException If an error occurs checking the files in Subversion.
    * @throws IOException If an error occurs reading the file contents.
    */
-  protected void assertPublish(String organisation, String module, String pubRevision, String artifactName,
-      String artifactFileContents, String ivyFileName, boolean binaryDiff, String binaryDiffFolderName)
+  protected void assertPublish(String organisation, String module, String pubRevision, Map<String, String> artifacts,
+      String ivyFileName, boolean binaryDiff, String binaryDiffFolderName)
     throws SVNException, IOException {
-    assertBinaryDiffPublish(organisation, module, artifactName, artifactFileContents, ivyFileName, binaryDiff,
+    assertBinaryDiffPublish(organisation, module, artifacts, ivyFileName, binaryDiff,
         binaryDiffFolderName);
     // now check publish to actual revision folder
-    assertNonBinaryDiffPublish(organisation, module, pubRevision, artifactName, artifactFileContents, ivyFileName);
+    assertNonBinaryDiffPublish(organisation, module, pubRevision, artifacts, ivyFileName);
   }
 
   /**
@@ -90,21 +93,21 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
    * 
    * @param organisation The organisation.
    * @param module The module.
-   * @param artifactName The artifact name.
-   * @param artifactFileContents The expected artifact file contents.
+   * @param artifacts A map where the keys are the artifact names and the values are the expected contents of the
+   *          artifact files.
    * @param ivyFileName Expected published ivy file name.
    * @param binaryDiff Binary diff value for the publish action.
    * @param binaryDiffFolderName The name of the binary diff folder.
    * @throws SVNException If an error occurs checking the files in Subversion.
    * @throws IOException If an error occurs reading the file contents.
    */
-  protected void assertBinaryDiffPublish(String organisation, String module, String artifactName,
-      String artifactFileContents, String ivyFileName, boolean binaryDiff, String binaryDiffFolderName)
+  protected void assertBinaryDiffPublish(String organisation, String module, Map<String, String> artifacts,
+      String ivyFileName, boolean binaryDiff, String binaryDiffFolderName)
     throws SVNException, IOException {
     // first setup binary diff path
     String publishFolder = organisation + "/" + module + "/" + binaryDiffFolderName + "/";
     if (binaryDiff) {
-      assertPublication(publishFolder, artifactName, artifactFileContents, publishFolder, ivyFileName);
+      assertPublication(publishFolder, artifacts, publishFolder, ivyFileName);
     } else {
       assertFalse("Binary diff folder found at " + publishFolder, svnDAO.folderExists(publishFolder, -1, false));
     }
@@ -116,37 +119,41 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
    * @param organisation The organisation.
    * @param module The module.
    * @param pubRevision The publication revision.
-   * @param artifactName The artifact name.
-   * @param artifactFileContents The expected artifact file contents.
+   * @param artifacts A map where the keys are the artifact names and the values are the expected contents of the
+   *          artifact files.
    * @param ivyFileName Expected published ivy file name.
    * @throws SVNException If an error occurs checking the files in Subversion.
    * @throws IOException If an error occurs reading the file contents.
    */
   protected void assertNonBinaryDiffPublish(String organisation, String module, String pubRevision,
-      String artifactName, String artifactFileContents, String ivyFileName) throws SVNException, IOException {
+      Map<String, String> artifacts, String ivyFileName) throws SVNException, IOException {
     String publishFolder = organisation + "/" + module + "/" + pubRevision + "/";
-    assertPublication(publishFolder, artifactName, artifactFileContents, publishFolder, ivyFileName);
+    assertPublication(publishFolder, artifacts, publishFolder, ivyFileName);
   }
 
   /**
    * Asserts all the effects of a publish action under a single folder in Subversion.
    * 
    * @param artifactPublishFolder The folder in Subversion that artifact files should have been published to.
-   * @param artifactName The name of the published artifact.
-   * @param artifactFileContents The expected artifact file contents.
+   * @param artifacts A map where the keys are the artifact names and the values are the expected contents of the
+   *          artifact files.
    * @param ivyPublishFolder The folder in Subversion that ivy files should have been published to.
    * @param ivyFileName Expected published ivy file name.
    * @throws SVNException If an error occurs checking the files in Subversion.
    * @throws IOException If an error occurs reading the file contents.
    */
-  protected void assertPublication(String artifactPublishFolder, String artifactName, String artifactFileContents,
+  protected void assertPublication(String artifactPublishFolder, Map<String, String> artifacts,
       String ivyPublishFolder, String ivyFileName) throws SVNException, IOException {
     assertArtifactPublished(ivyPublishFolder, ivyFileName);
-    assertArtifactPublished(artifactPublishFolder, artifactName);
-    File tempFile = new File(testTempFolder, "retrieved-" + artifactName);
-    SVNURL sourceURL = SVNURL.parseURIEncoded(ivyRepositoryRoot + "/" + artifactPublishFolder + "/" + artifactName);
-    svnDAO.getFile(sourceURL, tempFile, -1);
-    assertEquals(artifactFileContents, FileUtils.readFileToString(tempFile));
+    for (Entry<String, String> artifact : artifacts.entrySet()) {
+      String artifactName = artifact.getKey();
+      String artifactFileContents = artifact.getValue();
+      assertArtifactPublished(artifactPublishFolder, artifactName);
+      File tempFile = new File(testTempFolder, "retrieved-" + artifactName);
+      SVNURL sourceURL = SVNURL.parseURIEncoded(ivyRepositoryRoot + "/" + artifactPublishFolder + "/" + artifactName);
+      svnDAO.getFile(sourceURL, tempFile, -1);
+      assertEquals(artifactFileContents, FileUtils.readFileToString(tempFile));
+    }
   }
 
   /**
