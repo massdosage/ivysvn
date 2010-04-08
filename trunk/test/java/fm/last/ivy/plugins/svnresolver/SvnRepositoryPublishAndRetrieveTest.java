@@ -110,7 +110,6 @@ public class SvnRepositoryPublishAndRetrieveTest extends BaseSvnRepositoryPublis
   public void testPublishMultipleArtifacts() throws IOException, SVNException, InterruptedException {
     File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile, "binaryDiff=\"false\"");
     IvyPublish ivyPublish = createIvyPublish("1.0", false);
-    ivyPublish.setStatus("milestone");
 
     File fileToPublish1 = new File(DIST_PATH + "/" + "testartifact1.jar");
     String fileContents1 = "testArtifact1 - contents";
@@ -136,7 +135,6 @@ public class SvnRepositoryPublishAndRetrieveTest extends BaseSvnRepositoryPublis
   public void testPublishMultipleArtifacts_BinaryDiff() throws IOException, SVNException, InterruptedException {
     File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile, "binaryDiff=\"true\"");
     IvyPublish ivyPublish = createIvyPublish("1.0", false);
-    ivyPublish.setStatus("milestone");
 
     File fileToPublish1 = new File(DIST_PATH + "/" + "testartifact1.jar");
     String fileContents1 = "testArtifact1 - contents";
