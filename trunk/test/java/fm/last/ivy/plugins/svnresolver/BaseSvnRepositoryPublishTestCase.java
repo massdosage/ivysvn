@@ -48,8 +48,8 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
       String binaryDiffFolderName) throws SVNException, IOException {
     Map<String, String> defaultArtifacts = new HashMap<String, String>();
     defaultArtifacts.put(defaultArtifactName, artifactFileContents);
-    this.assertPublish(defaultOrganisation, defaultModule, pubRevision, defaultArtifacts,
-        defaultIvyFileName, binaryDiff, binaryDiffFolderName);
+    this.assertPublish(defaultOrganisation, defaultModule, pubRevision, defaultArtifacts, defaultIvyFileName,
+        binaryDiff, binaryDiffFolderName);
   }
 
   /**
@@ -67,23 +67,36 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
   }
 
   /**
+   * Asserts all the effects of a publish action, using default values where necessary.
+   * 
+   * @param pubRevision The publication revision.
+   * @param artifacts A map keyed by artifact name with values of the expected contents of the artifact files.
+   * @param binaryDiff Binary diff value for the publish action.
+   * @throws SVNException If an error occurs checking the files in Subversion.
+   * @throws IOException If an error occurs reading the file contents.
+   */
+  protected void assertPublish(String pubRevision, Map<String, String> artifacts, boolean binaryDiff)
+    throws SVNException, IOException {
+    this.assertPublish(defaultOrganisation, defaultModule, pubRevision, artifacts, defaultIvyFileName, binaryDiff,
+        SvnRepository.DEFAULT_BINARY_DIFF_FOLDER_NAME);
+  }
+
+  /**
    * Asserts all the effects of a publish action.
    * 
    * @param organisation The organisation.
    * @param module The module.
    * @param pubRevision The publication revision.
-   * @param artifacts A map where the keys are the artifact names and the values are the expected contents of the
-   *          artifact files. * @param ivyFileName Expected published ivy file name.
+   * @param artifacts A map keyed by artifact name with values of the expected contents of the artifact files.
+   * @param ivyFileName Expected published ivy file name.
    * @param binaryDiff Binary diff value for the publish action.
    * @param binaryDiffFolderName The name of the binary diff folder.
    * @throws SVNException If an error occurs checking the files in Subversion.
    * @throws IOException If an error occurs reading the file contents.
    */
   protected void assertPublish(String organisation, String module, String pubRevision, Map<String, String> artifacts,
-      String ivyFileName, boolean binaryDiff, String binaryDiffFolderName)
-    throws SVNException, IOException {
-    assertBinaryDiffPublish(organisation, module, artifacts, ivyFileName, binaryDiff,
-        binaryDiffFolderName);
+      String ivyFileName, boolean binaryDiff, String binaryDiffFolderName) throws SVNException, IOException {
+    assertBinaryDiffPublish(organisation, module, artifacts, ivyFileName, binaryDiff, binaryDiffFolderName);
     // now check publish to actual revision folder
     assertNonBinaryDiffPublish(organisation, module, pubRevision, artifacts, ivyFileName);
   }
@@ -93,8 +106,7 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
    * 
    * @param organisation The organisation.
    * @param module The module.
-   * @param artifacts A map where the keys are the artifact names and the values are the expected contents of the
-   *          artifact files.
+   * @param artifacts A map keyed by artifact name with values of the expected contents of the artifact files.
    * @param ivyFileName Expected published ivy file name.
    * @param binaryDiff Binary diff value for the publish action.
    * @param binaryDiffFolderName The name of the binary diff folder.
@@ -102,8 +114,7 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
    * @throws IOException If an error occurs reading the file contents.
    */
   protected void assertBinaryDiffPublish(String organisation, String module, Map<String, String> artifacts,
-      String ivyFileName, boolean binaryDiff, String binaryDiffFolderName)
-    throws SVNException, IOException {
+      String ivyFileName, boolean binaryDiff, String binaryDiffFolderName) throws SVNException, IOException {
     // first setup binary diff path
     String publishFolder = organisation + "/" + module + "/" + binaryDiffFolderName + "/";
     if (binaryDiff) {
@@ -119,8 +130,7 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
    * @param organisation The organisation.
    * @param module The module.
    * @param pubRevision The publication revision.
-   * @param artifacts A map where the keys are the artifact names and the values are the expected contents of the
-   *          artifact files.
+   * @param artifacts A map keyed by artifact name with values of the expected contents of the artifact files.
    * @param ivyFileName Expected published ivy file name.
    * @throws SVNException If an error occurs checking the files in Subversion.
    * @throws IOException If an error occurs reading the file contents.
@@ -135,8 +145,7 @@ public abstract class BaseSvnRepositoryPublishTestCase extends BaseIvyTestCase {
    * Asserts all the effects of a publish action under a single folder in Subversion.
    * 
    * @param artifactPublishFolder The folder in Subversion that artifact files should have been published to.
-   * @param artifacts A map where the keys are the artifact names and the values are the expected contents of the
-   *          artifact files.
+   * @param artifacts A map keyed by artifact name with values of the expected contents of the artifact files.
    * @param ivyPublishFolder The folder in Subversion that ivy files should have been published to.
    * @param ivyFileName Expected published ivy file name.
    * @throws SVNException If an error occurs checking the files in Subversion.
