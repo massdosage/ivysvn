@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.ivy.ant.IvyPublish;
 import org.apache.tools.ant.BuildException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,7 +36,6 @@ public class SvnRepositoryBinaryDiffPublishTest extends BaseSvnRepositoryPublish
     assertPublish("1.0", defaultFileContents, true);
     // now try publish again
     String fileContents2 = "overwrite set to false so this should not get published";
-    // FileUtils.writeStringToFile(defaultFileToPublish, fileContents2);
     publish(ivySettingsFile, fileContents2, false);
     assertPublish("1.0", defaultFileContents, true); // overwrite was false, so fileContents2 should not be published
   }
@@ -179,6 +180,82 @@ public class SvnRepositoryBinaryDiffPublishTest extends BaseSvnRepositoryPublish
     assertPublish("2.5.5", defaultFileContents, true);
     publish(ivySettingsFile, defaultFileContents, "2.0.8", false);
     assertPublish("2.0.8", defaultFileContents, true);
+  }
+
+  /**
+   * This checks that a revision can be called TEST when doing a default binary diff. This used to cause an issue as
+   * TEST was seen as a revision within the default binary publish path of LATEST.
+   * 
+   * @throws IOException
+   * @throws SVNException
+   */
+  @Test
+  public void testBinaryDiff_TESTRevision() throws IOException, SVNException {
+    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile, "binaryDiff=\"true\"");
+    // revision TEST is contained within binary diff folder name LATEST
+    String revision = "TEST";
+    IvyPublish ivyPublish = createIvyPublish(revision, false);
+
+    File fileToPublish1 = new File(DIST_PATH + "/" + "testartifact1.jar");
+    String fileContents1 = "testArtifact1 - contents";
+    FileUtils.writeStringToFile(fileToPublish1, fileContents1);
+
+    File fileToPublish2 = new File(DIST_PATH + "/" + "testartifact2.jar");
+    String fileContents2 = "testArtifact2 - contents";
+    FileUtils.writeStringToFile(fileToPublish2, fileContents2);
+
+    File ivyPublishFile = new File(ivysDataFolder, "ivy-test-publish-multiple-artifacts.xml");
+    publish(ivyPublishFile, ivySettingsFile, ivyPublish);
+
+    Map<String, String> expectedArtifacts = new HashMap<String, String>();
+    assertPublish(revision, expectedArtifacts, true);
+  }
+
+  /**
+   * When doing a binary diff we need to replace the revision with "LATEST", if the revision occurs more than once in
+   * the path we can't figure out which part of the path is the revision and thus cannot continue.
+   * 
+   * @throws Throwable
+   */
+  @Test(expected = IllegalStateException.class)
+  public void testBinaryDiff_testRevision() throws Throwable {
+    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile, "binaryDiff=\"true\"");
+    // revision "test" is contained within the organisation, module and artifact names
+    String revision = "test";
+    IvyPublish ivyPublish = createIvyPublish(revision, false);
+
+    File fileToPublish1 = new File(DIST_PATH + "/" + "testartifact.jar");
+    String fileContents1 = "testArtifact1 - contents";
+    FileUtils.writeStringToFile(fileToPublish1, fileContents1);
+
+    File ivyPublishFile = new File(ivysDataFolder, "ivy-test-publish.xml");
+    try {
+      publish(ivyPublishFile, ivySettingsFile, ivyPublish);
+    } catch (BuildException e) {
+      throw e.getCause();
+    }
+  }
+
+  @Test
+  public void testBinaryDiff_RevisionInArtifactName() throws IOException, SVNException {
+    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile, "binaryDiff=\"true\"");
+    // revision "artifact" is contained within the artifact names
+    String revision = "artifact";
+    IvyPublish ivyPublish = createIvyPublish(revision, false);
+
+    File fileToPublish1 = new File(DIST_PATH + "/" + "testartifact1.jar");
+    String fileContents1 = "testArtifact1 - contents";
+    FileUtils.writeStringToFile(fileToPublish1, fileContents1);
+
+    File fileToPublish2 = new File(DIST_PATH + "/" + "testartifact2.jar");
+    String fileContents2 = "testArtifact2 - contents";
+    FileUtils.writeStringToFile(fileToPublish2, fileContents2);
+
+    File ivyPublishFile = new File(ivysDataFolder, "ivy-test-publish-multiple-artifacts.xml");
+    publish(ivyPublishFile, ivySettingsFile, ivyPublish);
+
+    Map<String, String> expectedArtifacts = new HashMap<String, String>();
+    assertPublish(revision, expectedArtifacts, true);
   }
 
 }
