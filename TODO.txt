@@ -7,9 +7,7 @@ mailing lists. This release should also update to the latest version of Ivy and 
 
 -----------------------------------------------------------------------
 
--Ask ivy and ivymeetssvn projects to update link to google code site.
-
--When 2.1.0 - announce on ivy list, javalobby, last.fm blog, IvySvn mailing list etc.
+-When 2.1.0 has been downloaded a fair bit and looks OK - announce on javalobby, last.fm blog etc.
 
   http://java.dzone.com/node/add/announcement
   http://www.theserverside.com/news/post.tss
@@ -27,15 +25,17 @@ mailing lists. This release should also update to the latest version of Ivy and 
   use by Ivy's publish and retrieve operations. IvySvn is free, open source software released under the Apache license 
   (http://www.apache.org/licenses/LICENSE-2.0.html).
   
-  Features in IvySvn 2.1.0 include:
+  New Features in IvySvn 2.1.0 include:
   
-  - All repository operations are now relative to Ivy repository root, NOT the Subversion root which allows more fine-grained permissions models among other things. 
-  - Upgraded to Ivy 2.1.0, SVNKit 1.3.2 and Trilead SSH for Java build213-svnkit-1.3-patch.
-  - Improved Wiki documentation, especially instructions for building from source and unit test setup for developers.
+- All repository operations are now relative to Ivy repository root, NOT the Subversion root. This allows a more fine-grained Subversion permissions model,
+  among other things (see http://code.google.com/p/ivysvn/wiki/Installation for more info).
+- Upgraded to Ivy 2.1.0, SVNKit 1.3.2 and Trilead SSH for Java build213-svnkit-1.3-patch.
+- Improved Wiki documentation, especially instructions for building from source (http://code.google.com/p/ivysvn/wiki/BuildingFromSource) and 
+  unit test setup (http://code.google.com/p/ivysvn/wiki/UnitTestSetup) for developers.
     
   For more information on the new features please refer to the CHANGELOG.txt file which is part of the release.
    
-  Thank you to everyone from the open source community (especially the peeps at Apache and Last.fm) who helped 
+  Thank you to everyone from the open source community (especially the peeps at Last.fm) who helped 
   contribute to this release by giving feedback, feature ideas, code patches and helping with testing.
 
 Future:
