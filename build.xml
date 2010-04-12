@@ -123,7 +123,7 @@ limitations under the License.
     <fail if="testfailed" message="Some test(s) failed. See '${junit.report.dir}' for details." />
   </target>
 
-  <target name="jar" depends="compile, check-buildnumber-generation" description="make a jar file for this project">
+  <target name="jar" depends="compile" description="Build a jar file for this project">
     <tstamp>
       <format property="BUILD-DATETIME" pattern="yyyy-MM-dd HH:mm:ss" />
     </tstamp>
