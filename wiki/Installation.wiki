@@ -28,9 +28,9 @@ while the root of the Ivy repository is
 {{{
 svn://localhost/opt/svntest/ivy/repository/
 }}}
-So, in this case the the 2.1.0 ivy settings file would need to be changed so that `repositoryRoot` contains the path to the Ivy repository by adding `ivy/repository/` to it and removing this from the patterns like so:
+So, in this case the the 2.1.0 ivy settings file would need to be changed so that `repositoryRoot` contains the path to the Ivy repository by adding `ivy/repository` to it and removing this from the patterns like so:
 {{{
-    <svn name="ivysvn" repositoryRoot="svn://localhost/opt/svntest/ivy/repository/" 
+    <svn name="ivysvn" repositoryRoot="svn://localhost/opt/svntest/ivy/repository" 
          userName="${svn.user.name}" userPassword="${svn.user.password}">
       <ivy pattern="[organisation]/[module]/[revision]/ivy-[revision].xml"/>
       <artifact pattern="[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
