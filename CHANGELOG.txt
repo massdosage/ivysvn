@@ -1,6 +1,6 @@
 IvySvn Change Log
 
-Release 2.1.0 TBA
+Release 2.1.0 2010-04-12
 ~~~~~~~~~~~~~~~~~~~~~~~~
  - http://code.google.com/p/ivysvn/issues/detail?id=18 - made all repository operations relative to Ivy repository root, NOT the SVN root. 
  - http://code.google.com/p/ivysvn/issues/detail?id=20
@@ -10,7 +10,7 @@ Release 2.1.0 TBA
  - Upgraded to Trilead SSH for Java build213-svnkit-1.3-patch.
  - Added instructions for building from source and unit test setup to Wiki.
 
-Release 2.0.0 2008-05-14
+Release 2.0.0 2009-05-14
 ~~~~~~~~~~~~~~~~~~~~~~~~
   - Added ability to perform binary diffs (based on code and concepts contributed by Xavier Hanin).
   - Publish now results in one/two svn commits per publish call instead of per file (based on code and 
