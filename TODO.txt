@@ -5,41 +5,6 @@ certain patterns, files and folders end up in unexpected places. Once these have
 advertise IvySvn more publically to the rest of the world by doing some advertising on Java websites and 
 mailing lists. This release should also update to the latest version of Ivy and latest version of SVNKit. 
 
-
-- updated wiki so it has instructions for building from source and setting up for unit tests.
------------------------------------------------------------------------
-
-upgrade to svn kit 1.3.1
-
-TODO: update example ivy settings on website to use new ivy repository root layout stuff
-
-TODO: update README.txt to contain below (will also need to go in mail out, possibly also make a page on website)
-
-2.0 to 2.1 upgrade procedure.
-
-What you will need to change in your ivysettings config file...
-
-- repositoryRoot should now point to the root location of your *Ivy* repository in subversion (not the subversion root).
-- your ivy and artifact patterns should now be relative to this Ivy root repository location.
-
-In practise this usually means moving the leading folder structure from the patterns and appending them to the existing repositoryRoot.
-
-e.g. before:
-
-    <svn name="ivysvn" repositoryRoot="svn://localhost/opt/svntest/" userName="${svn.user.name}"
-      userPassword="${svn.user.password}">
-      <ivy pattern="test/java/repository/[organisation]/[module]/[revision]/ivy-[revision].xml"/>
-      <artifact pattern="test/java/repository/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
-    </svn>
-    
-after:
-
-    <svn name="ivysvn" repositoryRoot="svn://localhost/opt/svntest/repo/root/test/java/repository/" userName="${svn.user.name}"
-      userPassword="${svn.user.password}"><!--@-->
-      <ivy pattern="[organisation]/[module]/[revision]/ivy-[revision].xml"/>
-      <artifact pattern="[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
-    </svn>    
-
 -----------------------------------------------------------------------
 
 -Ask ivy and ivymeetssvn projects to update link to google code site.
@@ -52,35 +17,26 @@ after:
   IvySvn 2.1.0 released - A Subversion Resolver for Ivy.
   
   Summary:
-  The 2.0.0 version of IvySvn, a Subversion Resolver for Ivy (Ant's "agile dependency manager"), has been released with 
-  new features which take advantage of Subversion's diff and transactional commits.  
+  The 2.1.0 version of IvySvn, a Subversion Resolver for Ivy (Ant's "agile dependency manager"), has been released with 
+  upgrades to the version of Ivy it uses as well as various bug fixes and improvements.  
   
   Content:
   The 2.1.0 version of IvySvn is now available for download from http://code.google.com/p/ivysvn/
   
-  IvySvn is a resolver for Ivy 2.0.0 (http://ant.apache.org/ivy) which uses Subversion for storing artifacts for 
-  use in Ivy's publish and retrieve operations. IvySvn is free, open source software released under the <link>
-  Apache license.
+  IvySvn is a resolver for Ivy 2.1.0 (http://ant.apache.org/ivy) which uses Subversion for storing artifacts for 
+  use by Ivy's publish and retrieve operations. IvySvn is free, open source software released under the Apache license 
+  (http://www.apache.org/licenses/LICENSE-2.0.html).
   
   Features in IvySvn 2.1.0 include:
   
-    - Publish operations can now be configured to publish to an intermediate location, taking 
-    advantage of Subversion's diff functionality to reduce storage requirements in Subversion when 
-    publishing multiple revisions of the same project.
-    
-    - Publish operations now result in one Subversion commit per publish (or two commits if using the binary 
-    diff feature) instead of one commit per file. This allows Subversion to control Ivy commits better and 
-    also allows for better diffs between Subversion revisions. 
-    
-   - When overwriting existing published artifacts, files that are no longer part of publish are now 
-     deleted. 
+  - All repository operations are now relative to Ivy repository root, NOT the Subversion root which allows more fine-grained permissions models among other things. 
+  - Upgraded to Ivy 2.1.0, SVNKit 1.3.2 and Trilead SSH for Java build213-svnkit-1.3-patch.
+  - Improved Wiki documentation, especially instructions for building from source and unit test setup for developers.
     
   For more information on the new features please refer to the CHANGELOG.txt file which is part of the release.
-
    
   Thank you to everyone from the open source community (especially the peeps at Apache and Last.fm) who helped 
   contribute to this release by giving feedback, feature ideas, code patches and helping with testing.
-
 
 Future:
 ~~~~~~~
