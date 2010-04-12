@@ -5,6 +5,8 @@ Configuring !IvySvn is explained below.
 
 = Configuration =
 
+Note: All these examples reflect the !IvySvn 2.1.0 release, for upgrading from 2.0.0 see the section "Upgrading from 2.0.0 to 2.1.0" on the [Installation] wiki page for important configuration changes.
+
 1. Create an `ivysettings.xml` file along the lines of the example file shown below. This example includes *all* possible values which can be set on the !IvySvn Resolver for reference purposes only. For real world use refer to the table below and only set the attributes you require, replacing the values which are all uppercase with values that suit your setup. 
  
 {{{
@@ -16,7 +18,7 @@ Configuring !IvySvn is explained below.
     <svn name="ivysvn" 
          userName="${svn.user.name}" 
          userPassword="${svn.user.password}" 
-         repositoryRoot="PROTOCOL://HOSTNAME/PATH_TO_SVN_REPOSITORY_ROOT"
+         repositoryRoot="PROTOCOL://HOSTNAME/PATH/TO/IVY/REPOSITORY/ROOT"
          keyFile="${ssh.keyfile}" 
          sshPort="${ssh.port}" 
          sshPassphrase="${ssh.keyfile.passphrase}" 
@@ -27,8 +29,8 @@ Configuring !IvySvn is explained below.
          binaryDiffFolderName="${svn.binarydiff.folder}"
          retrieveRevision="${svn.retrieve.revision}"
          cleanupPublishFolder="${svn.cleanup.publish.folder}">
-      <ivy pattern="PATH_TO_ARTIFACT_FOLDER/[organisation]/[module]/[revision]/ivy.xml"/>
-      <artifact pattern="PATH_TO_ARTIFACT_FOLDER/[organisation]/[module]/[revision]/[artifact].[ext]"/>
+      <ivy pattern="[organisation]/[module]/[revision]/ivy.xml"/>
+      <artifact pattern="[organisation]/[module]/[revision]/[artifact].[ext]"/>
     </svn>
   </resolvers>
 
@@ -50,7 +52,7 @@ For more information on the values in `ivysettings.xml` refer to the [http://ant
 || name        || Name of the resolver. || Always. ||
 || userName || Subversion user name. || Always. ||
 || userPassword || Subversion password. || Only for password authentication. ||
-|| repositoryRoot || SVN repository root location (including protocol, host and Subversion root path). || Always. ||
+|| repositoryRoot || Ivy repository root location (including protocol, host and Subversion root path). || Always. ||
 || keyFile || Path to SSH key file. || Only for svn+ssh:// connections that require username and keyfile authentication. ||
 || sshPassphrase || The SSH key file passphrase (if any). || Only for svn+ssh:// connections that require username and keyfile authentication with a keyfile requiring a passphrase, defaults to "". ||
 || sshPort || The SSH port. || Only for svn+ssh:// connections where the SSH port is not the default of 22. ||
@@ -69,9 +71,9 @@ So an example ivysettings.xml for a Subversion repository accessed over SSH on t
   <typedef name="svn" classname="fm.last.ivy.plugins.svnresolver.SvnResolver"/>
 
   <resolvers>
-    <svn name="ivysvn" repositoryRoot="svn+ssh://example.com/svn" userName="USER" userPassword="PASSWORD">
-      <ivy pattern="ivyrep/[organisation]/[module]/[revision]/ivy.xml"/>
-      <artifact pattern="ivyrep/[organisation]/[module]/[revision]/[artifact].[ext]"/>
+    <svn name="ivysvn" repositoryRoot="svn+ssh://example.com/svn/ivyrep" userName="USER" userPassword="PASSWORD">
+      <ivy pattern="[organisation]/[module]/[revision]/ivy.xml"/>
+      <artifact pattern="[organisation]/[module]/[revision]/[artifact].[ext]"/>
     </svn>
   </resolvers>
 
