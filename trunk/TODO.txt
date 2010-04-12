@@ -5,6 +5,8 @@ certain patterns, files and folders end up in unexpected places. Once these have
 advertise IvySvn more publically to the rest of the world by doing some advertising on Java websites and 
 mailing lists. This release should also update to the latest version of Ivy and latest version of SVNKit. 
 
+
+- updated wiki so it has instructions for building from source and setting up for unit tests.
 -----------------------------------------------------------------------
 
 upgrade to svn kit 1.3.1
