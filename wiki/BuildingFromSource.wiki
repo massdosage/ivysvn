@@ -7,9 +7,9 @@ This page describes the steps needed to get !IvySvn set up for development and c
 = Details =
 
 ==Prerequisites==
-* Java >=5.0 installed.
-* Ant >= 1.6 installed.
-
+  * Java >=5.0 installed.
+  * Ant >= 1.6 installed.
+ 
 ==Getting the source==
 ===Download a source release===
 If you want to modify the source code of an official !IvySvn release then you should download the "Source release" from the [http://code.google.com/p/ivysvn/downloads/list downloads] page and unpack it.
@@ -28,8 +28,8 @@ build/dist/ivysvnresolver.jar
 }}}
 
 ==Installing a new build==
-* Copy ivysettings.xml.example to ivysettings.xml and modify it to suit your Subversion setup.
-* Then you can run:
+  * Copy ivysettings.xml.example to ivysettings.xml and modify it to suit your Subversion setup.
+  * Then you can run:
 {{{
 ant -Dskip.retrieve=true -Dversion=REPLACE_WITH_YOUR_VERSION install
 }}}
