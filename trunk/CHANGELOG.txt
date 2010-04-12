@@ -8,6 +8,7 @@ Release 2.1.0 TBA
  - Upgraded to Ivy 2.1.0.
  - Upgraded to SVNKit 1.3.2.
  - Upgraded to Trilead SSH for Java build213-svnkit-1.3-patch.
+ - Added instructions for building from source and unit test setup to Wiki.
 
 Release 2.0.0 2008-05-14
 ~~~~~~~~~~~~~~~~~~~~~~~~

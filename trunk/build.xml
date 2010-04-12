@@ -164,7 +164,6 @@ limitations under the License.
     </tar>
   </target>
 
-  <!-- doesn't appear to work, google moved the file upload location?? -->
   <target name="upload" depends="build-dist">
     <taskdef classname="net.bluecow.googlecode.ant.GoogleCodeUploadTask" classpath="${lib.dir}/ant-googlecode.jar" name="gcupload" />
     <!-- first upload the src version -->

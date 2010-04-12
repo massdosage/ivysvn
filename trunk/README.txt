@@ -8,52 +8,51 @@ For more information please visit:
 Binary Version
 ~~~~~~~~~~~~~~
 
-Installing Ivysvn
+See http://code.google.com/p/ivysvn/wiki/Installation for the latest version of this.
 
-The following steps describe how to install Ivysvn after you have downloaded and unpacked the latest binary release.
- 
-1. Copy all the third party libraries (Ivy, Trilead and SVNKit) from the lib folder to ANT_HOME/lib/ or to somewhere on 
-your CLASSPATH. If you are upgrading from a previous version of Ivysvn please remove any older versions of these 
-libraries. 
-2. Copy ivysvnresolver.jar into ANT_HOME/lib/ or make sure it is on your CLASSPATH. 
-3. Create a standard ivy.xml file for your project declaring your dependencies, publications etc. 
-4. Create an ivysettings.xml file containing a "svn" resolver element and set various properties on it. 
+*Installing IvySvn*
 
-If you are upgrading from Ivysvn 1.4 or below you will also need to: 
+The following steps describe how to install IvySvn after you have downloaded and unpacked the latest binary release.
 
-1. Modify ivysettings.xml - many attribute names now contain mixed case (e.g. "keyfile" is now "keyFile") and some 
-attribute names have changed (e.g. "port" is now "sshPort"). For more information refer to Configuration. 
-2. Remove previous Ivy jar files (e.g. 'ivy-2.0.0-beta2.jar') from ANT_HOME/lib/. All future versions of Ivysvn 
-will name this jar ivy.jar so future upgrades can just replace this file instead of having to remove older 
-versions. 
+   1. Copy all the third party library jar files (Ivy, Trilead and SVNKit) from the lib folder to ANT_HOME/lib/ or to somewhere on your CLASSPATH. If you are upgrading from a previous version of IvySvn please remove any older versions of these libraries.
+   2. Copy ivysvnresolver.jar into ANT_HOME/lib/ or make sure it is on your CLASSPATH.
+   3. Create a standard ivy.xml file for your project declaring your dependencies, publications etc.
+   4. Create an ivysettings.xml file containing a "svn" resolver element and set various properties on it as described in Configuration. 
 
-If you are upgrading from Ivysvn 1.3 or below you will also need to:
- 
-1. Remove the contents of your local ivy2 cache (this is located in ~/.ivy2 on Linux) - remove the folder and
- all its contents). 
-2. Remove ANT_HOME/lib/ganymed.jar and previous versions of Ivy jar files from ANT_HOME/lib/.
+*Upgrading from 2.0.0 to 2.1.0*
+
+A major change in 2.1.0 is the meaning of the repositoryRoot attribute in ivysettings.xml - this is now taken to mean the root location of your Ivy repository in Subversion and not the root of the Subversion repository as it was previously. A follow on from this is that the ivy and artifact patterns need to be changed to be relative to this Ivy root repository location instead of the root of the entire Subversion repository. If your Ivy and Subversion repository roots are identical then you can skip this step.
+
+In practise this usually means moving part of the leading folder structure from the patterns and appending them to the existing repositoryRoot. An example should make this clearer. The following shows a 2.0.0 ivysettings.xml file:
+
+    <svn name="ivysvn" repositoryRoot="svn://localhost/opt/svntest/" 
+         userName="${svn.user.name}" userPassword="${svn.user.password}">
+      <ivy pattern="ivy/repository/[organisation]/[module]/[revision]/ivy-[revision].xml"/>
+      <artifact pattern="ivy/repository/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
+    </svn>
+
+The root of the Subversion repository is
+
+svn://localhost/opt/svntest/
+
+while the root of the Ivy repository is
+
+svn://localhost/opt/svntest/ivy/repository/
+
+So, in this case the the 2.1.0 ivy settings file would need to be changed so that repositoryRoot contains the path to the Ivy repository by adding ivy/repository to it and removing this from the patterns like so:
+
+    <svn name="ivysvn" repositoryRoot="svn://localhost/opt/svntest/ivy/repository" 
+         userName="${svn.user.name}" userPassword="${svn.user.password}">
+      <ivy pattern="[organisation]/[module]/[revision]/ivy-[revision].xml"/>
+      <artifact pattern="[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
+    </svn>    
+
+repositoryRoot now contains the full path to the Ivy repository and the two patterns are relative to this instead of the Subversion repository root. 
 
 Source Version
 ~~~~~~~~~~~~~~
 
-Installing from source:
-
-1. Copy ivysettings.xml.example to ivysettings.xml and configure to suit your setup.
-2. Copy build.properties.example to build.properties and set the values according to your setup.
-3. Run "ant -Dskip.retrieve=true -Dversion=0 install" which will compile the Java source code, build ivysvnresolver.jar 
-into build/dist and then copy this, ivysettings.xml, ivy-common-targets.xml and the required 3rd party libraries to your 
-ANT_HOME/lib folder.
-
-If you are upgrading from a previous version please remove any older versions of the files copied across 
-in the above step from ANT_HOME/lib.
-
-Testing that it works:
-
-1. Edit ivy.xml so that it contains dependencies to artifacts in your repository.
-2. Run "ant retrieve" and the dependent files should be downloaded to the lib folder.
-3. Make sure the "version" property is set and run "ant publish" and the current version of ivysvnresolver.jar. 
-should be published to your repository. NOTE: Every time you do a publish you will need to use a different 
-version number (or set the property "publish.overwrite" to true).
+See http://code.google.com/p/ivysvn/wiki/BuildingFromSource for the latest version of this.
 
 
 Third party libraries
