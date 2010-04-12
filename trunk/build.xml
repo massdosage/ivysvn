@@ -159,8 +159,7 @@ limitations under the License.
   <!-- builds the source zip file -->
   <target name="build-src" depends="build-jar">
     <tar destfile="${dist.dir}/${ant.project.name}-${version}-src.tgz" compression="gzip">
-      <zipfileset dir="${basedir}" excludes="build/**/*, build, .*, build.properties, lib/commons*, lib/junit*, 
-        ivysettings.xml, .settings/**/*, deb.xml, test/conf/test.properties" prefix="${ant.project.name}-${version}" />
+      <zipfileset dir="${basedir}" excludes="build/**/*, build, .*, build.properties, ivysettings.xml, .settings/**/*, deb.xml, test/conf/test.properties" prefix="${ant.project.name}-${version}" />
     </tar>
   </target>
 
