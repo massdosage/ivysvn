@@ -1,5 +1,8 @@
 IvySvn Change Log
 
+TBA
+- Added extra targets to ivy-common-targets.xml for publishing snapshots etc. (contributed by Elliot West). 
+
 Release 2.1.0 2010-04-12
 ~~~~~~~~~~~~~~~~~~~~~~~~
  - http://code.google.com/p/ivysvn/issues/detail?id=18 - made all repository operations relative to Ivy repository root, NOT the SVN root. 
