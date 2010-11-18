@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.ivy.ant.IvyPublish;
 import org.apache.tools.ant.BuildException;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.io.ISVNEditor;
@@ -256,6 +257,28 @@ public class SvnRepositoryBinaryDiffPublishTest extends BaseSvnRepositoryPublish
 
     Map<String, String> expectedArtifacts = new HashMap<String, String>();
     assertPublish(revision, expectedArtifacts, true);
+  }
+
+  @Ignore("See http://code.google.com/p/ivysvn/issues/detail?id=22 - this test reproduces the issue but we don't have a fix yet")
+  @Test
+  public void testBinaryDiff_PublishSubFolderIssue22() throws IOException, SVNException {
+    File ivySettingsFile = prepareTestIvySettings(defaultIvySettingsFile, "binaryDiff=\"true\"");
+
+    String revision = "1.0";
+    IvyPublish ivyPublish = createIvyPublish(revision, false);
+
+    File artifactFolder = new File(DIST_PATH, "SubFolder");
+    artifactFolder.mkdir();
+    File fileToPublish1 = new File(artifactFolder, "MyArtifact.txt");
+    String fileContents1 = "my artifact - contents";
+    FileUtils.writeStringToFile(fileToPublish1, fileContents1);
+
+    File ivyPublishFile = new File(ivysDataFolder, "ivy-test-publish-sub-folder.xml");
+    publish(ivyPublishFile, ivySettingsFile, ivyPublish);
+
+    // TODO: the asserts for this.
+    // Map<String, String> expectedArtifacts = new HashMap<String, String>();
+    // assertPublish(revision, expectedArtifacts, true);
   }
 
 }
