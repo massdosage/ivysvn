@@ -3,6 +3,7 @@ IvySvn Change Log
 TBA
 - Upgraded to SvnKit 1.3.4.
 - Upgraded to Ivy 2.2.0.
+- http://code.google.com/p/ivysvn/issues/detail?id=24 (contributed by asheiduk).
 - Added extra targets to ivy-common-targets.xml for publishing snapshots etc. (contributed by Elliot West). 
 
 Release 2.1.0 2010-04-12

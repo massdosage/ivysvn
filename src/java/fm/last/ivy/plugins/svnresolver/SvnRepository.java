@@ -197,6 +197,7 @@ public class SvnRepository extends AbstractRepository {
    * @param mrid The SVN commit message to use for this publish transaction.
    */
   public void beginPublishTransaction(ModuleRevisionId mrid) {
+    ensureNoPublishTransaction();
     Message.debug("Starting transaction " + mrid + "...");
     this.moduleRevisionId = mrid;
   }
@@ -211,6 +212,7 @@ public class SvnRepository extends AbstractRepository {
     Message.debug("Committing transaction...");
     try {
       publishTransaction.commit();
+      publishTransaction = null;
     } catch (SVNException e) {
       throw (IOException) new IOException().initCause(e);
     }
@@ -233,6 +235,7 @@ public class SvnRepository extends AbstractRepository {
     Message.info("Aborting transaction");
     try {
       publishTransaction.abort();
+      publishTransaction = null;
     } catch (SVNException e) {
       throw (IOException) new IOException().initCause(e);
     }
@@ -241,11 +244,22 @@ public class SvnRepository extends AbstractRepository {
   /**
    * Ensures that a transaction has been created.
    * 
-   * @throws IllegalArgumentException If a transaction has not been created.
+   * @throws IllegalStateException If a transaction has not been created.
    */
   private void ensurePublishTransaction() {
     if (publishTransaction == null) {
       throw new IllegalStateException("Transaction not initialised");
+    }
+  }
+
+  /**
+   * Ensures that no transaction is lingering around.
+   * 
+   * @throws IllegalStateException If a transaction is still active.
+   */
+  private void ensureNoPublishTransaction() {
+    if (publishTransaction != null) {
+      throw new IllegalStateException("Previous transaction is still active");
     }
   }
 
