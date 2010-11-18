@@ -140,4 +140,10 @@ public class SvnRepositoryRetrieveTest extends BaseIvyTestCase {
     assertEquals(fileContents2, FileUtils.readFileToString(new File(testTempFolder, "testartifact.jar")));
   }
 
+  @Test
+  public void testRetrieve_Issue26() throws IOException, SVNException {
+    retrieve(new File(ivysDataFolder, "ivy-test-retrieve-issue26.xml"));
+    assertEquals("acme widgets 4.5", FileUtils.readFileToString(new File(testTempFolder, "widgets.jar")));
+  }
+
 }
