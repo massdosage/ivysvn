@@ -10,25 +10,25 @@ For each new release, announce on project's Google mailing list and possibly als
   
 Announcement template:
 
- IvySvn $VERSION released - A Subversion Resolver for Ivy.
+IvySvn $VERSION released - A Subversion Resolver for Ivy.
   
-  Summary:
-  IvySvn $VERSION, a Subversion Resolver for Ivy (Ant's "agile dependency manager"), has been released with 
-  $AMAZING_NEW_FEATURE as well as various bug fixes and improvements.  
+Summary:
+IvySvn $VERSION, a Subversion Resolver for Ivy (Ant's "agile dependency manager"), has been released with 
+$AMAZING_NEW_FEATURE as well as various bug fixes and improvements.  
   
-  Content:
-  IvySvn $VERSION is now available for download from http://code.google.com/p/ivysvn/
+Content:
+IvySvn $VERSION is now available for download from http://code.google.com/p/ivysvn/
   
-  IvySvn is a resolver for Ivy $VERSION (http://ant.apache.org/ivy) which uses Subversion for storing artifacts for 
-  use by Ivy's publish and retrieve operations. IvySvn is free, open source software released under the Apache license 
-  (http://www.apache.org/licenses/LICENSE-2.0.html).
+IvySvn is a resolver for Ivy $VERSION (http://ant.apache.org/ivy) which uses Subversion for storing artifacts for 
+use by Ivy's publish and retrieve operations. IvySvn is free, open source software released under the Apache license 
+(http://www.apache.org/licenses/LICENSE-2.0.html).
   
-  New Features in IvySvn $VERSION include:
+New Features in IvySvn $VERSION include:
   
 - $LIST_OF_NEW_FEATURES_AND_FIXES
     
-  For more information on the new features please refer to the CHANGELOG.txt file which is part of the release.
+For more information on the new features please refer to the CHANGELOG.txt file which is part of the release.
    
-  Thank you to everyone from the open source community (especially the peeps at Last.fm) who helped 
-  contribute to this release by giving feedback, feature ideas, code patches and helping with testing.
+Thank you to everyone from the open source community (especially the peeps at Last.fm) who helped 
+contribute to this release by giving feedback, feature ideas, code patches and helping with testing.
   
