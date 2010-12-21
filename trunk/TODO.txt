@@ -19,7 +19,7 @@ $AMAZING_NEW_FEATURE as well as various bug fixes and improvements.
 Content:
 IvySvn $VERSION is now available for download from http://code.google.com/p/ivysvn/
   
-IvySvn is a resolver for Ivy $VERSION (http://ant.apache.org/ivy) which uses Subversion for storing artifacts for 
+IvySvn is a resolver for Ivy $VERSION (http://ant.apache.org/ivy) which uses Subversion to store artifacts for 
 use by Ivy's publish and retrieve operations. IvySvn is free, open source software released under the Apache license 
 (http://www.apache.org/licenses/LICENSE-2.0.html).
   
