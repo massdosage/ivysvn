@@ -1,5 +1,5 @@
 ##Copy this file to "test.properties" in the same folder and uncomment and modify values according to your test setup
-##See http://code.google.com/p/ivysvn/wiki/UnitTestSetup for more info.
+##See https://github.com/massdosage/ivysvn/wiki/UnitTestSetup for more info.
 
 ##The root of the subversion repository
 #svn.repository.root=svn://localhost/opt/ivysvntest/repo/root/

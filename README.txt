@@ -3,12 +3,12 @@ Ivy Subversion Resolver
 
 For more information please visit:
 
-  http://code.google.com/p/ivysvn/
+  https://github.com/massdosage/ivysvn
   
 Binary Version
 ~~~~~~~~~~~~~~
 
-See http://code.google.com/p/ivysvn/wiki/Installation for the latest version of this.
+See https://github.com/massdosage/ivysvn/wiki/Installation for the latest version of this.
 
 *Installing IvySvn*
 
@@ -52,7 +52,7 @@ repositoryRoot now contains the full path to the Ivy repository and the two patt
 Source Version
 ~~~~~~~~~~~~~~
 
-See http://code.google.com/p/ivysvn/wiki/BuildingFromSource for the latest version of this.
+See https://github.com/massdosage/ivysvn/wiki/Building-from-source for the latest version of this.
 
 
 Third party libraries
