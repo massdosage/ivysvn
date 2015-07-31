@@ -3,6 +3,10 @@ operations. Ivy is a dependency manager for Java which can be integrated into [A
 which your project may depend on as well as publication of artifacts (e.g. your own .jar/.war/.ear/.tgz files etc.) that your build generates. Subversion is not supported "out of the 
 box" by Ivy itself, which is the gap that IvySvn aims to fill.
 
+IvySvn can be [downloaded here](https://code.google.com/p/ivysvn/downloads/list).
+
+Please refer to the project's [Wiki](https://github.com/massdosage/ivysvn/wiki) for usage and other information.
+
 The key benefits of using IvySvn for existing Subversion users are:
 
 * Everything is in one place - your source code, dependent libraries and build artifacts are all kept in Subversion.
