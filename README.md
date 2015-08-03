@@ -23,7 +23,7 @@ Note: IvySvn 2.1.0 requires >= Java 5.0.
 Latest news
 
 * **Project moved from Google Code to Github** (2015-06-31) - with Google Code's [impending closure] (http://google-opensource.blogspot.co.uk/2015/03/farewell-to-google-code.html) 
-IvySvn has been moved to a new home in Github. IvySvn isn't actively maintained any more but at least the code is still available for future reference or forking. 
+IvySvn has been moved to a new home in Github. IvySvn isn't actively developed any more but the code is still available here for future reference, forking or the consideration of pull requests. 
 * **2.2.0 release available** (2010-12-20) - 2.2.0 is now available and uses Ivy 2.2.0. Get it [here](http://code.google.com/p/ivysvn/downloads/list), and report any issues to the 
 [IvySvn group](http://groups.google.com/group/ivysvn).
 
