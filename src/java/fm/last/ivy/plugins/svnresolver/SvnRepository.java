@@ -325,6 +325,11 @@ public class SvnRepository extends AbstractRepository {
       SvnDao svnDAO = new SvnDao(repository);
       svnDAO.getFile(url, destination, svnRetrieveRevision);
 
+      long lastModified = resource.getLastModified();
+      if (lastModified > 0) {
+        destination.setLastModified(lastModified);
+      }
+
       fireTransferCompleted(destination.length());
     } catch (SVNException e) {
       Message.error("Error retrieving" + repositorySource + " [revision=" + svnRetrieveRevision + "]");
@@ -340,7 +345,11 @@ public class SvnRepository extends AbstractRepository {
    * @throws IOException Never thrown, just here to satisfy interface.
    */
   public Resource getResource(String source) throws IOException {
-    String repositorySource = getRepositoryRoot() + source;
+    String repositorySource = source;
+    if (!source.startsWith(repositoryRoot)) {
+      repositorySource = getRepositoryRoot() + source;
+    }
+
     Resource resource = (Resource) resourcesCache.get(repositorySource);
     if (resource == null) {
       resource = new SvnResource(this, repositorySource);
