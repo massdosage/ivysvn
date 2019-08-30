@@ -325,6 +325,11 @@ public class SvnRepository extends AbstractRepository {
       SvnDao svnDAO = new SvnDao(repository);
       svnDAO.getFile(url, destination, svnRetrieveRevision);
 
+      long lastModified = resource.getLastModified();
+      if (lastModified > 0) {
+        destination.setLastModified(lastModified);
+      }
+
       fireTransferCompleted(destination.length());
     } catch (SVNException e) {
       Message.error("Error retrieving" + repositorySource + " [revision=" + svnRetrieveRevision + "]");
