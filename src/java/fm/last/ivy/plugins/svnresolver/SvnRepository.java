@@ -345,7 +345,11 @@ public class SvnRepository extends AbstractRepository {
    * @throws IOException Never thrown, just here to satisfy interface.
    */
   public Resource getResource(String source) throws IOException {
-    String repositorySource = getRepositoryRoot() + source;
+    String repositorySource = source;
+    if (!source.startsWith(repositoryRoot)) {
+      repositorySource = getRepositoryRoot() + source;
+    }
+
     Resource resource = (Resource) resourcesCache.get(repositorySource);
     if (resource == null) {
       resource = new SvnResource(this, repositorySource);
